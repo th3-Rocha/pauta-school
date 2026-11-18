@@ -1,4 +1,5 @@
 // Minuto de trocas e registro do BPM do desafio.
+import { L } from "../../i18n";
 import * as React from "react";
 import { Plus, RotateCcw, Timer, Trophy } from "lucide-react";
 import { Button } from "../../components/ui/Button";
@@ -57,15 +58,15 @@ export function MinuteChallenge({ id, label }: { id: string; label: string }) {
   };
 
   return (
-    <section className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-4 shadow-md sm:p-5" aria-label="Minuto de trocas">
+    <section className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-4 shadow-md sm:p-5" aria-label={L("Minuto de trocas", "Changes minute")}>
       <header className="flex items-center justify-between gap-2">
         <h3 className="panel-label inline-flex items-center gap-1.5 text-muted">
           <Timer className="size-4" aria-hidden />
-          Minuto de trocas
+          {L("Minuto de trocas", "Changes minute")}
         </h3>
         <span className="inline-flex items-center gap-1.5 font-mono text-sm text-muted">
           <Trophy className="size-4 text-warn" aria-hidden />
-          Recorde: <strong className="text-fg">{best}</strong>
+          {L("Recorde", "Record")}: <strong className="text-fg">{best}</strong>
         </span>
       </header>
       <p className="text-base text-fg">{label}</p>
@@ -81,12 +82,12 @@ export function MinuteChallenge({ id, label }: { id: string; label: string }) {
         {running ? (
           <Button size="lg" onClick={() => setCount((c) => c + 1)} className="min-w-40">
             <Plus aria-hidden />
-            Troquei
+            {L("Troquei", "Changed")}
           </Button>
         ) : (
           <Button size="lg" onClick={startTimer}>
             {left === 0 ? <RotateCcw aria-hidden /> : <Timer aria-hidden />}
-            {left === 0 ? "De novo" : "Começar o minuto"}
+            {left === 0 ? L("De novo", "Again") : L("Começar o minuto", "Start the minute")}
           </Button>
         )}
       </div>
@@ -103,13 +104,13 @@ export function BpmLog({ month, target }: { month: number; target: number }) {
   const n = Number(value);
   const valid = Number.isInteger(n) && n >= 30 && n <= 250;
   return (
-    <section className="flex flex-col gap-3 rounded-lg border-2 border-warn bg-surface p-4 sm:p-5" aria-label="Registrar o desafio">
-      <h3 className="panel-label text-warn">Registrar o desafio</h3>
+    <section className="flex flex-col gap-3 rounded-lg border-2 border-warn bg-surface p-4 sm:p-5" aria-label={L("Registrar o desafio", "Log the challenge")}>
+      <h3 className="panel-label text-warn">{L("Registrar o desafio", "Log the challenge")}</h3>
       <p className="text-base text-fg">
-        Meta: <strong className="font-mono">{target} BPM</strong> sem parar.{" "}
+        {L("Meta", "Goal")}: <strong className="font-mono">{target} BPM</strong> {L("sem parar.", "without stopping.")}{" "}
         {best > 0 && (
           <>
-            Seu melhor até agora: <strong className={best >= target ? "font-mono text-good" : "font-mono"}>{best} BPM</strong>.
+            {L("Seu melhor até agora", "Your best so far")}: <strong className={best >= target ? "font-mono text-good" : "font-mono"}>{best} BPM</strong>.
           </>
         )}
       </p>
@@ -123,11 +124,11 @@ export function BpmLog({ month, target }: { month: number; target: number }) {
         }}
       >
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor={`bpm-${month}`}>Maior BPM que você tocou limpo</Label>
+          <Label htmlFor={`bpm-${month}`}>{L("Maior BPM que você tocou limpo", "Highest BPM you played cleanly")}</Label>
           <Input id={`bpm-${month}`} inputMode="numeric" value={value} onChange={(e) => setValue(e.target.value.replace(/\D/g, ""))} className="w-32 font-mono" placeholder="70" />
         </div>
         <Button type="submit" disabled={!valid}>
-          Salvar
+          {L("Salvar", "Save")}
         </Button>
       </form>
       {best >= target && <p className="font-semibold text-good">Desafio vencido! Conclua a aula para fechar o mês 1.</p>}

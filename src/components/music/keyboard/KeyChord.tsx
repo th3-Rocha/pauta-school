@@ -5,7 +5,7 @@
 import * as React from "react";
 import { cn } from "../../../lib/cn";
 import { strings as defaultStrings, type Strings } from "../../../lib/strings";
-import { isBlack, noteName, noteSpoken, type Accidentals, type Finger, type Hand, type NoteNames } from "../../../lib/piano";
+import { isBlack, noteName, noteSpoken, type Accidentals, type Finger, type Hand, type NoteNames, defaultNoteNames } from "../../../lib/piano";
 import { MarkerGlyph, type MarkerKind } from "../markers";
 import { MiniKeys, type MiniKeyMarker } from "./MiniKeys";
 
@@ -72,7 +72,7 @@ export function KeyChord({
   previous,
   from,
   to,
-  noteNames = "solfege",
+  noteNames = defaultNoteNames(),
   naming = "sharp",
   showLegend,
   maxKeyPx = 40,

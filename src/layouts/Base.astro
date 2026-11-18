@@ -4,12 +4,22 @@ import "../styles/global.css";
 interface Props {
   title: string;
   description?: string;
+  lang?: "pt" | "en";
 }
-const { title, description = "Pauta: escola de música livre e open source. Uma aula por dia, do zero ao solo." } = Astro.props;
+const { lang = "pt" } = Astro.props;
+const {
+  title,
+  description = lang === "en"
+    ? "Pauta: a free, open-source music school. One lesson a day, from zero to soloing."
+    : "Pauta: escola de música livre e open source. Uma aula por dia, do zero ao solo.",
+} = Astro.props;
+const path = Astro.url.pathname.replace(/^\/en(?=\/|$)/, "") || "/";
+const ptHref = path;
+const enHref = path === "/" ? "/en" : `/en${path}`;
 ---
 
 <!doctype html>
-<html lang="pt-BR" data-theme="dark">
+<html lang={lang === "en" ? "en" : "pt-BR"} data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -18,6 +28,8 @@ const { title, description = "Pauta: escola de música livre e open source. Uma 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" href="/fonts/Figtree-latin.woff2" as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
+    <link rel="alternate" hreflang="pt-BR" href={ptHref} />
+    <link rel="alternate" hreflang="en" href={enHref} />
     <script is:inline>
       (function () {
         var t = null;

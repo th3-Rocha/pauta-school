@@ -5,7 +5,7 @@ import * as React from "react";
 import { Check, CircleDashed, Hand as HandIcon, Plus, X } from "lucide-react";
 import { cn } from "../../../lib/cn";
 import { strings as defaultStrings, type Strings } from "../../../lib/strings";
-import { compareChord, noteName, type Accidentals, type NoteNames } from "../../../lib/piano";
+import { compareChord, noteName, type Accidentals, type NoteNames, defaultNoteNames } from "../../../lib/piano";
 import { Panel } from "../controls";
 import type { MarkerKind } from "../markers";
 import { Keyboard } from "./Keyboard";
@@ -46,7 +46,7 @@ export function ChordCheck({
   mode = "pitch-class",
   inputReady = true,
   showKeyboard = true,
-  noteNames = "solfege",
+  noteNames = defaultNoteNames(),
   naming = "sharp",
   onPress,
   onRelease,

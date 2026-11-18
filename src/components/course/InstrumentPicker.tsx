@@ -2,6 +2,7 @@
 import { AudioLines, Check, Drum, Guitar, Lock, MicVocal, Piano, type LucideIcon } from "lucide-react";
 import { cn } from "../../lib/cn";
 import type { Instrument, InstrumentId } from "../../data/instruments";
+import { L } from "../../i18n";
 
 const ICONS: Record<InstrumentId, LucideIcon> = {
   guitar: Guitar,
@@ -24,7 +25,7 @@ export type InstrumentPickerProps = {
 /** Grade de instrumentos. Os que ainda não têm curso aparecem bloqueados. */
 export function InstrumentPicker({ instruments, selected, onSelect, className }: InstrumentPickerProps) {
   return (
-    <div role="radiogroup" aria-label="Instrumento" className={cn("grid grid-cols-2 gap-3 sm:grid-cols-4", className)}>
+    <div role="radiogroup" aria-label={L("Instrumento", "Instrument")} className={cn("grid grid-cols-2 gap-3 sm:grid-cols-4", className)}>
       {instruments.map((ins) => {
         const Icon = ICONS[ins.id];
         const isSel = ins.id === selected;
@@ -37,7 +38,7 @@ export function InstrumentPicker({ instruments, selected, onSelect, className }:
             aria-disabled={!ins.available}
             disabled={!ins.available}
             onClick={() => ins.available && onSelect(ins.id)}
-            aria-label={ins.available ? (ins.preview ? `${ins.name}, prévia` : ins.name) : `${ins.name}, em breve`}
+            aria-label={ins.available ? (ins.preview ? `${ins.name}, ${L("prévia", "preview")}` : ins.name) : `${ins.name}, ${L("em breve", "coming soon")}`}
             className={cn(
               "relative flex flex-col items-start gap-2 rounded-md border p-4 text-left transition-colors focus-ring",
               isSel
@@ -51,15 +52,15 @@ export function InstrumentPicker({ instruments, selected, onSelect, className }:
               <Icon className={cn("size-6", isSel ? "text-accent" : "text-muted")} aria-hidden />
               {isSel ? (
                 <span className="flex items-center gap-1.5">
-                  {ins.preview && <span className="text-xs font-semibold text-accent">Prévia</span>}
+                  {ins.preview && <span className="text-xs font-semibold text-accent">{L("Prévia", "Preview")}</span>}
                   <Check className="size-4 text-accent" aria-hidden />
                 </span>
               ) : ins.preview ? (
-                <span className="text-xs font-semibold text-muted">Prévia</span>
+                <span className="text-xs font-semibold text-muted">{L("Prévia", "Preview")}</span>
               ) : !ins.available ? (
                 <span className="flex items-center gap-1 text-xs font-semibold text-muted">
                   <Lock className="size-3.5" aria-hidden />
-                  Em breve
+                  {L("Em breve", "Coming soon")}
                 </span>
               ) : null}
             </span>

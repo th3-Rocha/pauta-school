@@ -2,7 +2,7 @@
 // Trecho de teclado estático, para diagramas (KeyChord, HandPosition, ChordCheck).
 // Mesma geometria e mesmas cores do Keyboard, sem interação.
 import * as React from "react";
-import { KEY, MIDDLE_C, layoutKeys, noteName, type Accidentals, type Hand, type KeyGeom, type NoteNames } from "../../../lib/piano";
+import { KEY, MIDDLE_C, layoutKeys, noteName, type Accidentals, type Hand, type KeyGeom, type NoteNames, defaultNoteNames } from "../../../lib/piano";
 import { MarkerDefs, MarkerGlyph, type MarkerKind } from "../markers";
 
 export const MINI = { lid: 8, felt: 4, cheek: 5 } as const;
@@ -61,7 +61,7 @@ export function MiniKeys({
   markers = [],
   headroom = 0,
   showNoteNames = "none",
-  noteNames = "solfege",
+  noteNames = defaultNoteNames(),
   naming = "sharp",
   handLetters = { right: "D", left: "E" },
   overlay,

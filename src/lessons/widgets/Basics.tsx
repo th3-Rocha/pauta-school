@@ -1,4 +1,5 @@
 // Widgets básicos: cordas, notas, afinador e metrônomo.
+import { L } from "../../i18n";
 import * as React from "react";
 import { Volume2 } from "lucide-react";
 import { Button } from "../../components/ui/Button";
@@ -10,12 +11,12 @@ import { STANDARD_TUNING } from "../../lib/music";
 import { MetronomeEngine, listenPitch, noteName, pluck } from "../../app/audio";
 
 export const STRINGS = [
-  { n: 1, letter: "E", pt: "Mi", desc: "a mais fina, mais perto do chão" },
-  { n: 2, letter: "B", pt: "Si", desc: "" },
-  { n: 3, letter: "G", pt: "Sol", desc: "" },
-  { n: 4, letter: "D", pt: "Ré", desc: "" },
-  { n: 5, letter: "A", pt: "Lá", desc: "" },
-  { n: 6, letter: "E", pt: "Mi", desc: "a mais grossa, mais perto do seu rosto" },
+  { n: 1, letter: "E", pt: "Mi", desc: "a mais fina, mais perto do chão", descEn: "the thinnest, closest to the floor" },
+  { n: 2, letter: "B", pt: "Si", desc: "", descEn: "" },
+  { n: 3, letter: "G", pt: "Sol", desc: "", descEn: "" },
+  { n: 4, letter: "D", pt: "Ré", desc: "", descEn: "" },
+  { n: 5, letter: "A", pt: "Lá", desc: "", descEn: "" },
+  { n: 6, letter: "E", pt: "Mi", desc: "a mais grossa, mais perto do seu rosto", descEn: "the thickest, closest to your face" },
 ];
 const midiOf = (stringNo: number) => STANDARD_TUNING[stringNo - 1];
 
@@ -39,15 +40,22 @@ export function StringsExplorer() {
           pluck(midiOf(s) + f);
           if (f === 0) setLast(s);
         }}
-        aria-label="Braço com as seis cordas soltas. Toque numa corda para ouvir."
+        aria-label={L("Braço com as seis cordas soltas. Toque numa corda para ouvir.", "Neck with the six open strings. Tap a string to hear it.")}
       />
       <p aria-live="polite" className="min-h-12 rounded-sm border border-line bg-bg px-4 py-3 text-base text-fg">
         {info ? (
           <>
-            <strong className="font-mono">Corda {info.n}</strong>: {info.pt} ({info.letter}){info.desc ? `, ${info.desc}` : ""}.
+            {L(
+              <>
+                <strong className="font-mono">Corda {info.n}</strong>: {info.pt} ({info.letter}){info.desc ? `, ${info.desc}` : ""}.
+              </>,
+              <>
+                <strong className="font-mono">String {info.n}</strong>: {info.letter}{info.descEn ? `, ${info.descEn}` : ""}.
+              </>,
+            )}
           </>
         ) : (
-          "Toque nas bolinhas da esquerda (as cordas soltas) para ouvir cada corda."
+          L("Toque nas bolinhas da esquerda (as cordas soltas) para ouvir cada corda.", "Tap the dots on the left (the open strings) to hear each string.")
         )}
       </p>
     </div>
@@ -122,10 +130,10 @@ export function Tuner() {
           type="single"
           value={String(stringNo)}
           onValueChange={(v) => v && setStringNo(Number(v))}
-          aria-label="Corda que você está afinando"
+          aria-label={L("Corda que você está afinando", "String you are tuning")}
         >
           {[6, 5, 4, 3, 2, 1].map((n) => (
-            <ToggleGroupItem key={n} value={String(n)} aria-label={`Corda ${n}, ${STRINGS[n - 1].pt}`}>
+            <ToggleGroupItem key={n} value={String(n)} aria-label={L(`Corda ${n}, ${STRINGS[n - 1].pt}`, `String ${n}, ${STRINGS[n - 1].letter}`)}>
               <span className="font-mono">
                 {n}·{STRINGS[n - 1].letter}
               </span>
@@ -134,14 +142,14 @@ export function Tuner() {
         </ToggleGroup>
         <Button variant="secondary" onClick={() => pluck(target, { gain: 0.7 })}>
           <Volume2 aria-hidden />
-          Ouvir a nota certa
+          {L("Ouvir a nota certa", "Hear the right note")}
         </Button>
       </div>
       <PitchMeter
         permission={permission}
         onRequestPermission={start}
         target={noteName(target)}
-        targetHint={`Corda ${stringNo} solta (${STRINGS[stringNo - 1].pt})`}
+        targetHint={L(`Corda ${stringNo} solta (${STRINGS[stringNo - 1].pt})`, `Open string ${stringNo} (${STRINGS[stringNo - 1].letter})`)}
         detected={reading ? noteName(reading.midi) : null}
         cents={cents}
       />

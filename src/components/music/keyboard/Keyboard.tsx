@@ -20,6 +20,7 @@ import {
   type Hand,
   type KeyGeom,
   type NoteNames,
+  defaultNoteNames,
 } from "../../../lib/piano";
 import { Button } from "../../ui/Button";
 import { MarkerDefs, MarkerGlyph, type MarkerKind } from "../markers";
@@ -118,7 +119,7 @@ export function Keyboard({
   pressed = [],
   handZones = [],
   showNoteNames = "c-only",
-  noteNames = "solfege",
+  noteNames = defaultNoteNames(),
   naming = "sharp",
   computerKeys = false,
   pedal = false,

@@ -6,6 +6,7 @@ import { getCourse, type CourseInfo } from "../data/courses";
 import type { InstrumentId } from "../data/instruments";
 import { setActiveInstrument } from "./progress";
 import { selectInstrument } from "./instrument";
+import { L, localePath, setLocale, type Locale } from "../i18n";
 import { Shell } from "./Shell";
 import { Lesson } from "../lessons/Lesson";
 
@@ -15,36 +16,37 @@ function Soon({ day, course }: { day: number; course: CourseInfo }) {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-10">
       <p className="panel-label text-accent">
-        {course.name} · Mês {m.month} · Dia {day}
+        {course.name} · {L("Mês", "Month")} {m.month} · {L("Dia", "Day")} {day}
       </p>
       <h1 className="font-display text-3xl font-extrabold tracking-tight text-fg sm:text-4xl">
-        {milestone ? `Desafio: ${m.milestone.title}` : "Esta aula ainda está sendo escrita"}
+        {milestone ? `${L("Desafio", "Challenge")}: ${m.milestone.title}` : L("Esta aula ainda está sendo escrita", "This lesson is still being written")}
       </h1>
       <p className="text-lg text-muted">
-        {milestone ? m.milestone.goal : `Ela faz parte do mês "${m.title}".`}
+        {milestone ? m.milestone.goal : L(`Ela faz parte do mês "${m.title}".`, `It belongs to the month "${m.title}".`)}
       </p>
-      <Callout variant="theory" label="O que vem neste mês">
+      <Callout variant="theory" label={L("O que vem neste mês", "Coming this month")}>
         <p>
-          <strong>Teoria:</strong> {m.theory}
+          <strong>{L("Teoria", "Theory")}:</strong> {m.theory}
         </p>
         <p>
-          <strong>Prática:</strong> {m.practice}
+          <strong>{L("Prática", "Practice")}:</strong> {m.practice}
         </p>
       </Callout>
       <Button variant="secondary" asChild className="self-start">
-        <a href="/">
+        <a href={localePath("/")}>
           <ArrowLeft aria-hidden />
-          Voltar para o seu ano
+          {L("Voltar para o seu ano", "Back to your year")}
         </a>
       </Button>
     </main>
   );
 }
 
-export default function LessonApp({ day, instrument = "guitar" }: { day: number; instrument?: InstrumentId }) {
+export default function LessonApp({ day, instrument = "guitar", locale = "pt" }: { day: number; instrument?: InstrumentId; locale?: Locale }) {
+  setLocale(locale);
   setActiveInstrument(instrument, { silent: true });
   const course = getCourse(instrument);
   const lesson = course.lessons[day];
   React.useEffect(() => selectInstrument(instrument), [instrument]);
-  return <Shell>{lesson ? <Lesson lesson={lesson} href={course.href} /> : <Soon day={day} course={course} />}</Shell>;
+  return <Shell>{lesson ? <Lesson lesson={lesson} href={course.href} homeHref={localePath("/")} /> : <Soon day={day} course={course} />}</Shell>;
 }

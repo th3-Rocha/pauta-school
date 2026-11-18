@@ -13,6 +13,7 @@ import { onNote, press, release, useKeyInput } from "../../app/key-input";
 import { playKey } from "../../app/piano-audio";
 import { audio, tick } from "../../app/audio";
 import { ExerciseFrame, useExercise } from "./Keys";
+import { L } from "../../i18n";
 
 export type PlayMode = "listen" | "wait" | "tempo";
 
@@ -221,12 +222,15 @@ export function PlayAlong({
   const score = sorted.length ? (hits + close * 0.5) / sorted.length : 0;
   const pct = Math.round(score * 100);
   const counting = position < 0 && running && mode !== "wait";
-  const tally = `${hits} ${hits === 1 ? "certa" : "certas"}, ${close} quase, ${miss} ${miss === 1 ? "perdida" : "perdidas"}`;
+  const tally = L(
+    `${hits} ${hits === 1 ? "certa" : "certas"}, ${close} quase, ${miss} ${miss === 1 ? "perdida" : "perdidas"}`,
+    `${hits} on time, ${close} close, ${miss} missed`,
+  );
 
   return (
     <ExerciseFrame
       ex={ex}
-      label={title ?? "Toque junto"}
+      label={title ?? L("Toque junto", "Play along")}
       aside={
         mode === "tempo" && (finished || hits + close + miss > 0) ? (
           <Badge mono tone={finished ? (score >= goal ? "good" : "warn") : "neutral"}>{pct}%</Badge>
@@ -239,13 +243,13 @@ export function PlayAlong({
     >
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          <ToggleGroup type="single" size="sm" value={mode} onValueChange={(v) => v && setMode(v as PlayMode)} aria-label="Modo">
-            {modes.includes("listen") && <ToggleGroupItem value="listen">Ouvir</ToggleGroupItem>}
-            {modes.includes("wait") && <ToggleGroupItem value="wait">Esperar por mim</ToggleGroupItem>}
-            {modes.includes("tempo") && <ToggleGroupItem value="tempo">No tempo</ToggleGroupItem>}
+          <ToggleGroup type="single" size="sm" value={mode} onValueChange={(v) => v && setMode(v as PlayMode)} aria-label={L("Modo", "Mode")}>
+            {modes.includes("listen") && <ToggleGroupItem value="listen">{L("Ouvir", "Listen")}</ToggleGroupItem>}
+            {modes.includes("wait") && <ToggleGroupItem value="wait">{L("Esperar por mim", "Wait for me")}</ToggleGroupItem>}
+            {modes.includes("tempo") && <ToggleGroupItem value="tempo">{L("No tempo", "In time")}</ToggleGroupItem>}
           </ToggleGroup>
           {mode !== "wait" && (
-            <ToggleGroup type="single" size="sm" value={String(speed)} onValueChange={(v) => v && setSpeed(Number(v))} aria-label="Velocidade">
+            <ToggleGroup type="single" size="sm" value={String(speed)} onValueChange={(v) => v && setSpeed(Number(v))} aria-label={L("Velocidade", "Speed")}>
               <ToggleGroupItem value="0.5">50%</ToggleGroupItem>
               <ToggleGroupItem value="0.75">75%</ToggleGroupItem>
               <ToggleGroupItem value="1">{bpm} BPM</ToggleGroupItem>
@@ -257,18 +261,21 @@ export function PlayAlong({
           {finished
             ? mode === "tempo"
               ? score >= goal
-                ? `${pct}%: meta batida! ${tally}.`
-                : `${pct}%. A meta é ${Math.round(goal * 100)}%: tente a 75% da velocidade. ${tally}.`
+                ? L(`${pct}%: meta batida! ${tally}.`, `${pct}%: goal reached! ${tally}.`)
+                : L(`${pct}%. A meta é ${Math.round(goal * 100)}%: tente a 75% da velocidade. ${tally}.`, `${pct}%. The goal is ${Math.round(goal * 100)}%: try at 75% speed. ${tally}.`)
               : mode === "wait"
-                ? `Pronto! ${wrong === 0 ? "Sem nenhuma tecla errada." : `${wrong} ${wrong === 1 ? "tecla errada" : "teclas erradas"} no caminho.`} Agora tente No tempo.`
-                : "Agora é com você: escolha Esperar por mim."
+                ? L(
+                    `Pronto! ${wrong === 0 ? "Sem nenhuma tecla errada." : `${wrong} ${wrong === 1 ? "tecla errada" : "teclas erradas"} no caminho.`} Agora tente No tempo.`,
+                    `Done! ${wrong === 0 ? "Not a single wrong key." : `${wrong} wrong ${wrong === 1 ? "key" : "keys"} along the way.`} Now try In time.`,
+                  )
+                : L("Agora é com você: escolha Esperar por mim.", "Your turn now: choose Wait for me.")
             : counting
-              ? `Contagem: ${Math.ceil(-position)}…`
+              ? `${L("Contagem", "Count-in")}: ${Math.ceil(-position)}…`
               : mode === "wait"
-                ? "A música para em cada nota e espera você tocar a tecla marcada."
+                ? L("A música para em cada nota e espera você tocar a tecla marcada.", "The music stops at each note and waits for you to play the marked key.")
                 : mode === "tempo"
-                  ? "Toque cada nota quando ela encostar na linha. Primeiro vem um compasso de contagem."
-                  : "Veja e ouça. As notas tocam quando encostam na linha."}
+                  ? L("Toque cada nota quando ela encostar na linha. Primeiro vem um compasso de contagem.", "Play each note when it touches the line. First comes one bar of count-in.")
+                  : L("Veja e ouça. As notas tocam quando encostam na linha.", "Watch and listen. Notes play when they touch the line.")}
         </p>
 
         <PianoRoll
@@ -294,19 +301,19 @@ export function PlayAlong({
           {running ? (
             <Button variant="secondary" onClick={stop}>
               <Pause aria-hidden />
-              Pausar
+              {L("Pausar", "Pause")}
             </Button>
           ) : (
             <Button onClick={start}>
               <Play aria-hidden />
-              {finished ? "De novo" : position > (mode === "wait" ? -1 : -beatsPerBar) ? "Continuar" : mode === "listen" ? "Ouvir" : "Começar"}
+              {finished ? L("De novo", "Again") : position > (mode === "wait" ? -1 : -beatsPerBar) ? L("Continuar", "Continue") : mode === "listen" ? L("Ouvir", "Listen") : L("Começar", "Start")}
             </Button>
           )}
           <Button variant="ghost" onClick={reset}>
             <RotateCcw aria-hidden />
-            Do início
+            {L("Do início", "From the top")}
           </Button>
-          {mode === "wait" && !running && !finished && <span className="text-sm text-muted">Ou só toque a primeira nota.</span>}
+          {mode === "wait" && !running && !finished && <span className="text-sm text-muted">{L("Ou só toque a primeira nota.", "Or just play the first note.")}</span>}
         </div>
       </div>
     </ExerciseFrame>

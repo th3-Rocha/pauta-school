@@ -8,6 +8,7 @@ import { STANDARD_TUNING } from "../lib/music";
 import { pluck } from "../app/audio";
 import { completeDay, setBlockDone, setChecks, useProgress } from "../app/progress";
 import { md } from "./md";
+import { L } from "../i18n";
 import type { Lesson as LessonData, Node } from "./types";
 import { LetterTable, MetronomeExercise, StringsExplorer, Tuner } from "./widgets/Basics";
 import { ChordCards, ChordChanger, StrumPattern } from "./widgets/Chords";
@@ -166,13 +167,13 @@ export function Lesson({ lesson, href = (d: number) => `/guitar/day/${d}`, homeH
         <nav className="flex justify-between gap-3 text-sm">
           {lesson.day > 1 ? (
             <a className="text-muted underline decoration-line-strong underline-offset-4 hover:text-fg" href={href(lesson.day - 1)}>
-              ← Dia {lesson.day - 1}
+              ← {L("Dia", "Day")} {lesson.day - 1}
             </a>
           ) : (
             <span />
           )}
           <a className="text-muted underline decoration-line-strong underline-offset-4 hover:text-fg" href={homeHref}>
-            Seu ano
+            {L("Seu ano", "Your year")}
           </a>
         </nav>
       }

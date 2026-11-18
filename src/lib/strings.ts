@@ -1,10 +1,11 @@
 // src/lib/strings.ts
 // Todo texto fixo dos componentes. Para traduzir, passe um objeto com a mesma
 // forma na prop `strings` de cada componente (parcial é aceito).
+import { EN } from "./strings-en";
 
 type HandKey = "right" | "left";
 
-export const strings = {
+const PT = {
   common: {
     close: "Fechar",
     loading: "Carregando…",
@@ -432,7 +433,15 @@ export const strings = {
   },
 };
 
-export type Strings = typeof strings;
+export type Strings = typeof PT;
+
+/** Texto em uso agora. `setLocale` troca o conteúdo; os componentes leem na hora de renderizar. */
+export const strings: Strings = { ...PT };
+
+/** Troca todo o texto para o idioma pedido. Chamado por `setLocale` (src/i18n). */
+export function applyLocaleStrings(locale: "pt" | "en") {
+  Object.assign(strings, locale === "en" ? EN : PT);
+}
 
 /** Mescla rasa entre o texto padrão e `strings` parciais vindas por prop. */
 export function withStrings<K extends keyof Strings>(key: K, override?: Partial<Strings[K]>): Strings[K] {

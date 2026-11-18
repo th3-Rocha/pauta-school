@@ -5,7 +5,7 @@ import * as React from "react";
 import { CheckCircle2, ChevronLeft, ChevronRight, Lightbulb } from "lucide-react";
 import { cn } from "../../../lib/cn";
 import { strings as defaultStrings, type Strings } from "../../../lib/strings";
-import { noteName, noteSpoken, type Accidentals, type Finger, type Hand, type NoteNames } from "../../../lib/piano";
+import { noteName, noteSpoken, type Accidentals, type Finger, type Hand, type NoteNames, defaultNoteNames } from "../../../lib/piano";
 import { Button } from "../../ui/Button";
 import { Panel, PlayButton } from "../controls";
 
@@ -41,7 +41,7 @@ export function KeyFixPuzzle({
   onShowHint,
   playing = false,
   onPlay,
-  noteNames = "solfege",
+  noteNames = defaultNoteNames(),
   naming = "sharp",
   strings: stringsOverride,
   keyboardStrings,

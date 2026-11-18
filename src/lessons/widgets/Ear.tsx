@@ -1,6 +1,7 @@
 // Treinos de ouvido. Cada tipo gera uma pergunta e sabe tocar o som dela.
 import * as React from "react";
 import { EarTrainer, type EarOption } from "../../components/music/EarTrainer";
+import { L } from "../../i18n";
 import { STANDARD_TUNING } from "../../lib/music";
 import { audio, pluck, strum, tick } from "../../app/audio";
 import { chordMidis } from "../chords";
@@ -20,10 +21,12 @@ const twoNotes = (a: number, b: number, gap = 900) => () => {
 
 const KINDS: Record<EarKind, Kind> = {
   "highlow-strings": {
-    question: "A segunda nota foi mais aguda ou mais grave que a primeira?",
+    get question() {
+      return L("A segunda nota foi mais aguda ou mais grave que a primeira?", "Was the second note higher or lower than the first?");
+    },
     options: () => [
-      { id: "aguda", label: "Mais aguda", hint: "mais fina, mais alta" },
-      { id: "grave", label: "Mais grave", hint: "mais grossa, mais baixa" },
+      { id: "aguda", label: L("Mais aguda", "Higher"), hint: L("mais fina, mais alta", "thinner, brighter") },
+      { id: "grave", label: L("Mais grave", "Lower"), hint: L("mais grossa, mais baixa", "thicker, deeper") },
     ],
     make: () => {
       const a = rnd(6);
@@ -35,10 +38,12 @@ const KINDS: Record<EarKind, Kind> = {
     },
   },
   "highlow-close": {
-    question: "Agora as notas são vizinhas. A segunda subiu ou desceu?",
+    get question() {
+      return L("Agora as notas são vizinhas. A segunda subiu ou desceu?", "Now the notes are neighbors. Did the second go up or down?");
+    },
     options: () => [
-      { id: "aguda", label: "Subiu", hint: "ficou mais aguda" },
-      { id: "grave", label: "Desceu", hint: "ficou mais grave" },
+      { id: "aguda", label: L("Subiu", "Up"), hint: L("ficou mais aguda", "got higher") },
+      { id: "grave", label: L("Desceu", "Down"), hint: L("ficou mais grave", "got lower") },
     ],
     make: () => {
       const base = STANDARD_TUNING[pick([1, 2, 3])] + 2 + rnd(3);
@@ -47,10 +52,12 @@ const KINDS: Record<EarKind, Kind> = {
     },
   },
   "same-diff": {
-    question: "As duas notas são iguais ou diferentes?",
+    get question() {
+      return L("As duas notas são iguais ou diferentes?", "Are the two notes the same or different?");
+    },
     options: () => [
-      { id: "igual", label: "Iguais" },
-      { id: "diferente", label: "Diferentes" },
+      { id: "igual", label: L("Iguais", "Same") },
+      { id: "diferente", label: L("Diferentes", "Different") },
     ],
     make: () => {
       const base = 52 + rnd(12);
@@ -60,11 +67,13 @@ const KINDS: Record<EarKind, Kind> = {
     },
   },
   duration: {
-    question: "O metrônomo conta 4 tempos. Quantos tempos a nota durou?",
+    get question() {
+      return L("O metrônomo conta 4 tempos. Quantos tempos a nota durou?", "The metronome counts 4 beats. How many beats did the note last?");
+    },
     options: () => [
-      { id: "1", label: "1 tempo", hint: "semínima" },
-      { id: "2", label: "2 tempos", hint: "mínima" },
-      { id: "4", label: "4 tempos", hint: "semibreve" },
+      { id: "1", label: L("1 tempo", "1 beat"), hint: L("semínima", "quarter note") },
+      { id: "2", label: L("2 tempos", "2 beats"), hint: L("mínima", "half note") },
+      { id: "4", label: L("4 tempos", "4 beats"), hint: L("semibreve", "whole note") },
     ],
     make: () => {
       const d = pick([1, 2, 4]);
@@ -82,10 +91,12 @@ const KINDS: Record<EarKind, Kind> = {
     },
   },
   "major-minor": {
-    question: "Esse acorde soa maior (aberto, alegre) ou menor (fechado, triste)?",
+    get question() {
+      return L("Esse acorde soa maior (aberto, alegre) ou menor (fechado, triste)?", "Does this chord sound major (open, happy) or minor (closed, sad)?");
+    },
     options: () => [
-      { id: "maior", label: "Maior", hint: "aberto, alegre" },
-      { id: "menor", label: "Menor", hint: "fechado, triste" },
+      { id: "maior", label: L("Maior", "Major"), hint: L("aberto, alegre", "open, happy") },
+      { id: "menor", label: L("Menor", "Minor"), hint: L("fechado, triste", "closed, sad") },
     ],
     make: () => {
       const [maj, min] = pick([
@@ -106,7 +117,9 @@ const KINDS: Record<EarKind, Kind> = {
     },
   },
   "which-chord": {
-    question: "Qual acorde tocou?",
+    get question() {
+      return L("Qual acorde tocou?", "Which chord was played?");
+    },
     options: (chords = ["Em", "Am", "D"]) => chords.map((c) => ({ id: c, label: c })),
     make: (chords = ["Em", "Am", "D"]) => {
       const name = pick(chords);

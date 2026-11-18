@@ -13,6 +13,7 @@ import { activateExercise, connectMidi, onNote, press, release, useKeyInput } fr
 import { playKey, playSequence } from "../../app/piano-audio";
 import { noteName, type Finger, type Hand } from "../../lib/piano";
 import { md } from "../md";
+import { L, localePath } from "../../i18n";
 
 const pc = (m: number) => ((m % 12) + 12) % 12;
 
@@ -51,7 +52,7 @@ export function ExerciseFrame({
           <div className="absolute inset-0 z-10 flex items-center justify-center rounded-md bg-bg/70 backdrop-blur-[2px]">
             <Button onClick={ex.activate}>
               <Play aria-hidden />
-              Começar
+              {L("Começar", "Start")}
             </Button>
           </div>
         )}
@@ -82,9 +83,9 @@ export function InputPanel({ showTestLink = true }: { showTestLink?: boolean }) 
         onConnect={() => void connectMidi()}
       />
       {showTestLink && (
-      <a href="/setup" className="inline-flex items-center gap-1.5 self-start text-sm text-muted underline decoration-line-strong underline-offset-4 hover:text-fg">
+      <a href={localePath("/setup")} className="inline-flex items-center gap-1.5 self-start text-sm text-muted underline decoration-line-strong underline-offset-4 hover:text-fg">
         <Settings2 className="size-4" aria-hidden />
-        Testar o equipamento antes
+        {L("Testar o equipamento antes", "Test your setup first")}
       </a>
       )}
     </div>
@@ -227,7 +228,7 @@ export function FindKeys({
   return (
     <ExerciseFrame
       ex={ex}
-      label={title ?? (mode === "all" ? "Ache as teclas" : "Toque a nota")}
+      label={title ?? (mode === "all" ? L("Ache as teclas", "Find the keys") : L("Toque a nota", "Play the note"))}
       aside={
         mode === "all" ? (
           <Badge mono tone={done ? "good" : "neutral"}>
@@ -243,10 +244,10 @@ export function FindKeys({
       <div className="flex flex-col gap-3">
         {mode === "quiz" && !done && (
           <p className="font-display text-3xl font-extrabold text-fg" aria-live="polite">
-            Toque um <span className={flash === "hit" ? "text-good" : flash === "miss" ? "text-bad" : "text-accent"}>{askedName}</span>
+            {L("Toque um", "Play")} <span className={flash === "hit" ? "text-good" : flash === "miss" ? "text-bad" : "text-accent"}>{askedName}</span>
           </p>
         )}
-        {mode === "all" && !done && <p className="text-muted">Toque cada uma. As que você achar ficam marcadas.</p>}
+        {mode === "all" && !done && <p className="text-muted">{L("Toque cada uma. As que você achar ficam marcadas.", "Play each one. The ones you find stay marked.")}</p>}
         <Keyboard
           from={from}
           to={to}
@@ -257,15 +258,15 @@ export function FindKeys({
           onPress={(m, v) => press(m, v ?? 90, "screen")}
           onRelease={(m) => release(m, "screen")}
         />
-        {mode === "quiz" && <Progress value={Math.min(100, (score.total / rounds) * 100)} aria-label="Rodadas" />}
+        {mode === "quiz" && <Progress value={Math.min(100, (score.total / rounds) * 100)} aria-label={L("Rodadas", "Rounds")} />}
         {done && (
           <div className="flex flex-wrap items-center gap-3">
             <p className={mode === "quiz" && pct < 80 ? "text-warn" : "text-good"}>
-              {mode === "all" ? "Achou todas!" : pct >= 80 ? `${pct}% de acerto. Meta batida!` : `${pct}% de acerto. A meta é 80%: mais uma rodada?`}
+              {mode === "all" ? L("Achou todas!", "Found them all!") : pct >= 80 ? L(`${pct}% de acerto. Meta batida!`, `${pct}% correct. Goal reached!`) : L(`${pct}% de acerto. A meta é 80%: mais uma rodada?`, `${pct}% correct. The goal is 80%: one more round?`)}
             </p>
             <Button variant="secondary" size="sm" onClick={reset}>
               <RotateCcw aria-hidden />
-              De novo
+              {L("De novo", "Again")}
             </Button>
           </div>
         )}
@@ -343,15 +344,15 @@ export function Sequence({
   return (
     <ExerciseFrame
       ex={ex}
-      label={title ?? "Sequência"}
+      label={title ?? L("Sequência", "Sequence")}
       aside={
         <Badge mono tone={done ? "good" : "neutral"}>
-          {Math.min(clean, goal)}/{goal} sem erro
+          {Math.min(clean, goal)}/{goal} {L("sem erro", "clean")}
         </Badge>
       }
     >
       <div className="flex flex-col gap-3">
-        <ol className="flex flex-wrap gap-1.5 font-mono text-sm" aria-label="Notas da sequência">
+        <ol className="flex flex-wrap gap-1.5 font-mono text-sm" aria-label={L("Notas da sequência", "Sequence notes")}>
           {notes.map((n, i) => (
             <li
               key={i}
@@ -378,10 +379,10 @@ export function Sequence({
         <div className="flex flex-wrap items-center gap-3">
           <Button variant="secondary" size="sm" onClick={() => playSequence(notes.map((n) => n.midi), 60 / bpm)}>
             <Play aria-hidden />
-            Ouvir a {bpm} BPM
+            {L("Ouvir a", "Listen at")} {bpm} BPM
           </Button>
           <span className="text-sm text-muted">
-            {done ? "Pronto! Pode seguir." : `Toque a nota marcada em teal. Erros nesta sessão: ${errors}.`}
+            {done ? L("Pronto! Pode seguir.", "Done! Move on.") : L(`Toque a nota marcada em teal. Erros nesta sessão: ${errors}.`, `Play the note marked in teal. Mistakes this session: ${errors}.`)}
           </span>
         </div>
       </div>
@@ -430,7 +431,7 @@ export function KeyEcho({ notes }: { notes: number[] }) {
   return (
     <div onPointerDownCapture={ex.activate} onFocusCapture={ex.activate}>
     <EarTrainer
-      question={`Primeiro toca o ${noteName(ref)} de referência. Qual foi a segunda nota? Responda aqui ou tocando a tecla.`}
+      question={L(`Primeiro toca o ${noteName(ref)} de referência. Qual foi a segunda nota? Responda aqui ou tocando a tecla.`, `First you hear a reference ${noteName(ref)}. What was the second note? Answer here or by playing the key.`)}
       options={notes.map((m) => ({ id: String(m), label: noteName(m) }))}
       status={status}
       selectedId={selected}

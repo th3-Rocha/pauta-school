@@ -1,10 +1,28 @@
 import * as React from "react";
+import { L, getLocale, localePath, switchLocalePath } from "../i18n";
 import { AppHeader, type Theme } from "../components/course/AppHeader";
 import { ProgressCodeDialog } from "../components/course/ProgressCodeDialog";
 import { TOTAL_DAYS } from "../data/curriculum";
 import { currentDay, decodeProgress, encodeProgress, importProgress, useProgress } from "./progress";
 
 const THEME_KEY = "trastes:theme";
+
+/** Link para a mesma página no outro idioma. */
+function LangSwitch() {
+  const other = getLocale() === "en" ? "pt" : "en";
+  const [href, setHref] = React.useState(localePath("/", other));
+  React.useEffect(() => setHref(switchLocalePath(window.location.pathname, other) + window.location.search), [other]);
+  return (
+    <a
+      href={href}
+      hrefLang={other === "en" ? "en" : "pt-BR"}
+      aria-label={other === "en" ? "Read in English" : "Ler em português"}
+      className="inline-flex h-10 items-center rounded-sm px-2.5 font-mono text-sm font-bold text-muted hover:bg-surface-2 hover:text-fg focus-ring"
+    >
+      {other === "en" ? "EN" : "PT"}
+    </a>
+  );
+}
 
 function useTheme(): [Theme, (t: Theme) => void] {
   const [theme, setTheme] = React.useState<Theme>("dark");
@@ -34,7 +52,15 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <AppHeader day={day} totalDays={TOTAL_DAYS} onProgressClick={() => setOpen(true)} theme={theme} onThemeChange={setTheme} />
+      <AppHeader
+        day={day}
+        totalDays={TOTAL_DAYS}
+        onProgressClick={() => setOpen(true)}
+        theme={theme}
+        onThemeChange={setTheme}
+        homeHref={localePath("/")}
+        actions={<LangSwitch />}
+      />
       {children}
       <ProgressCodeDialog
         open={open}
@@ -50,8 +76,9 @@ export function Shell({ children }: { children: React.ReactNode }) {
         }}
       >
         <p className="text-base text-fg">
-          Você está no <strong className="font-mono">dia {day}</strong> e concluiu{" "}
-          <strong className="font-mono">{progress.completed.length}</strong> {progress.completed.length === 1 ? "aula" : "aulas"}.
+          {L("Você está no", "You are on")} <strong className="font-mono">{L("dia", "day")} {day}</strong> {L("e concluiu", "and finished")}{" "}
+          <strong className="font-mono">{progress.completed.length}</strong>{" "}
+          {progress.completed.length === 1 ? L("aula", "lesson") : L("aulas", "lessons")}.
         </p>
       </ProgressCodeDialog>
     </>

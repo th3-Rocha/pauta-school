@@ -20,11 +20,18 @@ const SOLFEGE_FLAT = ["Dó", "Réb", "Ré", "Mib", "Mi", "Fá", "Solb", "Sol", "
 const LETTER_SHARP = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const LETTER_FLAT = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 
+let DEFAULT_NAMES: NoteNames = "solfege";
+/** Padrão de nomes do idioma atual: Dó Ré Mi em português, C D E em inglês. */
+export const defaultNoteNames = (): NoteNames => DEFAULT_NAMES;
+export function setDefaultNoteNames(n: NoteNames) {
+  DEFAULT_NAMES = n;
+}
+
 /**
  * Nome da nota. `withOctave` acrescenta a oitava científica:
  * solfejo "Dó 4" (com espaço, como se fala), cifra "C4".
  */
-export function noteName(midi: number, noteNames: NoteNames = "solfege", accidentals: Accidentals = "sharp", withOctave = false): string {
+export function noteName(midi: number, noteNames: NoteNames = DEFAULT_NAMES, accidentals: Accidentals = "sharp", withOctave = false): string {
   const pc = ((midi % 12) + 12) % 12;
   const table = noteNames === "letters" ? (accidentals === "flat" ? LETTER_FLAT : LETTER_SHARP) : accidentals === "flat" ? SOLFEGE_FLAT : SOLFEGE_SHARP;
   const octave = Math.floor(midi / 12) - 1;
@@ -38,6 +45,12 @@ export function noteSpoken(midi: number, accidentals: Accidentals = "sharp"): st
   const base = ["Dó", "Dó", "Ré", "Ré", "Mi", "Fá", "Fá", "Sol", "Sol", "Lá", "Lá", "Si"];
   const flatBase = ["Dó", "Ré", "Ré", "Mi", "Mi", "Fá", "Sol", "Sol", "Lá", "Lá", "Si", "Si"];
   const octave = Math.floor(midi / 12) - 1;
+  if (DEFAULT_NAMES === "letters") {
+    const l = ["C", "C", "D", "D", "E", "F", "F", "G", "G", "A", "A", "B"];
+    const lf = ["C", "D", "D", "E", "E", "F", "G", "G", "A", "A", "B", "B"];
+    if (!isBlack(midi)) return `${l[pc]} ${octave}`;
+    return accidentals === "flat" ? `${lf[pc]} flat ${octave}` : `${l[pc]} sharp ${octave}`;
+  }
   if (!isBlack(midi)) return `${base[pc]} ${octave}`;
   return accidentals === "flat" ? `${flatBase[pc]} bemol ${octave}` : `${base[pc]} sustenido ${octave}`;
 }

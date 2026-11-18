@@ -1,4 +1,5 @@
 // Tablatura com ritmo embaixo, tocável. A moldura (controles) é o ScoreFrame do design system.
+import { L } from "../../i18n";
 import * as React from "react";
 import { ScoreFrame } from "../../components/music/ScoreFrame";
 import { STANDARD_TUNING } from "../../lib/music";
@@ -187,7 +188,7 @@ export function TabPlayer({ title, bpm, notes, beatsPerMeasure = 4 }: { title?: 
   return (
     <ScoreFrame
       title={title}
-      subtitle={`${bpm} BPM · ${measures} ${measures === 1 ? "compasso" : "compassos"}`}
+      subtitle={`${bpm} BPM · ${measures} ${measures === 1 ? L("compasso", "bar") : L("compassos", "bars")}`}
       playing={playing}
       onPlayPause={() => (playing ? stop() : start())}
       speed={speed}

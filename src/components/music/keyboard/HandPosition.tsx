@@ -5,7 +5,7 @@ import * as React from "react";
 import { Info } from "lucide-react";
 import { cn } from "../../../lib/cn";
 import { strings as defaultStrings, type Strings } from "../../../lib/strings";
-import { noteName, noteSpoken, type Accidentals, type Hand, type NoteNames } from "../../../lib/piano";
+import { noteName, noteSpoken, type Accidentals, type Hand, type NoteNames, defaultNoteNames } from "../../../lib/piano";
 import { MiniKeys, type MiniKeyMarker } from "./MiniKeys";
 
 export type HandPlacement = {
@@ -89,7 +89,7 @@ export function HandPosition({
   description,
   showFingerChart = true,
   showThumbNote = true,
-  noteNames = "solfege",
+  noteNames = defaultNoteNames(),
   naming = "sharp",
   strings: stringsOverride,
   keyboardStrings,

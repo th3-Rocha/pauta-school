@@ -1,4 +1,5 @@
 // src/components/course/AppHeader.tsx
+import type * as React from "react";
 import { BarChart3, Moon, Sun } from "lucide-react";
 import { cn } from "../../lib/cn";
 import { strings as defaultStrings, type Strings } from "../../lib/strings";
@@ -18,6 +19,8 @@ export type AppHeaderProps = {
   /** Gruda no topo ao rolar. */
   sticky?: boolean;
   strings?: Partial<Strings["appHeader"]>;
+  /** Controles extras antes da troca de tema (ex.: idioma). */
+  actions?: React.ReactNode;
   className?: string;
 };
 
@@ -46,6 +49,7 @@ export function AppHeader({
   onThemeChange,
   sticky = true,
   strings: stringsOverride,
+  actions,
   className,
 }: AppHeaderProps) {
   const s = { ...defaultStrings.appHeader, ...stringsOverride };
@@ -79,6 +83,7 @@ export function AppHeader({
             <BarChart3 className="text-muted" aria-hidden />
             <span className="sr-only">{s.progress}</span>
           </Button>
+          {actions}
           <Button
             variant="ghost"
             size="icon"
