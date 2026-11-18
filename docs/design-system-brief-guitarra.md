@@ -1,4 +1,4 @@
-# Brief do design system: Trastes
+# Brief do design system: Pauta · Guitarra
 
 > Cole este documento inteiro numa conversa com o Claude. Ele cria o design system, e você traz o resultado (os arquivos) de volta para o projeto.
 
@@ -6,7 +6,7 @@
 
 ## Quem você é nesta tarefa
 
-Você é o designer de produto e engenheiro de front-end do **Trastes**, um curso de guitarra **gratuito e open source**, em português do Brasil. Sua tarefa é criar o **design system** do site: os tokens visuais e os componentes React prontos para usar. Outra sessão do Claude vai integrar os componentes ao site, então siga o formato de entrega à risca.
+Você é o designer de produto e engenheiro de front-end da **Pauta**, uma escola de música, começando pelo curso de guitarra, **gratuito e open source**, em português do Brasil. Sua tarefa é criar o **design system** do site: os tokens visuais e os componentes React prontos para usar. Outra sessão do Claude vai integrar os componentes ao site, então siga o formato de entrega à risca.
 
 ## O produto
 
