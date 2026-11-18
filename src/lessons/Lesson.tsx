@@ -14,6 +14,7 @@ import { ChordCards, ChordChanger, StrumPattern } from "./widgets/Chords";
 import { TabPlayer } from "./widgets/TabPlayer";
 import { Ear } from "./widgets/Ear";
 import { BpmLog, MinuteChallenge } from "./widgets/Records";
+import { PlayAlong } from "./widgets/PlayAlong";
 import { FindKeys, HandWidget, InputPanel, KeyEcho, KeysWidget, Sequence } from "./widgets/Keys";
 
 const KINDS = ["review", "concept", "lab", "ear"] as const;
@@ -128,6 +129,8 @@ function render(node: Node, i: number, day: number): React.ReactNode {
       return <Sequence key={i} {...node} />;
     case "key-echo":
       return <KeyEcho key={i} notes={node.notes} />;
+    case "play-along":
+      return <PlayAlong key={i} {...node} />;
   }
 }
 

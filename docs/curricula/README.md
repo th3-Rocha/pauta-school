@@ -5,7 +5,7 @@ Um arquivo por instrumento, com o mesmo nome do `id` em `src/data/instruments.ts
 | Instrumento | Arquivo | Status |
 |---|---|---|
 | Guitarra | `guitar.md` | pronto, mês 1 publicado |
-| Teclado | `keyboard.md` | pronto, aula 1 publicada |
+| Teclado | `keyboard.md` | pronto, aulas 1 e 2 publicadas |
 | Gaita | `harmonica.md` | a escrever |
 | Violão | `acoustic-guitar.md` | a escrever |
 | Baixo | `bass.md` | a escrever |

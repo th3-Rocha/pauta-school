@@ -17,7 +17,7 @@ import { md } from "../md";
 const pc = (m: number) => ((m % 12) + 12) % 12;
 
 /** Só um exercício ouve o teclado por vez. Clicar dentro dele ou em "Começar" ativa. */
-function useExercise() {
+export function useExercise() {
   const id = React.useId();
   const kb = useKeyInput();
   const active = kb.activeExercise === id;
@@ -26,7 +26,7 @@ function useExercise() {
   return { id, active, activeRef, activate: () => activateExercise(id) };
 }
 
-function ExerciseFrame({
+export function ExerciseFrame({
   ex,
   label,
   aside,

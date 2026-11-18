@@ -62,7 +62,19 @@ export type Node =
   | { w: "hand"; name: Text; description?: Text; positions: { hand: Hand; notes: [number, number, number, number, number] }[] }
   | { w: "find-keys"; mode: "all" | "quiz"; from: number; to: number; targets: number[]; rounds?: number; names?: "none" | "c-only" | "all"; title?: Text }
   | { w: "sequence"; title?: Text; notes: { midi: number; finger?: Finger }[]; hand?: Hand; from: number; to: number; bpm?: number; goal?: number }
-  | { w: "key-echo"; notes: number[] };
+  | { w: "key-echo"; notes: number[] }
+  | {
+      w: "play-along";
+      title?: Text;
+      /** Tempos em semínimas a partir do 0. */
+      notes: { midi: number; start: number; duration: number; hand: Hand; finger?: Finger }[];
+      bpm: number;
+      from: number;
+      to: number;
+      beatsPerBar?: number;
+      modes?: ("listen" | "wait" | "tempo")[];
+      defaultMode?: "listen" | "wait" | "tempo";
+    };
 
 export type Block = { title?: Text; subtitle?: Text; minutes: number; body: Node[] };
 
