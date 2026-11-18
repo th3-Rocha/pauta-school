@@ -63,7 +63,7 @@ export function AppHeader({
         className,
       )}
     >
-      <div className="mx-auto flex h-16 max-w-5xl items-center gap-3 px-4">
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4">
         <a href={homeHref} aria-label={s.home} className="flex items-center gap-2 rounded-sm focus-ring">
           <PautaMark />
           <span className="font-display text-xl font-extrabold tracking-tight text-fg">{courseName}</span>

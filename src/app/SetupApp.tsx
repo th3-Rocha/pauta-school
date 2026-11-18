@@ -116,7 +116,7 @@ export default function SetupApp({ locale = "pt" }: { locale?: Locale }) {
   setLocale(locale);
   return (
     <Shell>
-      <main className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 pb-20 pt-8 sm:pt-12">
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 pb-20 pt-8 sm:pt-12">
         <header className="flex flex-col gap-2">
           <p className="panel-label text-accent">{L("Antes de estudar", "Before you practice")}</p>
           <h1 className="font-display text-4xl font-extrabold tracking-tight text-fg">{L("Testar equipamento", "Test your setup")}</h1>

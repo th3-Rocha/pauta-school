@@ -58,9 +58,59 @@ export function LessonLayout({
   const hintId = React.useId();
   const blockId = (i: number) => `bloco-${day}-${i + 1}`;
 
+  // Bloco na tela agora, para destacar no roteiro lateral.
+  const [current, setCurrent] = React.useState(0);
+  React.useEffect(() => {
+    const els = blocks.map((_, i) => document.getElementById(blockId(i))).filter(Boolean) as HTMLElement[];
+    if (!els.length || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        const vis = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        if (vis) setCurrent(els.indexOf(vis.target as HTMLElement));
+      },
+      { rootMargin: "-30% 0px -60% 0px" },
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [day, blocks.length]);
+
+  const outlineLabel = (b: LessonBlockData) => b.title ?? s.blockKinds[b.kind];
+
   return (
-    <article data-slot="lesson-layout" className={cn("mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6 sm:py-10", className)}>
-      <header className="flex flex-col gap-4">
+    <div className={cn("mx-auto w-full max-w-7xl px-4 py-6 sm:py-10 xl:grid xl:grid-cols-[13rem_minmax(0,1fr)] xl:gap-10", className)}>
+      {/* Roteiro lateral (telas grandes): acompanha a rolagem */}
+      <aside className="hidden xl:block" aria-label={s.outline}>
+        <nav className="sticky top-24 flex flex-col gap-2">
+          <p className="panel-label text-muted">{s.outline}</p>
+          <ol className="flex flex-col gap-1.5">
+            {blocks.map((b, i) => (
+              <li key={i}>
+                <a
+                  href={`#${blockId(i)}`}
+                  aria-current={i === current ? "step" : undefined}
+                  className={cn(
+                    "flex flex-col gap-0.5 rounded-xs border-l-[3px] px-3 py-2 focus-ring transition-colors",
+                    i === current ? "border-accent bg-surface" : "border-line hover:bg-surface",
+                  )}
+                >
+                  <span className={cn("flex items-center gap-1 font-mono text-xs font-bold", b.done ? "text-good" : "text-muted")}>
+                    {b.done ? <Check className="size-3.5" strokeWidth={3} aria-hidden /> : null}
+                    {String(i + 1).padStart(2, "0")} · {b.minutes}′
+                  </span>
+                  <span className="text-sm font-semibold leading-tight text-fg">{outlineLabel(b)}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+          <p className="text-sm text-muted" aria-live="polite">
+            {s.blocksDone(doneCount, blocks.length)}
+          </p>
+        </nav>
+      </aside>
+
+    <article data-slot="lesson-layout" className="flex w-full min-w-0 flex-col gap-6">
+      <header className="flex max-w-3xl flex-col gap-4">
         <p className="panel-label text-accent">{s.monthDay(month, day)}</p>
         <h1 className="font-display text-3xl font-extrabold tracking-tight text-fg sm:text-4xl">{title}</h1>
         <p className="inline-flex items-center gap-2 text-base text-muted">
@@ -85,8 +135,8 @@ export function LessonLayout({
           </div>
         )}
 
-        {/* Roteiro: os 4 blocos como trastes */}
-        <nav aria-label={s.outline}>
+        {/* Roteiro: os 4 blocos como trastes (no topo, até a lateral aparecer) */}
+        <nav aria-label={s.outline} className="xl:hidden">
           <ol className="grid grid-cols-4 gap-1.5">
             {blocks.map((b, i) => (
               <li key={i}>
@@ -102,7 +152,7 @@ export function LessonLayout({
                     {String(i + 1).padStart(2, "0")}
                     <span className="hidden font-normal sm:inline">· {b.minutes}′</span>
                   </span>
-                  <span className="text-xs font-semibold leading-tight text-fg sm:text-sm">{b.title ?? s.blockKinds[b.kind]}</span>
+                  <span className="text-xs font-semibold leading-tight text-fg sm:text-sm">{outlineLabel(b)}</span>
                 </a>
               </li>
             ))}
@@ -152,5 +202,6 @@ export function LessonLayout({
         )}
       </footer>
     </article>
+    </div>
   );
 }

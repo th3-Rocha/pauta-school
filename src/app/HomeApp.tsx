@@ -47,7 +47,7 @@ export default function HomeApp({ locale = "pt" }: { locale?: Locale }) {
 
   return (
     <Shell>
-      <main className="mx-auto flex w-full max-w-5xl flex-col gap-12 px-4 pb-20 pt-8 sm:pt-14">
+      <main className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-4 pb-20 pt-8 sm:pt-14">
         <section aria-labelledby="instrumento" className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
             <h2 id="instrumento" className="font-display text-2xl font-bold text-fg">

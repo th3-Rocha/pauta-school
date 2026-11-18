@@ -25,7 +25,7 @@ export type InstrumentPickerProps = {
 /** Grade de instrumentos. Os que ainda não têm curso aparecem bloqueados. */
 export function InstrumentPicker({ instruments, selected, onSelect, className }: InstrumentPickerProps) {
   return (
-    <div role="radiogroup" aria-label={L("Instrumento", "Instrument")} className={cn("grid grid-cols-2 gap-3 sm:grid-cols-4", className)}>
+    <div role="radiogroup" aria-label={L("Instrumento", "Instrument")} className={cn("grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-8", className)}>
       {instruments.map((ins) => {
         const Icon = ICONS[ins.id];
         const isSel = ins.id === selected;

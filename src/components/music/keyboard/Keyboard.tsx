@@ -93,7 +93,7 @@ const Y0 = LID + FELT;
 const CHEEK = 6;
 const PX_TOUCH = 44;
 const MIN_FIT_PX = 20;
-const MAX_FIT_PX = 52;
+const MAX_FIT_PX = 64;
 
 /** Ícones de feedback desenhados em SVG (dentro da tecla). */
 function FeedbackBadge({ state, cx, cy, r }: { state: Exclude<KeyState, null>; cx: number; cy: number; r: number }) {

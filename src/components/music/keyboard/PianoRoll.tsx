@@ -73,7 +73,7 @@ export function PianoRoll({
   for (let b = Math.ceil(position); b <= end; b++) beats.push(b);
 
   const wrapperStyle: React.CSSProperties =
-    size === "touch" ? { width: (totalW / KEY.w) * 44 } : { width: "100%", minWidth: (totalW / KEY.w) * 20, maxWidth: (totalW / KEY.w) * 52 };
+    size === "touch" ? { width: (totalW / KEY.w) * 44 } : { width: "100%", minWidth: (totalW / KEY.w) * 20, maxWidth: (totalW / KEY.w) * 64 };
 
   const upcoming = visible
     .filter((n) => n.start >= position)
