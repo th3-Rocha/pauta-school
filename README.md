@@ -18,7 +18,7 @@ pnpm build    # site estático em dist/
 | `src/app/` | Lógica do app: `audio.ts` (corda, metrônomo, afinador), `progress.ts` (localStorage + código hex), `Shell`, `HomeApp`, `LessonApp`. |
 | `src/lessons/` | Aulas como dados (`m01/*.ts`, formato em `types.ts`) e os widgets interativos. Nova aula = novo objeto na lista do mês. |
 | `src/data/curriculum.ts` | Os 12 meses, desafios e títulos das aulas. |
-| `docs/curriculos/` | Um currículo por instrumento (`guitarra.md`, `teclado.md`, `gaita.md`…). |
+| `docs/curricula/` | Um currículo por instrumento (`guitar.md`, `keyboard.md`, `harmonica.md`…). |
 | `/design` | Vitrine do design system. |
 
 ## Código de progresso

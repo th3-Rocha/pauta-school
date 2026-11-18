@@ -19,13 +19,13 @@ function buildMonths(course: CourseInfo, p: Progress, today: number): YearMonth[
     days: Array.from({ length: m.lastDay - m.firstDay + 1 }, (_, i) => {
       const day = m.firstDay + i;
       let state: DayState;
-      if (isMilestoneDay(day)) state = "marco";
-      else if (done.has(day)) state = "concluido";
-      else if (day === today) state = "atual";
-      else if (day < today && hasLesson(day)) state = "disponivel";
-      else state = "bloqueado";
-      const passed = state === "marco" && (p.bestBpm[m.month] ?? 0) >= m.milestone.targetBpm;
-      return { day, state, passed, title: course.titles[day] ?? (state === "marco" ? m.milestone.title : "Em breve") };
+      if (isMilestoneDay(day)) state = "milestone";
+      else if (done.has(day)) state = "done";
+      else if (day === today) state = "current";
+      else if (day < today && hasLesson(day)) state = "available";
+      else state = "locked";
+      const passed = state === "milestone" && (p.bestBpm[m.month] ?? 0) >= m.milestone.targetBpm;
+      return { day, state, passed, title: course.titles[day] ?? (state === "milestone" ? m.milestone.title : "Em breve") };
     }),
   }));
 }
@@ -53,7 +53,7 @@ export default function HomeApp() {
             </h2>
             <p className="text-muted">
               A guitarra já tem o primeiro mês inteiro e o teclado está em prévia. Gaita e os outros estão sendo preparados.{" "}
-              <a href="/equipamento" className="underline decoration-line-strong underline-offset-4 hover:text-fg focus-ring">
+              <a href="/setup" className="underline decoration-line-strong underline-offset-4 hover:text-fg focus-ring">
                 Testar meu equipamento
               </a>
             </p>
@@ -83,7 +83,7 @@ export default function HomeApp() {
           </div>
 
           <ul className="grid gap-3 text-base">
-            {(instrument === "teclado"
+            {(instrument === "keyboard"
               ? [
                   { icon: Cable, t: "Ligue seu teclado", d: "Com cabo USB o site ouve o que você toca e confere sozinho. Sem cabo, toque na tela." },
                   { icon: Ear, t: "Seu ouvido no centro", d: "Treinos curtos todo dia, com meta de 80% de acerto." },
@@ -127,7 +127,7 @@ export default function HomeApp() {
             criteria={month.milestone.criteria}
             targetBpm={month.milestone.targetBpm}
             bestBpm={p.bestBpm[month.month]}
-            status={today >= month.lastDay ? "disponivel" : "bloqueado"}
+            status={today >= month.lastDay ? "available" : "locked"}
             onAttempt={() => go(month.lastDay)}
           />
         </section>

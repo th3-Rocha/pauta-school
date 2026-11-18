@@ -72,7 +72,7 @@ export function KeyChord({
   previous,
   from,
   to,
-  noteNames = "solfejo",
+  noteNames = "solfege",
   naming = "sharp",
   showLegend,
   maxKeyPx = 40,

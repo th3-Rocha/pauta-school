@@ -89,7 +89,7 @@ export function HandPosition({
   description,
   showFingerChart = true,
   showThumbNote = true,
-  noteNames = "solfejo",
+  noteNames = "solfege",
   naming = "sharp",
   strings: stringsOverride,
   keyboardStrings,

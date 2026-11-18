@@ -26,7 +26,7 @@ export type Node =
   | Text
   | { h: Text }
   | { list: Text[]; ordered?: boolean }
-  | { callout: "dica" | "atencao" | "autoavaliacao" | "teoria"; text: Text | Text[]; title?: Text; label?: Text }
+  | { callout: "tip" | "warning" | "selfCheck" | "theory"; text: Text | Text[]; title?: Text; label?: Text }
   | { w: "strings" }
   | { w: "letters" }
   | { w: "tuner" }

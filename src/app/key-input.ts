@@ -30,7 +30,7 @@ const ECHO_KEY = "pauta:midi-echo";
 let state: KeyInputState = {
   pressed: [],
   pedal: false,
-  midiState: "pedir-permissao",
+  midiState: "prompt",
   activity: 0,
   midiEcho: true,
   activeExercise: null,
@@ -45,19 +45,19 @@ function set(patch: Partial<KeyInputState>) {
 
 /* ───────── notas ───────── */
 
-export function press(midi: number, velocity = 90, source: InputSource = "tela") {
+export function press(midi: number, velocity = 90, source: InputSource = "screen") {
   if (source !== "midi" || state.midiEcho) noteOn(midi, velocity);
   set({
     pressed: state.pressed.includes(midi) ? state.pressed : [...state.pressed, midi],
     activity: state.activity + 1,
-    lastNote: noteName(midi, "solfejo", "sharp", true),
+    lastNote: noteName(midi, "solfege", "sharp", true),
     lastVelocity: velocity,
     lastSource: source,
   });
   noteListeners.forEach((l) => l({ midi, velocity, on: true, source }));
 }
 
-export function release(midi: number, source: InputSource = "tela") {
+export function release(midi: number, source: InputSource = "screen") {
   noteOff(midi);
   set({ pressed: state.pressed.filter((m) => m !== midi) });
   noteListeners.forEach((l) => l({ midi, velocity: 0, on: false, source }));
@@ -110,12 +110,12 @@ function attach() {
     input.onmidimessage = handleMessage;
     if (input.name) names.push(input.name);
   });
-  set({ midiState: names.length ? "conectado" : "nenhum-aparelho", deviceName: names.join(", ") || undefined });
+  set({ midiState: names.length ? "connected" : "no-device", deviceName: names.join(", ") || undefined });
 }
 
 export async function connectMidi() {
   if (!("requestMIDIAccess" in navigator)) {
-    set({ midiState: "sem-suporte" });
+    set({ midiState: "unsupported" });
     return;
   }
   try {
@@ -124,7 +124,7 @@ export async function connectMidi() {
     a.onstatechange = attach;
     attach();
   } catch {
-    set({ midiState: "negado" });
+    set({ midiState: "denied" });
   }
 }
 
@@ -162,7 +162,7 @@ function onKeyDown(e: KeyboardEvent) {
   if (midi === undefined) return;
   e.preventDefault();
   held.add(k);
-  press(midi, 90, "computador");
+  press(midi, 90, "computer");
 }
 
 function onKeyUp(e: KeyboardEvent) {
@@ -174,7 +174,7 @@ function onKeyUp(e: KeyboardEvent) {
   if (!held.has(k)) return;
   held.delete(k);
   const midi = KEYMAP.get(k);
-  if (midi !== undefined) release(midi, "computador");
+  if (midi !== undefined) release(midi, "computer");
 }
 
 /* ───────── início ───────── */
@@ -195,12 +195,12 @@ function start() {
   window.addEventListener("blur", () => {
     held.forEach((k) => {
       const m = KEYMAP.get(k);
-      if (m !== undefined) release(m, "computador");
+      if (m !== undefined) release(m, "computer");
     });
     held.clear();
   });
   if (!("requestMIDIAccess" in navigator)) {
-    state = { ...state, midiState: "sem-suporte" };
+    state = { ...state, midiState: "unsupported" };
     return;
   }
   // Se o navegador já deu permissão antes, conecta sem perguntar.
@@ -208,7 +208,7 @@ function start() {
     ?.query({ name: "midi" as PermissionName })
     .then((p) => {
       if (p.state === "granted") void connectMidi();
-      else if (p.state === "denied") set({ midiState: "negado" });
+      else if (p.state === "denied") set({ midiState: "denied" });
     })
     .catch(() => {});
 }

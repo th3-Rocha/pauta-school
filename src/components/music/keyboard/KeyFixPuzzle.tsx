@@ -41,7 +41,7 @@ export function KeyFixPuzzle({
   onShowHint,
   playing = false,
   onPlay,
-  noteNames = "solfejo",
+  noteNames = "solfege",
   naming = "sharp",
   strings: stringsOverride,
   keyboardStrings,

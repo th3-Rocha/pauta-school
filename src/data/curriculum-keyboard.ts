@@ -1,4 +1,4 @@
-// Estrutura do ano de teclado (veja docs/curriculos/teclado.md, seção 7).
+// Estrutura do ano de teclado (veja docs/curricula/keyboard.md, seção 7).
 import { buildMonths, type Month, type MonthSeed } from "./curriculum";
 
 const SEEDS: MonthSeed[] = [
@@ -148,4 +148,4 @@ const SEEDS: MonthSeed[] = [
   },
 ];
 
-export const MONTHS_TECLADO: Month[] = buildMonths(SEEDS);
+export const KEYBOARD_MONTHS: Month[] = buildMonths(SEEDS);

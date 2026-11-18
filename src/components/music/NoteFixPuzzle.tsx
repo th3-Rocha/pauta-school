@@ -181,7 +181,7 @@ export function NoteFixPuzzle({
         </div>
       )}
 
-      {hint && showHint && !solved && <Callout variant="dica">{hint}</Callout>}
+      {hint && showHint && !solved && <Callout variant="tip">{hint}</Callout>}
     </Panel>
   );
 }

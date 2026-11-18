@@ -1,10 +1,10 @@
 // Mês 1 · dias 1 a 15
-import type { Lesson } from "../types";
-import { ACORDE_LIMPO, ALL_DOWN, BRILHA, HALVES, HINO, POSTURA, THREE_REST, n, r } from "./shared";
+import type { Lesson } from "../../types";
+import { CLEAN_CHORD, ALL_DOWN, TWINKLE, HALVES, ODE_TO_JOY, POSTURE, THREE_REST, n, r } from "./shared";
 
 const M = 1;
 
-export const DIAS_1_A_15: Lesson[] = [
+export const DAYS_1_TO_15: Lesson[] = [
   {
     day: 1,
     month: M,
@@ -24,7 +24,7 @@ export const DIAS_1_A_15: Lesson[] = [
         body: [
           "Hoje não tem nada para revisar, porque é o primeiro dia. Separe **a guitarra, uma palheta média** e um lugar onde dê para ouvir o celular ou o computador. Se a guitarra for elétrica, ligue no amplificador ou numa interface; se não tiver, dá para estudar desligada.",
           "Toda aula tem os mesmos quatro blocos: **revisão** de algo de dias anteriores, um **conceito**, o **laboratório** com metrônomo e o bloco de **ouvido**. Marque cada um quando terminar.",
-          { callout: "dica", text: "Estude todo dia, mesmo que só 15 minutos. Pouco e sempre rende mais que muito de vez em quando." },
+          { callout: "tip", text: "Estude todo dia, mesmo que só 15 minutos. Pouco e sempre rende mais que muito de vez em quando." },
         ],
       },
       {
@@ -35,7 +35,7 @@ export const DIAS_1_A_15: Lesson[] = [
           "As letras são o jeito internacional de escrever as notas, e é o que aparece em cifras e tablaturas. Para decorar a ordem: **E**lefantes **A**ndam **D**evagar, **G**irafas **B**ebem **E**scondido.",
           { w: "letters" },
           { w: "strings" },
-          { callout: "teoria", text: "No desenho, a corda 1 fica em cima, igual ao que você vê olhando para a guitarra no colo. A tablatura usa a mesma convenção." },
+          { callout: "theory", text: "No desenho, a corda 1 fica em cima, igual ao que você vê olhando para a guitarra no colo. A tablatura usa a mesma convenção." },
         ],
       },
       {
@@ -44,15 +44,15 @@ export const DIAS_1_A_15: Lesson[] = [
         body: [
           { h: "1. Postura" },
           "Sente na beira da cadeira, com as costas retas. Confira cada item, de preferência na frente de um espelho.",
-          POSTURA,
+          POSTURE,
           { h: "2. Afinar" },
           "Escolha a corda, toque ela solta e gire a tarraxa devagar até o ponteiro parar no meio. Comece pela corda 6 e vá até a 1. Se a nota estiver muito longe, use **Ouvir a nota certa** para ter uma referência.",
           { w: "tuner" },
-          { callout: "atencao", text: "Gire a tarraxa aos poucos e toque de novo a cada giro. Esticar demais arrebenta a corda." },
+          { callout: "warning", text: "Gire a tarraxa aos poucos e toque de novo a cada giro. Esticar demais arrebenta a corda." },
           { h: "3. Cordas soltas no pulso" },
           "Ligue o metrônomo em `60 BPM`. Toque cada corda solta **4 vezes**, uma por clique, sempre com a palheta para baixo. Comece pela corda 6 e termine na 1, sem parar entre as cordas. Conte em voz alta: *1, 2, 3, 4*.",
           { w: "metronome", bpm: 60 },
-          { callout: "autoavaliacao", text: "Grave 30 segundos no celular e escute. Cada nota cai junto com o clique? Se sim, suba para 70 BPM." },
+          { callout: "selfCheck", text: "Grave 30 segundos no celular e escute. Cada nota cai junto com o clique? Se sim, suba para 70 BPM." },
         ],
       },
       {
@@ -123,7 +123,7 @@ export const DIAS_1_A_15: Lesson[] = [
               { id: "limpo", label: "Nenhuma nota sai abafada ou trastejando", hint: "Trastejar é aquele zumbido de metal. Aperte um pouco mais perto do traste." },
             ],
           },
-          { callout: "dica", text: "Dói na ponta dos dedos? É normal nas primeiras semanas. Pare quando doer e volte mais tarde. Os calos chegam em umas duas semanas." },
+          { callout: "tip", text: "Dói na ponta dos dedos? É normal nas primeiras semanas. Pare quando doer e volte mais tarde. Os calos chegam em umas duas semanas." },
         ],
       },
       {
@@ -152,7 +152,7 @@ export const DIAS_1_A_15: Lesson[] = [
           "A tablatura tem **6 linhas**, uma para cada corda. A linha de **cima é a corda 1** (a mais fina), igual ao braço desenhado nas aulas.",
           "O **número** em cima da linha diz qual casa apertar. **0** é a corda solta. Lê-se da esquerda para a direita, como um texto.",
           "Embaixo da tablatura da Pauta aparece o **ritmo** de cada nota. Por enquanto, a bolinha preta com haste vale 1 tempo (um clique). Nos próximos dias você vai conhecer as outras.",
-          { callout: "teoria", text: "A tablatura diz *onde* tocar. A partitura diz *qual nota e quanto tempo*. Na Pauta as duas andam juntas, e a partitura entra aos poucos." },
+          { callout: "theory", text: "A tablatura diz *onde* tocar. A partitura diz *qual nota e quanto tempo*. Na Pauta as duas andam juntas, e a partitura entra aos poucos." },
         ],
       },
       {
@@ -161,7 +161,7 @@ export const DIAS_1_A_15: Lesson[] = [
         body: [
           "Primeiro leia sozinho, com o metrônomo, sem ouvir. Depois toque em **Tocar** para conferir. Use o dedo 1 na casa 1 e o dedo 3 na casa 3.",
           { w: "tab", title: "Primeira melodia", bpm: 60, notes: [n(1, 0), n(1, 1), n(1, 3), n(1, 1), n(1, 0), n(2, 3), n(2, 1, 2), n(2, 1), n(2, 3), n(1, 0), n(1, 1), n(1, 0, 4)] },
-          { callout: "dica", text: "Errou? Siga em frente sem parar. Tocar no tempo é mais importante que acertar todas as notas." },
+          { callout: "tip", text: "Errou? Siga em frente sem parar. Tocar no tempo é mais importante que acertar todas as notas." },
         ],
       },
       {
@@ -190,7 +190,7 @@ export const DIAS_1_A_15: Lesson[] = [
           "O **pulso** é a batida constante da música, aquela que você marca com o pé. O metrônomo dá o pulso, e o **BPM** diz quantas batidas por minuto.",
           "As batidas se agrupam em **compassos**. No compasso **4/4** cada grupo tem 4 tempos, e você conta *1, 2, 3, 4, 1, 2, 3, 4…*. A barra vertical na tablatura separa os compassos.",
           "A **semínima** (bolinha preta com haste) dura **1 tempo**. A **pausa de semínima** (o zigue-zague) é **1 tempo de silêncio**.",
-          { callout: "atencao", text: "Pausa é silêncio de verdade. Encoste a mão direita nas cordas para parar o som." },
+          { callout: "warning", text: "Pausa é silêncio de verdade. Encoste a mão direita nas cordas para parar o som." },
         ],
       },
       {
@@ -199,7 +199,7 @@ export const DIAS_1_A_15: Lesson[] = [
         body: [
           "Conte em voz alta. Nas pausas, fale o número mais baixo e abafe as cordas.",
           { w: "tab", title: "Semínimas e pausas", bpm: 60, notes: [n(6, 0), r(), n(6, 0), r(), n(5, 0), n(5, 0), n(5, 0), n(5, 0), n(4, 0), r(), n(4, 0), n(4, 0), n(3, 0), n(3, 0), r(), r()] },
-          { callout: "autoavaliacao", text: "Desligue o exemplo e toque só com o metrônomo. Cada nota cai em cima do clique? Então suba para 70 BPM." },
+          { callout: "selfCheck", text: "Desligue o exemplo e toque só com o metrônomo. Cada nota cai em cima do clique? Então suba para 70 BPM." },
         ],
       },
       {
@@ -280,8 +280,8 @@ export const DIAS_1_A_15: Lesson[] = [
         minutes: 15,
         body: [
           "Comece com a velocidade em 70% e suba aos poucos. Toque junto com o exemplo e depois só com o metrônomo.",
-          { w: "tab", title: "Hino à Alegria", bpm: 60, notes: HINO },
-          { callout: "dica", text: "Nos compassos 4 e 8 o ritmo muda: a primeira nota é mais longa e a segunda mais curta. Não precisa contar ainda. Escute o exemplo e imite." },
+          { w: "tab", title: "Hino à Alegria", bpm: 60, notes: ODE_TO_JOY },
+          { callout: "tip", text: "Nos compassos 4 e 8 o ritmo muda: a primeira nota é mais longa e a segunda mais curta. Não precisa contar ainda. Escute o exemplo e imite." },
         ],
       },
       {
@@ -320,7 +320,7 @@ export const DIAS_1_A_15: Lesson[] = [
         minutes: 15,
         body: [
           { w: "tab", title: "1-2-3-4 a 70 BPM", bpm: 70, notes: [6, 5, 4, 3, 2, 1].flatMap((s) => [n(s, 1), n(s, 2), n(s, 3), n(s, 4)]) },
-          { w: "tab", title: "Hino à Alegria a 70 BPM", bpm: 70, notes: HINO },
+          { w: "tab", title: "Hino à Alegria a 70 BPM", bpm: 70, notes: ODE_TO_JOY },
           {
             w: "selfcheck",
             id: "semana1",
@@ -344,7 +344,7 @@ export const DIAS_1_A_15: Lesson[] = [
     minutes: 30,
     objectives: ["Ler um diagrama de acorde", "Montar o Em com as seis cordas soando", "Fazer uma batida no pulso"],
     blocks: [
-      { minutes: 5, body: ["Toque o Hino à Alegria a 70 BPM.", { w: "tab", bpm: 70, notes: HINO }] },
+      { minutes: 5, body: ["Toque o Hino à Alegria a 70 BPM.", { w: "tab", bpm: 70, notes: ODE_TO_JOY }] },
       {
         title: "O que é um acorde",
         minutes: 8,
@@ -360,7 +360,7 @@ export const DIAS_1_A_15: Lesson[] = [
         minutes: 12,
         body: [
           "Monte o Em e toque **corda por corda**, da 6 para a 1. Todas precisam soar.",
-          ACORDE_LIMPO("em"),
+          CLEAN_CHORD("em"),
           "Agora uma batida para baixo em cada tempo, passando pelas seis cordas.",
           { w: "strum", title: "Em no pulso", bpm: 60, measures: [{ chord: "Em", strokes: ALL_DOWN }, { chord: "Em", strokes: ALL_DOWN }, { chord: "Em", strokes: ALL_DOWN }, { chord: "Em", strokes: ALL_DOWN }] },
         ],
@@ -388,7 +388,7 @@ export const DIAS_1_A_15: Lesson[] = [
           "Repare na semelhança: os dedos 2 e 3 fazem o **mesmo desenho do Em, uma corda abaixo** (cordas 4 e 3). Depois o dedo 1 entra na casa 1 da corda 2.",
           { w: "chords", chords: ["Em", "Am"] },
           "No Am a corda 6 tem **X**: comece a batida na corda 5.",
-          ACORDE_LIMPO("am"),
+          CLEAN_CHORD("am"),
         ],
       },
       {
@@ -419,7 +419,7 @@ export const DIAS_1_A_15: Lesson[] = [
           "A batida sai do **pulso**, não do braço inteiro. Imagine que está sacudindo água da mão.",
           "A mão fica **sempre em movimento**: desce no tempo, sobe no ar entre um tempo e outro. Isso vai deixar tudo pronto para as batidas para cima no mês 2.",
           "Toque o **tempo 1 um pouco mais forte**. Esse acento ajuda você (e quem toca junto) a saber onde o compasso começa.",
-          { callout: "dica", text: "Para fazer pausa com acorde, encoste a lateral da mão direita nas cordas. O som para na hora." },
+          { callout: "tip", text: "Para fazer pausa com acorde, encoste a lateral da mão direita nas cordas. O som para na hora." },
         ],
       },
       {
@@ -449,8 +449,8 @@ export const DIAS_1_A_15: Lesson[] = [
         body: [
           "O D forma um **triângulo** com os dedos 1, 2 e 3 nas cordas 3, 2 e 1. As cordas 6 e 5 têm X: a batida começa na **corda 4** (Ré solta).",
           { w: "chords", chords: ["D"] },
-          ACORDE_LIMPO("d"),
-          { callout: "atencao", text: "Se a corda 1 não soa, o dedo 3 deve estar deitado em cima dela. Arqueie mais o dedo." },
+          CLEAN_CHORD("d"),
+          { callout: "warning", text: "Se a corda 1 não soa, o dedo 3 deve estar deitado em cima dela. Arqueie mais o dedo." },
         ],
       },
       {
@@ -482,7 +482,7 @@ export const DIAS_1_A_15: Lesson[] = [
             ],
             ordered: true,
           },
-          { callout: "dica", text: "Em → Am: os dedos 2 e 3 só descem uma corda juntos. Sinta esse movimento como um bloco." },
+          { callout: "tip", text: "Em → Am: os dedos 2 e 3 só descem uma corda juntos. Sinta esse movimento como um bloco." },
         ],
       },
       {
@@ -523,7 +523,7 @@ export const DIAS_1_A_15: Lesson[] = [
           "São as mesmas letras do hino, só que mais graves.",
         ],
       },
-      { title: "Brilha, Brilha, Estrelinha", minutes: 12, body: [{ w: "tab", title: "Brilha, Brilha, Estrelinha (tradicional)", bpm: 70, notes: BRILHA }, { callout: "dica", text: "Cante a letra enquanto toca. Se o canto e a guitarra não batem, a nota está errada." }] },
+      { title: "Brilha, Brilha, Estrelinha", minutes: 12, body: [{ w: "tab", title: "Brilha, Brilha, Estrelinha (tradicional)", bpm: 70, notes: TWINKLE }, { callout: "tip", text: "Cante a letra enquanto toca. Se o canto e a guitarra não batem, a nota está errada." }] },
       { title: "Igual ou diferente", minutes: 5, body: [{ w: "ear", kind: "same-diff" }] },
     ],
   },
@@ -535,7 +535,7 @@ export const DIAS_1_A_15: Lesson[] = [
     minutes: 30,
     objectives: ["Em, Am e D limpos", "Trocar os três a 60 BPM", "Reconhecer os três de ouvido"],
     blocks: [
-      { title: "Melodias", minutes: 6, body: [{ w: "tab", title: "Hino à Alegria", bpm: 70, notes: HINO }] },
+      { title: "Melodias", minutes: 6, body: [{ w: "tab", title: "Hino à Alegria", bpm: 70, notes: ODE_TO_JOY }] },
       {
         title: "O que você já sabe",
         minutes: 4,
@@ -570,7 +570,7 @@ export const DIAS_1_A_15: Lesson[] = [
     minutes: 30,
     objectives: ["Montar o A com três dedos na mesma casa", "Ouvir a diferença entre A e Am", "Trocar A e D"],
     blocks: [
-      { minutes: 5, body: [{ w: "tab", bpm: 70, notes: BRILHA }] },
+      { minutes: 5, body: [{ w: "tab", bpm: 70, notes: TWINKLE }] },
       {
         title: "O A, e o que muda do Am",
         minutes: 8,
@@ -578,7 +578,7 @@ export const DIAS_1_A_15: Lesson[] = [
           "No A, os dedos 1, 2 e 3 ficam todos na **casa 2**, nas cordas 4, 3 e 2. Fica apertado: incline um pouco os dedos para caberem.",
           { w: "chords", chords: ["A", "Am"] },
           "Compare com o Am: **só a corda 2 muda**. No Am ela está na casa 1, no A está na casa 2. Uma casa de diferença (meio tom) muda o acorde de triste para alegre.",
-          ACORDE_LIMPO("a"),
+          CLEAN_CHORD("a"),
         ],
       },
       {

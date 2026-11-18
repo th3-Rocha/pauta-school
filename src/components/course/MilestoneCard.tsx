@@ -4,7 +4,7 @@ import { cn } from "../../lib/cn";
 import { strings as defaultStrings, type Strings } from "../../lib/strings";
 import { Button } from "../ui/Button";
 
-export type MilestoneStatus = "bloqueado" | "disponivel" | "concluido";
+export type MilestoneStatus = "locked" | "available" | "done";
 
 export type MilestoneCardProps = {
   month: number;
@@ -35,8 +35,8 @@ export function MilestoneCard({
   className,
 }: MilestoneCardProps) {
   const s = { ...defaultStrings.milestone, ...stringsOverride };
-  const locked = status === "bloqueado";
-  const passed = status === "concluido";
+  const locked = status === "locked";
+  const passed = status === "done";
   return (
     <article
       data-slot="milestone-card"

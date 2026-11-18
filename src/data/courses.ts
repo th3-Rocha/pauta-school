@@ -1,9 +1,9 @@
 // Um curso por instrumento: meses, aulas e endereços.
 import type { Lesson } from "../lessons/types";
 import { LESSONS } from "../lessons";
-import { LESSONS_TECLADO } from "../lessons/teclado";
+import { KEYBOARD_LESSONS } from "../lessons/keyboard";
 import { MONTHS, type Month } from "./curriculum";
-import { MONTHS_TECLADO } from "./curriculum-teclado";
+import { KEYBOARD_MONTHS } from "./curriculum-keyboard";
 import type { InstrumentId } from "./instruments";
 
 export type Course = {
@@ -30,24 +30,24 @@ function make(c: Course) {
 export type CourseInfo = ReturnType<typeof make>;
 
 export const COURSES: Partial<Record<InstrumentId, CourseInfo>> = {
-  guitarra: make({
-    instrument: "guitarra",
+  guitar: make({
+    instrument: "guitar",
     name: "Guitarra",
     pitch: "com a guitarra no colo",
     months: MONTHS,
     lessons: LESSONS,
-    href: (d) => `/dia/${d}`,
+    href: (d) => `/guitar/day/${d}`,
   }),
-  teclado: make({
-    instrument: "teclado",
+  keyboard: make({
+    instrument: "keyboard",
     name: "Teclado",
     pitch: "sentado ao teclado",
-    months: MONTHS_TECLADO,
-    lessons: LESSONS_TECLADO,
-    href: (d) => `/teclado/dia/${d}`,
+    months: KEYBOARD_MONTHS,
+    lessons: KEYBOARD_LESSONS,
+    href: (d) => `/keyboard/day/${d}`,
   }),
 };
 
 export function getCourse(id: InstrumentId): CourseInfo {
-  return COURSES[id] ?? COURSES.guitarra!;
+  return COURSES[id] ?? COURSES.guitar!;
 }

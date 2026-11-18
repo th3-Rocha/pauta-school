@@ -10,8 +10,8 @@ import { Button } from "../../ui/Button";
 import { ToggleGroup, ToggleGroupItem } from "../../ui/ToggleGroup";
 import { Panel } from "../controls";
 
-export type InputSource = "midi" | "computador" | "tela" | "microfone";
-export type MidiState = "sem-suporte" | "pedir-permissao" | "nenhum-aparelho" | "conectado" | "negado";
+export type InputSource = "midi" | "computer" | "screen" | "mic";
+export type MidiState = "unsupported" | "prompt" | "no-device" | "connected" | "denied";
 
 export type MidiStatusProps = {
   source: InputSource;
@@ -34,9 +34,9 @@ export type MidiStatusProps = {
 
 const SOURCE_ICON: Record<InputSource, React.ReactNode> = {
   midi: <Cable aria-hidden />,
-  computador: <KeyboardIcon aria-hidden />,
-  tela: <Pointer aria-hidden />,
-  microfone: <Mic aria-hidden />,
+  computer: <KeyboardIcon aria-hidden />,
+  screen: <Pointer aria-hidden />,
+  mic: <Mic aria-hidden />,
 };
 
 /** LED de atividade. Pisca (animate-led) quando `activity` muda. */
@@ -59,7 +59,7 @@ export function ActivityLed({ activity, on, label }: { activity?: number; on: bo
 export function MidiStatus({
   source,
   onSourceChange,
-  sources = ["midi", "tela", "computador", "microfone"],
+  sources = ["midi", "screen", "computer", "mic"],
   midiState,
   deviceName,
   activity,
@@ -70,41 +70,41 @@ export function MidiStatus({
   className,
 }: MidiStatusProps) {
   const s = { ...defaultStrings.midi, ...stringsOverride };
-  const connected = source === "midi" && midiState === "conectado";
-  const receiving = source !== "microfone";
+  const connected = source === "midi" && midiState === "connected";
+  const receiving = source !== "mic";
 
   const midiBody = () => {
     switch (midiState) {
-      case "conectado":
+      case "connected":
         return (
           <p className="inline-flex items-center gap-2 text-sm text-fg">
             <ShieldCheck className="size-4 shrink-0 text-good" strokeWidth={2.5} aria-hidden />
             <span>
-              <span className="font-semibold text-good">{s.states.conectado}</span>
+              <span className="font-semibold text-good">{s.states.connected}</span>
               {deviceName && <span className="font-mono"> · {deviceName}</span>}
             </span>
           </p>
         );
-      case "sem-suporte":
+      case "unsupported":
         return (
           <p className="flex gap-2 text-sm text-fg">
             <Ban className="mt-0.5 size-4 shrink-0 text-muted" aria-hidden />
-            {s.states["sem-suporte"]}
+            {s.states["unsupported"]}
           </p>
         );
-      case "negado":
+      case "denied":
         return (
           <p className="flex gap-2 text-sm text-fg">
             <AlertTriangle className="mt-0.5 size-4 shrink-0 text-bad" strokeWidth={2.5} aria-hidden />
-            {s.states.negado}
+            {s.states.denied}
           </p>
         );
-      case "nenhum-aparelho":
+      case "no-device":
         return (
           <div className="flex flex-col gap-3">
             <p className="flex gap-2 text-sm text-fg">
               <AlertTriangle className="mt-0.5 size-4 shrink-0 text-warn" strokeWidth={2.5} aria-hidden />
-              {s.states["nenhum-aparelho"]}
+              {s.states["no-device"]}
             </p>
             {onConnect && (
               <Button variant="secondary" onClick={onConnect} loading={connecting} className="self-start">
@@ -114,11 +114,11 @@ export function MidiStatus({
             )}
           </div>
         );
-      case "pedir-permissao":
+      case "prompt":
       default:
         return (
           <div className="flex flex-col gap-3">
-            <p className="text-sm text-fg">{s.states["pedir-permissao"]}</p>
+            <p className="text-sm text-fg">{s.states["prompt"]}</p>
             {onConnect && (
               <Button onClick={onConnect} loading={connecting} className="self-start">
                 <Plug aria-hidden />
@@ -169,14 +169,14 @@ export function MidiStatus({
         )}
 
         {source === "midi" && midiBody()}
-        {source === "computador" && <p className="text-sm text-fg">{s.computerHint}</p>}
-        {source === "microfone" && (
+        {source === "computer" && <p className="text-sm text-fg">{s.computerHint}</p>}
+        {source === "mic" && (
           <p className="flex gap-2 text-sm text-fg">
             <AlertTriangle className="mt-0.5 size-4 shrink-0 text-warn" strokeWidth={2.5} aria-hidden />
             {s.micHint}
           </p>
         )}
-        {source === "midi" && midiState !== "sem-suporte" && <p className="text-sm text-muted">{s.explain}</p>}
+        {source === "midi" && midiState !== "unsupported" && <p className="text-sm text-muted">{s.explain}</p>}
       </div>
     </Panel>
   );

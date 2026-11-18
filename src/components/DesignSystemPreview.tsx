@@ -60,8 +60,8 @@ export function makeYear(currentDay = 37): YearMonth[] {
     const days = Array.from({ length: len }, (_, di) => {
       n += 1;
       const last = di === len - 1;
-      let state: DayState = n < currentDay ? "concluido" : n === currentDay ? "atual" : n <= currentDay + 2 ? "disponivel" : "bloqueado";
-      if (last) state = "marco";
+      let state: DayState = n < currentDay ? "done" : n === currentDay ? "current" : n <= currentDay + 2 ? "available" : "locked";
+      if (last) state = "milestone";
       return { day: n, state, passed: last && n < currentDay, title: last ? `Desafio: ${title}` : undefined };
     });
     return { month: mi + 1, title, days };
@@ -169,7 +169,7 @@ function useTicker(on: boolean, ms: number, n: number) {
   return i;
 }
 
-const LEVADA: RhythmMeasure[] = [
+const GROOVE: RhythmMeasure[] = [
   { chord: "Am", strokes: ["down", null, "down", "up", null, "up", "down", "up"] },
   { chord: "Am", strokes: ["down", null, "down", "up", null, "up", "down", "up"] },
   { chord: "F", strokes: ["down", null, "down", "up", null, "up", "down", "up"] },
@@ -178,7 +178,7 @@ const LEVADA: RhythmMeasure[] = [
 
 export function RhythmSlashesDemo() {
   const tick = useTicker(true, 500, 16);
-  return <RhythmSlashes measures={LEVADA} currentMeasure={Math.floor(tick / 4)} currentBeat={tick % 4} />;
+  return <RhythmSlashes measures={GROOVE} currentMeasure={Math.floor(tick / 4)} currentBeat={tick % 4} />;
 }
 
 export function MetronomeDemo() {
@@ -361,7 +361,7 @@ export function MilestoneDemo() {
       criteria={["Nenhuma parada entre acordes", "Todas as cordas soando limpas", "Metrônomo a 80 BPM, sem acelerar"]}
       targetBpm={80}
       bestBpm={72}
-      status="disponivel"
+      status="available"
       onAttempt={() => {}}
     />
   );
@@ -391,20 +391,20 @@ export function LessonDemo() {
   const [done, setDone] = React.useState([true, true, false, false]);
   const [completed, setCompleted] = React.useState(false);
   const blocks = [
-    { kind: "revisao", minutes: 8, content: <p>Toque a troca Am–F do dia 33 por 2 minutos, a 70 BPM.</p> },
+    { kind: "review", minutes: 8, content: <p>Toque a troca Am–F do dia 33 por 2 minutos, a 70 BPM.</p> },
     {
-      kind: "conceito",
+      kind: "concept",
       minutes: 10,
       content: (
         <>
           <p>A pentatônica menor tem 5 notas. Na caixa 1, a tônica fica na corda 6, casa 5.</p>
           <Fretboard frets={9} startFret={4} markers={PENTA_BOX.slice(0, 12)} highlightRange={{ from: 5, to: 8 }} readOnly />
-          <Callout variant="teoria">Pentatônica = penta (cinco) + tônica (tom). Não tem a 2ª nem a 6ª da escala menor.</Callout>
+          <Callout variant="theory">Pentatônica = penta (cinco) + tônica (tom). Não tem a 2ª nem a 6ª da escala menor.</Callout>
         </>
       ),
     },
-    { kind: "laboratorio", minutes: 12, content: <Callout variant="atencao">Comece a 60 BPM. Só suba quando tocar 4 vezes seguidas sem erro.</Callout> },
-    { kind: "ouvido", minutes: 8, content: <p>Improvise 4 compassos usando só as notas 1, b3 e 5 sobre a base.</p> },
+    { kind: "lab", minutes: 12, content: <Callout variant="warning">Comece a 60 BPM. Só suba quando tocar 4 vezes seguidas sem erro.</Callout> },
+    { kind: "ear", minutes: 8, content: <p>Improvise 4 compassos usando só as notas 1, b3 e 5 sobre a base.</p> },
   ].map((b, i) => ({ ...b, done: done[i] })) as unknown as [LessonBlockData, LessonBlockData, LessonBlockData, LessonBlockData];
   return (
     <LessonLayout
@@ -425,7 +425,7 @@ export function LessonDemo() {
 export function LessonBlockDemo() {
   const [done, setDone] = React.useState(false);
   return (
-    <LessonBlock index={3} kind="laboratorio" minutes={12} done={done} onDoneChange={setDone}>
+    <LessonBlock index={3} kind="lab" minutes={12} done={done} onDoneChange={setDone}>
       <p>Alterne palhetada para baixo e para cima na corda 3, casa 5, a 70 BPM.</p>
     </LessonBlock>
   );
@@ -585,10 +585,10 @@ export function InputDemo() {
 export function CalloutDemo() {
   return (
     <div className="flex flex-col gap-4">
-      <Callout variant="dica">Deixe o polegar atrás do braço, mais ou menos na altura do dedo médio.</Callout>
-      <Callout variant="atencao">Se doer o punho, pare. Dor não é parte do treino.</Callout>
-      <Callout variant="autoavaliacao" title="Grave 30 segundos e ouça">As notas soam do mesmo volume?</Callout>
-      <Callout variant="teoria">Um tom = duas casas. Meio tom = uma casa.</Callout>
+      <Callout variant="tip">Deixe o polegar atrás do braço, mais ou menos na altura do dedo médio.</Callout>
+      <Callout variant="warning">Se doer o punho, pare. Dor não é parte do treino.</Callout>
+      <Callout variant="selfCheck" title="Grave 30 segundos e ouça">As notas soam do mesmo volume?</Callout>
+      <Callout variant="theory">Um tom = duas casas. Meio tom = uma casa.</Callout>
     </div>
   );
 }
@@ -757,7 +757,7 @@ function Showcase() {
         </div>
         <Item name="NoteFixPuzzle"><NoteFixDemo /></Item>
       </Section>
-      <div id="teclado" className="border-t border-line pt-8">
+      <div id="keyboard" className="border-t border-line pt-8">
         <KeyboardPreviewSection />
       </div>
       <Section id="curso" title="Estrutura do curso">

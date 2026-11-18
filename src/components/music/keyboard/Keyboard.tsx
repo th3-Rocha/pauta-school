@@ -118,7 +118,7 @@ export function Keyboard({
   pressed = [],
   handZones = [],
   showNoteNames = "c-only",
-  noteNames = "solfejo",
+  noteNames = "solfege",
   naming = "sharp",
   computerKeys = false,
   pedal = false,

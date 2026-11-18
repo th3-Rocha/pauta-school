@@ -8,6 +8,12 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   integrations: [react()],
 
+  // Endereços antigos (em português) continuam funcionando.
+  redirects: {
+    "/dia/[day]": "/guitar/day/[day]",
+    "/equipamento": "/setup",
+  },
+
   vite: {
     plugins: [tailwindcss()]
   }

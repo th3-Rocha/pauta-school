@@ -61,7 +61,7 @@ export function MiniKeys({
   markers = [],
   headroom = 0,
   showNoteNames = "none",
-  noteNames = "solfejo",
+  noteNames = "solfege",
   naming = "sharp",
   handLetters = { right: "D", left: "E" },
   overlay,

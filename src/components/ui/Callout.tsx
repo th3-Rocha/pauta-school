@@ -5,7 +5,7 @@ import { BookOpen, ClipboardCheck, Lightbulb, TriangleAlert, type LucideIcon } f
 import { cn } from "../../lib/cn";
 import { strings } from "../../lib/strings";
 
-export type CalloutVariant = "dica" | "atencao" | "autoavaliacao" | "teoria";
+export type CalloutVariant = "tip" | "warning" | "selfCheck" | "theory";
 
 /**
  * Caixa de destaque dentro da aula. A etiqueta fica "colada" na borda de cima,
@@ -14,27 +14,27 @@ export type CalloutVariant = "dica" | "atencao" | "autoavaliacao" | "teoria";
 const calloutVariants = cva("relative mt-3 rounded-md border px-4 pb-4 pt-5 text-base", {
   variants: {
     variant: {
-      dica: "border-line-strong bg-surface",
-      atencao: "border-warn bg-warn-soft",
-      autoavaliacao: "border-accent bg-accent-soft",
-      teoria: "border-line-strong bg-surface-2",
+      tip: "border-line-strong bg-surface",
+      warning: "border-warn bg-warn-soft",
+      selfCheck: "border-accent bg-accent-soft",
+      theory: "border-line-strong bg-surface-2",
     },
   },
-  defaultVariants: { variant: "dica" },
+  defaultVariants: { variant: "tip" },
 });
 
 const tagClass: Record<CalloutVariant, string> = {
-  dica: "bg-fg text-bg",
-  atencao: "bg-warn text-bg",
-  autoavaliacao: "bg-accent text-on-accent",
-  teoria: "bg-surface text-fg border border-line-strong",
+  tip: "bg-fg text-bg",
+  warning: "bg-warn text-bg",
+  selfCheck: "bg-accent text-on-accent",
+  theory: "bg-surface text-fg border border-line-strong",
 };
 
 const icons: Record<CalloutVariant, LucideIcon> = {
-  dica: Lightbulb,
-  atencao: TriangleAlert,
-  autoavaliacao: ClipboardCheck,
-  teoria: BookOpen,
+  tip: Lightbulb,
+  warning: TriangleAlert,
+  selfCheck: ClipboardCheck,
+  theory: BookOpen,
 };
 
 export type CalloutProps = Omit<React.ComponentProps<"aside">, "title"> & {
@@ -44,7 +44,7 @@ export type CalloutProps = Omit<React.ComponentProps<"aside">, "title"> & {
   title?: React.ReactNode;
 };
 
-export function Callout({ className, variant = "dica", label, title, children, ...props }: CalloutProps) {
+export function Callout({ className, variant = "tip", label, title, children, ...props }: CalloutProps) {
   const Icon = icons[variant];
   return (
     <aside data-slot="callout" data-variant={variant} className={cn(calloutVariants({ variant }), className)} {...props}>

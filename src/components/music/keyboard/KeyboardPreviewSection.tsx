@@ -49,7 +49,7 @@ export function KeyboardDemo() {
   const kb = usePressed();
   const [feedback, setFeedback] = React.useState<KeyboardFeedback>("live");
   const [mode, setMode] = React.useState<"fit" | "touch" | "compact">("fit");
-  const [names, setNames] = React.useState<"solfejo" | "cifra">("solfejo");
+  const [names, setNames] = React.useState<"solfege" | "letters">("solfege");
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap gap-3">
@@ -64,8 +64,8 @@ export function KeyboardDemo() {
           <ToggleGroupItem value="result">Resultado</ToggleGroupItem>
         </ToggleGroup>
         <ToggleGroup type="single" size="sm" value={names} onValueChange={(v) => v && setNames(v as typeof names)} aria-label="Nomes">
-          <ToggleGroupItem value="solfejo">Dó Ré Mi</ToggleGroupItem>
-          <ToggleGroupItem value="cifra">C D E</ToggleGroupItem>
+          <ToggleGroupItem value="solfege">Dó Ré Mi</ToggleGroupItem>
+          <ToggleGroupItem value="letters">C D E</ToggleGroupItem>
         </ToggleGroup>
       </div>
       <Keyboard
@@ -305,7 +305,7 @@ export function PianoRollDemo() {
 
 export function MidiStatusDemo() {
   const [source, setSource] = React.useState<InputSource>("midi");
-  const [state, setState] = React.useState<MidiState>("conectado");
+  const [state, setState] = React.useState<MidiState>("connected");
   const [activity, setActivity] = React.useState(0);
   React.useEffect(() => {
     const t = setInterval(() => setActivity((a) => a + 1), 900);
@@ -314,7 +314,7 @@ export function MidiStatusDemo() {
   return (
     <div className="flex flex-col gap-3">
       <ToggleGroup type="single" size="sm" value={state} onValueChange={(v) => v && setState(v as MidiState)} aria-label="Estado do MIDI">
-        {(["sem-suporte", "pedir-permissao", "nenhum-aparelho", "conectado", "negado"] as MidiState[]).map((s) => (
+        {(["unsupported", "prompt", "no-device", "connected", "denied"] as MidiState[]).map((s) => (
           <ToggleGroupItem key={s} value={s}>
             {s}
           </ToggleGroupItem>
@@ -325,9 +325,9 @@ export function MidiStatusDemo() {
         onSourceChange={setSource}
         midiState={state}
         deviceName="Casio CT-S300"
-        activity={state === "conectado" || source !== "midi" ? activity : undefined}
-        lastNote={state === "conectado" ? "Dó 4" : undefined}
-        onConnect={() => setState("conectado")}
+        activity={state === "connected" || source !== "midi" ? activity : undefined}
+        lastNote={state === "connected" ? "Dó 4" : undefined}
+        onConnect={() => setState("connected")}
       />
     </div>
   );
@@ -473,10 +473,10 @@ export type KeyboardPreviewSectionProps = { className?: string };
 /** Seção "Teclado" para encaixar na DesignSystemPreview. */
 export function KeyboardPreviewSection({ className }: KeyboardPreviewSectionProps) {
   return (
-    <section aria-labelledby="ds-teclado" className={cn("flex flex-col gap-10", className)}>
+    <section aria-labelledby="ds-keyboard" className={cn("flex flex-col gap-10", className)}>
       <header className="flex flex-col gap-1">
         <p className="panel-label text-muted">Seção</p>
-        <h2 id="ds-teclado" className="font-display text-2xl font-bold text-fg">
+        <h2 id="ds-keyboard" className="font-display text-2xl font-bold text-fg">
           Teclado
         </h2>
         <p className="max-w-2xl text-base text-muted">

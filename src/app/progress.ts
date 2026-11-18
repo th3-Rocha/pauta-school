@@ -23,10 +23,10 @@ export type Progress = {
 };
 
 // Um progresso por instrumento. A guitarra mantém a chave antiga para não perder o que já foi feito.
-const KEYS: Record<string, string> = { guitarra: "trastes:progress:v1" };
+const KEYS: Record<string, string> = { guitar: "trastes:progress:v1" };
 const keyFor = (instrument: string) => KEYS[instrument] ?? `pauta:${instrument}:progress:v1`;
-let KEY = keyFor("guitarra");
-let active = "guitarra";
+let KEY = keyFor("guitar");
+let active = "guitar";
 
 /** Troca o instrumento cujo progresso é lido e gravado. Chame antes de renderizar. */
 export function setActiveInstrument(instrument: string, opts: { silent?: boolean } = {}) {

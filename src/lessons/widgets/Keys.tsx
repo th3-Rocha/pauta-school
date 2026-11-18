@@ -65,16 +65,16 @@ const rnd = (n: number) => Math.floor(Math.random() * n);
 
 export function InputPanel({ showTestLink = true }: { showTestLink?: boolean }) {
   const kb = useKeyInput();
-  const [source, setSource] = React.useState<InputSource>("tela");
+  const [source, setSource] = React.useState<InputSource>("screen");
   React.useEffect(() => {
-    if (kb.midiState === "conectado") setSource("midi");
+    if (kb.midiState === "connected") setSource("midi");
   }, [kb.midiState]);
   return (
     <div className="flex flex-col gap-2">
       <MidiStatus
         source={source}
         onSourceChange={setSource}
-        sources={["midi", "computador", "tela"]}
+        sources={["midi", "computer", "screen"]}
         midiState={kb.midiState}
         deviceName={kb.deviceName}
         activity={kb.activity || undefined}
@@ -82,7 +82,7 @@ export function InputPanel({ showTestLink = true }: { showTestLink?: boolean }) 
         onConnect={() => void connectMidi()}
       />
       {showTestLink && (
-      <a href="/equipamento" className="inline-flex items-center gap-1.5 self-start text-sm text-muted underline decoration-line-strong underline-offset-4 hover:text-fg">
+      <a href="/setup" className="inline-flex items-center gap-1.5 self-start text-sm text-muted underline decoration-line-strong underline-offset-4 hover:text-fg">
         <Settings2 className="size-4" aria-hidden />
         Testar o equipamento antes
       </a>
@@ -120,8 +120,8 @@ export function KeysWidget({
         pedal={kb.pedal}
         showNoteNames={names}
         computerKeys
-        onPress={(m, v) => press(m, v ?? 90, "tela")}
-        onRelease={(m) => release(m, "tela")}
+        onPress={(m, v) => press(m, v ?? 90, "screen")}
+        onRelease={(m) => release(m, "screen")}
       />
       {caption && <p className="text-sm text-muted">{md(caption)}</p>}
     </div>
@@ -254,8 +254,8 @@ export function FindKeys({
           pressed={kb.pressed}
           showNoteNames={names}
           computerKeys
-          onPress={(m, v) => press(m, v ?? 90, "tela")}
-          onRelease={(m) => release(m, "tela")}
+          onPress={(m, v) => press(m, v ?? 90, "screen")}
+          onRelease={(m) => release(m, "screen")}
         />
         {mode === "quiz" && <Progress value={Math.min(100, (score.total / rounds) * 100)} aria-label="Rodadas" />}
         {done && (
@@ -372,8 +372,8 @@ export function Sequence({
           pressed={kb.pressed}
           showNoteNames="none"
           computerKeys
-          onPress={(m, v) => press(m, v ?? 90, "tela")}
-          onRelease={(m) => release(m, "tela")}
+          onPress={(m, v) => press(m, v ?? 90, "screen")}
+          onRelease={(m) => release(m, "screen")}
         />
         <div className="flex flex-wrap items-center gap-3">
           <Button variant="secondary" size="sm" onClick={() => playSequence(notes.map((n) => n.midi), 60 / bpm)}>

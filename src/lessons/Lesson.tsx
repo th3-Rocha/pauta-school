@@ -16,7 +16,7 @@ import { Ear } from "./widgets/Ear";
 import { BpmLog, MinuteChallenge } from "./widgets/Records";
 import { FindKeys, HandWidget, InputPanel, KeyEcho, KeysWidget, Sequence } from "./widgets/Keys";
 
-const KINDS = ["revisao", "conceito", "laboratorio", "ouvido"] as const;
+const KINDS = ["review", "concept", "lab", "ear"] as const;
 
 function FretboardWidget({ node }: { node: Extract<Node, { w: "fretboard" }> }) {
   const [last, setLast] = React.useState<string | null>(null);
@@ -131,7 +131,7 @@ function render(node: Node, i: number, day: number): React.ReactNode {
   }
 }
 
-export function Lesson({ lesson, href = (d: number) => `/dia/${d}`, homeHref = "/" }: { lesson: LessonData; href?: (day: number) => string; homeHref?: string }) {
+export function Lesson({ lesson, href = (d: number) => `/guitar/day/${d}`, homeHref = "/" }: { lesson: LessonData; href?: (day: number) => string; homeHref?: string }) {
   const p = useProgress();
   const done = new Set(p.blocks[lesson.day] ?? []);
   const blocks = lesson.blocks.map(

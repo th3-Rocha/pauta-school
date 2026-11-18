@@ -4,7 +4,7 @@ import { Check, Clock } from "lucide-react";
 import { cn } from "../../lib/cn";
 import { strings as defaultStrings, type Strings } from "../../lib/strings";
 
-export type LessonBlockKind = "revisao" | "conceito" | "laboratorio" | "ouvido";
+export type LessonBlockKind = "review" | "concept" | "lab" | "ear";
 
 export type LessonBlockProps = {
   /** 1–4: posição fixa do bloco na aula. */

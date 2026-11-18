@@ -1,18 +1,16 @@
 ---
 import Base from "../../../layouts/Base.astro";
 import LessonApp from "../../../app/LessonApp";
-import { TOTAL_DAYS } from "../../../data/curriculum";
-import { COURSES } from "../../../data/courses";
+import { LESSON_TITLES, TOTAL_DAYS } from "../../../data/curriculum";
 
 export function getStaticPaths() {
   return Array.from({ length: TOTAL_DAYS }, (_, i) => ({ params: { day: String(i + 1) } }));
 }
 
 const day = Number(Astro.params.day);
-const t = COURSES.teclado!.titles[day];
-const title = t ? `Dia ${day}: ${t} · Teclado · Pauta` : `Dia ${day} · Teclado · Pauta`;
+const title = LESSON_TITLES[day] ? `Dia ${day}: ${LESSON_TITLES[day]} · Guitarra · Pauta` : `Dia ${day} · Guitarra · Pauta`;
 ---
 
 <Base title={title}>
-  <LessonApp day={day} instrument="teclado" client:load />
+  <LessonApp day={day} instrument="guitar" client:load />
 </Base>

@@ -1,11 +1,11 @@
 // Mês 1 · dias 16 a 30
-import type { Lesson } from "../types";
-import { ACORDE_LIMPO, ALL_DOWN, DOWN_REST, ESCALA_DO, HALVES, HINO, MELODIA_A, MELODIA_B, MELODIA_C, MELODIA_D, THREE_REST } from "./shared";
+import type { Lesson } from "../../types";
+import { CLEAN_CHORD, ALL_DOWN, DOWN_REST, C_MAJOR_SCALE, HALVES, ODE_TO_JOY, MELODY_A, MELODY_B, MELODY_C, MELODY_D, THREE_REST } from "./shared";
 
 const M = 1;
 const bars = (chords: string[], strokes = ALL_DOWN) => chords.map((chord) => ({ chord, strokes }));
 
-export const DIAS_16_A_30: Lesson[] = [
+export const DAYS_16_TO_30: Lesson[] = [
   {
     day: 16,
     month: M,
@@ -21,8 +21,8 @@ export const DIAS_16_A_30: Lesson[] = [
           "O C é uma **escadinha**: dedo 3 na casa 3 da corda 5, dedo 2 na casa 2 da corda 4, dedo 1 na casa 1 da corda 2. A corda 6 tem X.",
           { w: "chords", chords: ["C", "Am"] },
           "Agora compare com o Am: **os dedos 1 e 2 estão no mesmo lugar**. Para trocar, só o dedo 3 se mexe, da corda 3 para a corda 5. Dedos que não precisam sair, não saem.",
-          ACORDE_LIMPO("c"),
-          { callout: "atencao", text: "O dedo 1 costuma encostar na corda 1 e abafar. Arqueie bem: a corda 1 tem que soar solta." },
+          CLEAN_CHORD("c"),
+          { callout: "warning", text: "O dedo 1 costuma encostar na corda 1 e abafar. Arqueie bem: a corda 1 tem que soar solta." },
         ],
       },
       { title: "C ↔ Am", minutes: 12, body: [{ w: "changes", chords: ["C", "Am"], beats: 4, bpm: 60 }, { w: "minute", id: "c-am", label: "C para Am e de volta, só mexendo o dedo 3." }] },
@@ -45,8 +45,8 @@ export const DIAS_16_A_30: Lesson[] = [
           "O G usa as seis cordas: dedo 2 na casa 3 da corda 6, dedo 1 na casa 2 da corda 5 e dedo 3 na casa 3 da corda 1. As cordas do meio ficam soltas.",
           { w: "chords", chords: ["G"] },
           "O baixo do G (corda 6) é o que dá peso ao acorde. Comece a batida bem nele.",
-          ACORDE_LIMPO("g"),
-          { callout: "dica", text: "Você também vai ver o G com os dedos 3, 2 e 4. Os dois funcionam. Aqui usamos 2, 1 e 3 porque fica mais fácil chegar no C depois." },
+          CLEAN_CHORD("g"),
+          { callout: "tip", text: "Você também vai ver o G com os dedos 3, 2 e 4. Os dois funcionam. Aqui usamos 2, 1 e 3 porque fica mais fácil chegar no C depois." },
         ],
       },
       { title: "G ↔ Em", minutes: 12, body: [{ w: "changes", chords: ["G", "Em"], beats: 4, bpm: 50 }, { w: "minute", id: "g-em", label: "G para Em e de volta." }] },
@@ -110,7 +110,7 @@ export const DIAS_16_A_30: Lesson[] = [
         body: [
           { w: "strum", title: "Três e pausa", bpm: 60, measures: bars(["G", "C", "D", "G"], THREE_REST) },
           { w: "strum", title: "Bate e pausa", bpm: 60, measures: bars(["Em", "Am", "D", "G"], DOWN_REST) },
-          { callout: "autoavaliacao", text: "Grave um trecho. Nas pausas o som corta de verdade, ou fica um rastro do acorde?" },
+          { callout: "selfCheck", text: "Grave um trecho. Nas pausas o som corta de verdade, ou fica um rastro do acorde?" },
         ],
       },
       { title: "Quanto durou?", minutes: 5, body: [{ w: "ear", kind: "duration" }] },
@@ -148,7 +148,7 @@ export const DIAS_16_A_30: Lesson[] = [
           "Repare nas distâncias. Quase sempre há **duas casas** entre uma nota e a seguinte (um tom). Mas de **E para F** e de **B para C** a distância é de **uma casa** (meio tom). Essa diferença é o que dá o som da escala maior. Você vai estudar isso a fundo no mês 2.",
         ],
       },
-      { title: "A escala", minutes: 10, body: [{ w: "tab", title: "Escala de Dó maior, sobe e desce", bpm: 60, notes: ESCALA_DO }, "Fale o nome de cada nota enquanto toca."] },
+      { title: "A escala", minutes: 10, body: [{ w: "tab", title: "Escala de Dó maior, sobe e desce", bpm: 60, notes: C_MAJOR_SCALE }, "Fale o nome de cada nota enquanto toca."] },
       { title: "Subiu ou desceu", minutes: 5, body: [{ w: "ear", kind: "highlow-close" }] },
     ],
   },
@@ -172,7 +172,7 @@ export const DIAS_16_A_30: Lesson[] = [
         body: [
           "Esta é a sequência do desafio do fim do mês. Hoje a meta é 60 BPM.",
           { w: "changes", title: "G → C → D → Em", chords: ["G", "C", "D", "Em"], beats: 4, bpm: 60 },
-          { w: "tab", title: "Escala de Dó a 70 BPM", bpm: 70, notes: ESCALA_DO },
+          { w: "tab", title: "Escala de Dó a 70 BPM", bpm: 70, notes: C_MAJOR_SCALE },
           {
             w: "selfcheck",
             id: "semana3",
@@ -196,7 +196,7 @@ export const DIAS_16_A_30: Lesson[] = [
     minutes: 30,
     objectives: ["Tocar uma progressão de quatro acordes", "Alternar levadas no meio da música", "Manter o pulso nas trocas"],
     blocks: [
-      { minutes: 5, body: [{ w: "tab", bpm: 70, notes: ESCALA_DO }] },
+      { minutes: 5, body: [{ w: "tab", bpm: 70, notes: C_MAJOR_SCALE }] },
       {
         title: "Uma progressão clássica",
         minutes: 6,
@@ -268,13 +268,13 @@ export const DIAS_16_A_30: Lesson[] = [
             ],
             ordered: true,
           },
-          { callout: "atencao", text: "Nestas melodias, não aperte Tocar antes de tentar. Ligue só o metrônomo (desligue o exemplo depois de ouvir a contagem) e leia. Depois confira com o exemplo." },
+          { callout: "warning", text: "Nestas melodias, não aperte Tocar antes de tentar. Ligue só o metrônomo (desligue o exemplo depois de ouvir a contagem) e leia. Depois confira com o exemplo." },
         ],
       },
       {
         title: "Duas melodias novas",
         minutes: 14,
-        body: [{ w: "tab", title: "Melodia A", bpm: 60, notes: MELODIA_A }, { w: "tab", title: "Melodia B", bpm: 60, notes: MELODIA_B }],
+        body: [{ w: "tab", title: "Melodia A", bpm: 60, notes: MELODY_A }, { w: "tab", title: "Melodia B", bpm: 60, notes: MELODY_B }],
       },
       { title: "Igual ou diferente", minutes: 5, body: [{ w: "ear", kind: "same-diff" }] },
     ],
@@ -287,7 +287,7 @@ export const DIAS_16_A_30: Lesson[] = [
     minutes: 30,
     objectives: ["Montar o E (Mi maior)", "Entender que maior e menor diferem por uma nota", "Reconhecer de ouvido com 80% de acerto"],
     blocks: [
-      { minutes: 5, body: [{ w: "tab", title: "Melodia A", bpm: 70, notes: MELODIA_A }] },
+      { minutes: 5, body: [{ w: "tab", title: "Melodia A", bpm: 70, notes: MELODY_A }] },
       {
         title: "Uma casa de diferença",
         minutes: 8,
@@ -363,7 +363,7 @@ export const DIAS_16_A_30: Lesson[] = [
     minutes: 30,
     objectives: ["Tocar acordes enquanto a melodia acontece", "Trocar C e G no tempo da música", "Ouvir o acorde e a melodia juntos"],
     blocks: [
-      { minutes: 5, body: [{ w: "tab", title: "Hino à Alegria", bpm: 70, notes: HINO }] },
+      { minutes: 5, body: [{ w: "tab", title: "Hino à Alegria", bpm: 70, notes: ODE_TO_JOY }] },
       {
         title: "Acorde e melodia",
         minutes: 6,
@@ -378,8 +378,8 @@ export const DIAS_16_A_30: Lesson[] = [
         minutes: 14,
         body: [
           { w: "changes", chords: ["C", "G"], beats: 4, bpm: 60 },
-          { w: "strum", title: "Hino à Alegria: você nos acordes", bpm: 60, measures: bars(["C", "G", "C", "G", "C", "G", "C", "C"]), melody: HINO },
-          { callout: "dica", text: "Depois troque os papéis: grave você tocando os acordes no celular e toque a melodia por cima." },
+          { w: "strum", title: "Hino à Alegria: você nos acordes", bpm: 60, measures: bars(["C", "G", "C", "G", "C", "G", "C", "C"]), melody: ODE_TO_JOY },
+          { callout: "tip", text: "Depois troque os papéis: grave você tocando os acordes no celular e toque a melodia por cima." },
         ],
       },
       { title: "Qual acorde?", minutes: 5, body: [{ w: "ear", kind: "which-chord", chords: ["C", "G"] }] },
@@ -431,7 +431,7 @@ export const DIAS_16_A_30: Lesson[] = [
         minutes: 5,
         body: [
           { list: ["**Trocas:** G → C → D → Em, 4 tempos cada, duas voltas a 70 BPM sem parar a batida.", "**Leitura:** uma melodia de 4 compassos que você nunca viu, a 60 BPM, sem ouvir antes."] },
-          { callout: "autoavaliacao", text: "Grave os dois. Ouvir a gravação mostra coisas que você não percebe tocando." },
+          { callout: "selfCheck", text: "Grave os dois. Ouvir a gravação mostra coisas que você não percebe tocando." },
         ],
       },
       {
@@ -439,7 +439,7 @@ export const DIAS_16_A_30: Lesson[] = [
         minutes: 15,
         body: [
           { w: "changes", title: "Simulado a 70 BPM", chords: ["G", "C", "D", "Em"], beats: 4, bpm: 70 },
-          { w: "tab", title: "Melodia C (leia antes de ouvir)", bpm: 60, notes: MELODIA_C },
+          { w: "tab", title: "Melodia C (leia antes de ouvir)", bpm: 60, notes: MELODY_C },
           {
             w: "selfcheck",
             id: "ensaio",
@@ -484,9 +484,9 @@ export const DIAS_16_A_30: Lesson[] = [
         minutes: 15,
         body: [
           { w: "changes", title: "Desafio: G → C → D → Em", chords: ["G", "C", "D", "Em"], beats: 4, bpm: 70 },
-          { w: "tab", title: "Melodia D (primeira vista)", bpm: 60, notes: MELODIA_D },
+          { w: "tab", title: "Melodia D (primeira vista)", bpm: 60, notes: MELODY_D },
           { w: "bpmlog", month: 1, target: 70 },
-          { callout: "dica", text: "Não chegou nos 70? Registre o que conseguiu e siga para o mês 2 mesmo assim. Volte aqui daqui a uma semana. As trocas continuam no mês 2 e vão melhorar." },
+          { callout: "tip", text: "Não chegou nos 70? Registre o que conseguiu e siga para o mês 2 mesmo assim. Volte aqui daqui a uma semana. As trocas continuam no mês 2 e vão melhorar." },
         ],
       },
       {

@@ -4,14 +4,14 @@ import { cn } from "../../lib/cn";
 import type { Instrument, InstrumentId } from "../../data/instruments";
 
 const ICONS: Record<InstrumentId, LucideIcon> = {
-  guitarra: Guitar,
-  violao: Guitar,
-  baixo: Guitar,
+  guitar: Guitar,
+  "acoustic-guitar": Guitar,
+  bass: Guitar,
   ukulele: Guitar,
-  teclado: Piano,
-  gaita: AudioLines,
-  bateria: Drum,
-  canto: MicVocal,
+  keyboard: Piano,
+  harmonica: AudioLines,
+  drums: Drum,
+  voice: MicVocal,
 };
 
 export type InstrumentPickerProps = {
@@ -37,7 +37,7 @@ export function InstrumentPicker({ instruments, selected, onSelect, className }:
             aria-disabled={!ins.available}
             disabled={!ins.available}
             onClick={() => ins.available && onSelect(ins.id)}
-            title={ins.available ? undefined : "Em breve"}
+            aria-label={ins.available ? (ins.preview ? `${ins.name}, prévia` : ins.name) : `${ins.name}, em breve`}
             className={cn(
               "relative flex flex-col items-start gap-2 rounded-md border p-4 text-left transition-colors focus-ring",
               isSel

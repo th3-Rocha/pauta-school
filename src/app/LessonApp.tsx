@@ -23,7 +23,7 @@ function Soon({ day, course }: { day: number; course: CourseInfo }) {
       <p className="text-lg text-muted">
         {milestone ? m.milestone.goal : `Ela faz parte do mês "${m.title}".`}
       </p>
-      <Callout variant="teoria" label="O que vem neste mês">
+      <Callout variant="theory" label="O que vem neste mês">
         <p>
           <strong>Teoria:</strong> {m.theory}
         </p>
@@ -41,7 +41,7 @@ function Soon({ day, course }: { day: number; course: CourseInfo }) {
   );
 }
 
-export default function LessonApp({ day, instrument = "guitarra" }: { day: number; instrument?: InstrumentId }) {
+export default function LessonApp({ day, instrument = "guitar" }: { day: number; instrument?: InstrumentId }) {
   setActiveInstrument(instrument, { silent: true });
   const course = getCourse(instrument);
   const lesson = course.lessons[day];

@@ -61,8 +61,8 @@ function KeyboardTest() {
           pedal={kb.pedal}
           showNoteNames="c-only"
           computerKeys
-          onPress={(m, v) => press(m, v ?? 90, "tela")}
-          onRelease={(m) => release(m, "tela")}
+          onPress={(m, v) => press(m, v ?? 90, "screen")}
+          onRelease={(m) => release(m, "screen")}
         />
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
@@ -76,7 +76,7 @@ function KeyboardTest() {
           <div className="flex flex-col gap-2">
             <h4 className="font-semibold text-fg">Pedal de sustentação</h4>
             <p className="text-sm text-muted">Pise o pedal ligado ao teclado: o desenho afunda. Sem pedal, segure o botão.</p>
-            <PedalIndicator down={kb.pedal} onDownChange={setSustain} hasPedal={kb.midiState === "conectado"} />
+            <PedalIndicator down={kb.pedal} onDownChange={setSustain} hasPedal={kb.midiState === "connected"} />
           </div>
         </div>
         <label className="flex items-start gap-3 text-sm">
@@ -105,7 +105,7 @@ function GuitarTest() {
   );
 }
 
-export default function EquipmentApp() {
+export default function SetupApp() {
   return (
     <Shell>
       <main className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 pb-20 pt-8 sm:pt-12">
@@ -117,7 +117,7 @@ export default function EquipmentApp() {
         <SoundTest />
         <KeyboardTest />
         <GuitarTest />
-        <Callout variant="dica" label="MIDI no navegador">
+        <Callout variant="tip" label="MIDI no navegador">
           <p>
             O MIDI funciona no <strong>Chrome</strong>, no <strong>Edge</strong> e no <strong>Firefox</strong> recente. No iPhone e no Safari ainda não:
             use o teclado da tela.

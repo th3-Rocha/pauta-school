@@ -353,7 +353,7 @@ Adaptação das quatro fases ao formato do site, igual à guitarra: meses 1–11
   3. **Laboratório:** os passos 2 e 3, intercalados (técnica e harmonia, alternando a cada poucos minutos).
   4. **Ouvido e criação:** o passo 4 e o repertório do passo 5.
 - **Revisão espaçada** é calculada pelo número do dia, como na guitarra, para não aumentar o código de progresso.
-- **Entrada do aluno:** teclado MIDI (melhor), tela ou teclado do computador. O microfone fica como último recurso, só para nota única. Veja `docs/design-system-brief-teclado.md`.
+- **Entrada do aluno:** teclado MIDI (melhor), tela ou teclado do computador. O microfone fica como último recurso, só para nota única. Veja `docs/design-system-brief-keyboard.md`.
 - **Instrumento mínimo:** 61 teclas sensíveis ao toque, com pedal de sustain a partir do mês 6. O curso funciona com teclado de 61 teclas do começo ao fim.
 - **Meses 9–11** são densos. O site deixa claro que repetir semana é normal.
 - **Marco de verificação** de cada mês vira um desafio interativo no fim do mês.

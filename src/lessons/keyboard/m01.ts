@@ -7,7 +7,7 @@ const C3 = 48;
 const C4 = 60;
 const C6 = 84;
 
-export const TECLADO_M01: Lesson[] = [
+export const KEYBOARD_M01: Lesson[] = [
   {
     day: 1,
     month: M,
@@ -66,9 +66,9 @@ export const TECLADO_M01: Lesson[] = [
           { w: "find-keys", mode: "all", from: C3, to: C6, targets: [0], title: "Ache todos os Dó" },
           { h: "Dó central" },
           "O **Dó central** é o Dó mais perto do meio do teclado, quase sempre logo abaixo da marca do fabricante. É a referência para as duas mãos: a direita trabalha dele para cima, a esquerda dele para baixo. Na escrita internacional ele é o **C4**.",
-          { callout: "teoria", text: "As notas brancas seguem a ordem **Dó Ré Mi Fá Sol Lá Si** e recomeçam no Dó. Em cifra: **C D E F G A B**. O **Ré** fica entre as duas pretas do grupo de 2 e o **Mi** logo à direita delas." },
+          { callout: "theory", text: "As notas brancas seguem a ordem **Dó Ré Mi Fá Sol Lá Si** e recomeçam no Dó. Em cifra: **C D E F G A B**. O **Ré** fica entre as duas pretas do grupo de 2 e o **Mi** logo à direita delas." },
           { w: "find-keys", mode: "quiz", from: C3, to: C6, targets: [0, 2, 4], rounds: 10, title: "Dó, Ré ou Mi" },
-          { callout: "atencao", text: "Não cole adesivos com o nome das notas no teclado. Eles viram muleta: o olho para de procurar os grupos. O teclado da tela mostra o nome quando for preciso." },
+          { callout: "warning", text: "Não cole adesivos com o nome das notas no teclado. Eles viram muleta: o olho para de procurar os grupos. O teclado da tela mostra o nome quando for preciso." },
         ],
       },
       {
@@ -116,7 +116,7 @@ export const TECLADO_M01: Lesson[] = [
               { id: "pulso", label: "Uma nota por clique, sem correr" },
             ],
           },
-          { callout: "dica", text: "Soar bem agora não quer dizer que já aprendeu. Amanhã a gente volta nisso, e o que ficou de verdade é o que aparecer amanhã." },
+          { callout: "tip", text: "Soar bem agora não quer dizer que já aprendeu. Amanhã a gente volta nisso, e o que ficou de verdade é o que aparecer amanhã." },
         ],
       },
       {

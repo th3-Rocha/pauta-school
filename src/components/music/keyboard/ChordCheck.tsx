@@ -46,7 +46,7 @@ export function ChordCheck({
   mode = "pitch-class",
   inputReady = true,
   showKeyboard = true,
-  noteNames = "solfejo",
+  noteNames = "solfege",
   naming = "sharp",
   onPress,
   onRelease,

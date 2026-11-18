@@ -1,4 +1,4 @@
-import type { Stroke, TabNote } from "../types";
+import type { Stroke, TabNote } from "../../types";
 
 /** Nota de tablatura: corda, casa, duração em tempos. */
 export const n = (s: number, f: number, d = 1): TabNote => ({ s, f, d });
@@ -12,7 +12,7 @@ export const THREE_REST: Stroke[] = ["down", "down", "down", "rest"];
 export const DOWN_REST: Stroke[] = ["down", "rest", "down", "rest"];
 
 /** Hino à Alegria (Beethoven, domínio público), cordas 1 e 2. */
-export const HINO: TabNote[] = [
+export const ODE_TO_JOY: TabNote[] = [
   n(1, 0), n(1, 0), n(1, 1), n(1, 3),
   n(1, 3), n(1, 1), n(1, 0), n(2, 3),
   n(2, 1), n(2, 1), n(2, 3), n(1, 0),
@@ -24,7 +24,7 @@ export const HINO: TabNote[] = [
 ];
 
 /** Brilha, brilha, estrelinha (tradicional), cordas graves. */
-export const BRILHA: TabNote[] = [
+export const TWINKLE: TabNote[] = [
   n(5, 3), n(5, 3), n(3, 0), n(3, 0),
   n(3, 2), n(3, 2), n(3, 0, 2),
   n(4, 3), n(4, 3), n(4, 2), n(4, 2),
@@ -36,7 +36,7 @@ export const BRILHA: TabNote[] = [
 ];
 
 /** Escala de Dó maior na primeira posição, subindo e descendo. */
-export const ESCALA_DO: TabNote[] = [
+export const C_MAJOR_SCALE: TabNote[] = [
   n(5, 3), n(4, 0), n(4, 2), n(4, 3),
   n(3, 0), n(3, 2), n(2, 0), n(2, 1),
   n(2, 1), n(2, 0), n(3, 2), n(3, 0),
@@ -44,32 +44,32 @@ export const ESCALA_DO: TabNote[] = [
 ];
 
 /** Melodias originais da Pauta para leitura (CC BY-SA). */
-export const MELODIA_A: TabNote[] = [
+export const MELODY_A: TabNote[] = [
   n(2, 1), n(2, 3), n(1, 0), n(2, 3),
   n(2, 1, 2), n(3, 0, 2),
   n(3, 2), n(2, 0), n(2, 1), n(2, 3),
   n(2, 1, 4),
 ];
-export const MELODIA_B: TabNote[] = [
+export const MELODY_B: TabNote[] = [
   n(1, 3), n(1, 0), n(1, 1), n(2, 3),
   n(1, 0, 2), n(2, 1, 2),
   n(2, 3), n(1, 0), n(1, 1), n(1, 3),
   n(1, 0, 4),
 ];
-export const MELODIA_C: TabNote[] = [
+export const MELODY_C: TabNote[] = [
   n(3, 0), n(3, 2), n(2, 0), n(3, 2),
   n(3, 0, 2), r(2),
   n(2, 1), n(2, 0), n(3, 2), n(2, 0),
   n(2, 1, 4),
 ];
-export const MELODIA_D: TabNote[] = [
+export const MELODY_D: TabNote[] = [
   n(1, 0), n(2, 3), n(2, 1), n(2, 3),
   n(1, 0), n(1, 1), n(1, 3, 2),
   n(1, 1), n(1, 0), n(2, 3), r(1),
   n(2, 1, 4),
 ];
 
-export const POSTURA = {
+export const POSTURE = {
   w: "selfcheck" as const,
   id: "postura",
   title: "Checagem de postura",
@@ -82,7 +82,7 @@ export const POSTURA = {
   ],
 };
 
-export const ACORDE_LIMPO = (id: string) => ({
+export const CLEAN_CHORD = (id: string) => ({
   w: "selfcheck" as const,
   id,
   title: "O acorde está limpo?",

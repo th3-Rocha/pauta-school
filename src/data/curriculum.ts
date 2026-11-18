@@ -1,5 +1,5 @@
 import { LESSONS } from "../lessons";
-// Estrutura do ano (veja docs/curriculos/guitarra.md). Meses 1–11 têm 30 dias; o 12 tem 35.
+// Estrutura do ano (veja docs/curricula/guitar.md). Meses 1–11 têm 30 dias; o 12 tem 35.
 
 export type Month = {
   month: number;
