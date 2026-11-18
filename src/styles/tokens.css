@@ -1,5 +1,5 @@
 /* src/styles/tokens.css
- * Pauta — tokens do design system (Tailwind CSS v4).
+ * Pauta — tokens do design system (Tailwind CSS v4). Guitarra + Teclado.
  *
  * Uso no Astro (src/styles/global.css):
  *   @import "tailwindcss";
@@ -115,6 +115,27 @@
   --on-deg: #17110d;
 }
 
+/* Teclado ─────────────────────────────────────────────────────────────
+ * O piano também é objeto físico: marfim, ébano, feltro vermelho, laca preta
+ * e metal dos pedais. Iguais nos dois temas, como o braço da guitarra.
+ * As mãos são preenchimentos (nunca texto), sempre com a letra D/E em
+ * --on-deg e a posição (MD acima do teclado, ME abaixo).
+ */
+:root {
+  --key-white: #f2ead8;         /* marfim, não branco puro */
+  --key-white-pressed: #d6cbb2; /* marfim afundado, na sombra da tecla vizinha */
+  --key-black: #1a1614;         /* ébano */
+  --key-black-pressed: #3b3430; /* ébano afundado: aparece o verniz gasto */
+  --key-edge: #a99d86;          /* fresta entre teclas brancas */
+  --key-ink: #3a322b;           /* serigrafia sobre o marfim (nomes, letras do teclado do PC) */
+  --felt: #8c1d22;              /* feltro vermelho atrás das teclas */
+  --case: #0f0d0c;              /* caixa em laca preta */
+  --case-shine: #2e2a27;        /* reflexo do verniz na tampa */
+  --pedal: #c4a55f;             /* latão dos pedais */
+  --hand-right: #f28dc0;        /* mão direita (MD): rosa, mais clara */
+  --hand-left: #8b93f5;         /* mão esquerda (ME): anil, mais escura */
+}
+
 /* @values:end ──────────────────────────────────────────────────────── */
 
 /* Movimento e alvo de toque (não são cores; ficam fora de tokens.json) */
@@ -185,6 +206,20 @@
   --color-note-active: var(--note-active);
   --color-marker-ring: var(--marker-ring);
   --color-on-deg: var(--on-deg);
+
+  /* Teclado */
+  --color-key-white: var(--key-white);
+  --color-key-white-pressed: var(--key-white-pressed);
+  --color-key-black: var(--key-black);
+  --color-key-black-pressed: var(--key-black-pressed);
+  --color-key-edge: var(--key-edge);
+  --color-key-ink: var(--key-ink);
+  --color-felt: var(--felt);
+  --color-case: var(--case);
+  --color-case-shine: var(--case-shine);
+  --color-pedal: var(--pedal);
+  --color-hand-right: var(--hand-right);
+  --color-hand-left: var(--hand-left);
 }
 
 @theme {
@@ -234,6 +269,7 @@
   --animate-sheet-in: sheet-in var(--dur-slow) var(--ease-out);
   --animate-beat: beat 180ms var(--ease-out);
   --animate-pulse-ring: pulse-ring 1.6s var(--ease-out) infinite;
+  --animate-led: led 260ms var(--ease-out);
 
   @keyframes pluck {
     0% { transform: scale(0.6); }
@@ -268,6 +304,11 @@
   @keyframes pulse-ring {
     0% { transform: scale(1); opacity: 0.55; }
     100% { transform: scale(1.6); opacity: 0; }
+  }
+  /* LED do MidiStatus: acende forte e volta ao brilho de repouso */
+  @keyframes led {
+    0% { box-shadow: 0 0 0 4px var(--accent-soft), 0 0 10px 2px var(--accent); }
+    100% { box-shadow: 0 0 0 0 transparent; }
   }
 }
 
@@ -311,4 +352,13 @@
   &:focus-visible {
     box-shadow: 0 0 0 2px var(--marker-ring), 0 0 0 4px var(--pearl);
   }
+}
+
+/* Teclado: área com rolagem horizontal própria, sem arrastar a página */
+@utility keyboard-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
 }

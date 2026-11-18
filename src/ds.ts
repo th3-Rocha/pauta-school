@@ -2,6 +2,7 @@
 export { cn } from "./lib/cn";
 export { strings, withStrings, type Strings } from "./lib/strings";
 export * from "./lib/music";
+export * from "./lib/piano";
 
 export * from "./components/ui/Button";
 export * from "./components/ui/ToggleGroup";
@@ -35,5 +36,17 @@ export * from "./components/music/BackingTrackPlayer";
 export * from "./components/music/EarTrainer";
 export * from "./components/music/PitchMeter";
 export * from "./components/music/NoteFixPuzzle";
+export * from "./components/music/keyboard/Keyboard";
+export * from "./components/music/keyboard/KeyChord";
+export * from "./components/music/keyboard/HandPosition";
+export * from "./components/music/keyboard/GrandStaffFrame";
+export * from "./components/music/keyboard/PianoRoll";
+export * from "./components/music/keyboard/MidiStatus";
+export * from "./components/music/keyboard/PedalIndicator";
+export * from "./components/music/keyboard/ChordCheck";
+export * from "./components/music/keyboard/KeyFixPuzzle";
+export * from "./components/music/keyboard/DynamicsMeter";
+export * from "./components/music/keyboard/MiniKeys";
+export * from "./components/music/keyboard/KeyboardPreviewSection";
 
 export { DesignSystemPreview } from "./components/DesignSystemPreview";

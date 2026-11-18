@@ -50,7 +50,12 @@ export function InstrumentPicker({ instruments, selected, onSelect, className }:
             <span className="flex w-full items-center justify-between">
               <Icon className={cn("size-6", isSel ? "text-accent" : "text-muted")} aria-hidden />
               {isSel ? (
-                <Check className="size-4 text-accent" aria-hidden />
+                <span className="flex items-center gap-1.5">
+                  {ins.preview && <span className="text-xs font-semibold text-accent">Prévia</span>}
+                  <Check className="size-4 text-accent" aria-hidden />
+                </span>
+              ) : ins.preview ? (
+                <span className="text-xs font-semibold text-muted">Prévia</span>
               ) : !ins.available ? (
                 <span className="flex items-center gap-1 text-xs font-semibold text-muted">
                   <Lock className="size-3.5" aria-hidden />

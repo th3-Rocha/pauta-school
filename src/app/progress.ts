@@ -22,7 +22,20 @@ export type Progress = {
   bestBpm: Record<number, number>;
 };
 
-const KEY = "trastes:progress:v1";
+// Um progresso por instrumento. A guitarra mantém a chave antiga para não perder o que já foi feito.
+const KEYS: Record<string, string> = { guitarra: "trastes:progress:v1" };
+const keyFor = (instrument: string) => KEYS[instrument] ?? `pauta:${instrument}:progress:v1`;
+let KEY = keyFor("guitarra");
+let active = "guitarra";
+
+/** Troca o instrumento cujo progresso é lido e gravado. Chame antes de renderizar. */
+export function setActiveInstrument(instrument: string, opts: { silent?: boolean } = {}) {
+  if (instrument === active) return;
+  active = instrument;
+  KEY = keyFor(instrument);
+  cache = null;
+  if (!opts.silent) listeners.forEach((l) => l());
+}
 const VERSION = 1;
 const BITSET_BYTES = Math.ceil(TOTAL_DAYS / 8); // 46
 const CODE_BYTES = 1 + BITSET_BYTES + 12 + 2; // 61

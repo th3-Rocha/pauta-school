@@ -1,7 +1,7 @@
 // src/components/music/markers.tsx
-// Desenho compartilhado das bolinhas de nota (braço, diagrama de acorde, legenda).
+// Desenho compartilhado das bolinhas de nota (braço, teclado, diagramas, legenda).
 // Cor nunca é o único sinal: cada tipo também tem forma (anel tracejado, hachura,
-// contorno vazado) e rótulo (grau ou nome da nota).
+// contorno vazado) e rótulo (grau, nome da nota ou dedo).
 import * as React from "react";
 import { cn } from "../../lib/cn";
 
@@ -33,7 +33,29 @@ export const MARKER_FILL: Record<MarkerKind, string> = {
 /** Ordem da legenda padrão. */
 export const MARKER_KINDS: MarkerKind[] = ["root", "deg-3", "deg-5", "deg-7", "ext", "in", "tension", "out", "ghost", "active"];
 
-export type MarkerSurface = "wood" | "page";
+/**
+ * Onde a bolinha é desenhada. Define a cor dos traços claros (anel da tônica,
+ * contorno vazado, rótulo das vazadas) e o "furo" das vazadas.
+ * - `wood`: braço da guitarra (madrepérola sobre jacarandá)
+ * - `page`: interface (cor do texto sobre surface)
+ * - `key-white`: tecla de marfim (serigrafia escura)
+ * - `key-black`: tecla de ébano (traço em marfim)
+ */
+export type MarkerSurface = "wood" | "page" | "key-white" | "key-black";
+
+const SURFACE_LIGHT: Record<MarkerSurface, string> = {
+  wood: "var(--pearl)",
+  page: "var(--fg)",
+  "key-white": "var(--key-ink)",
+  "key-black": "var(--key-white)",
+};
+
+const SURFACE_HOLE: Record<MarkerSurface, string> = {
+  wood: "var(--wood)",
+  page: "var(--surface)",
+  "key-white": "var(--key-white)",
+  "key-black": "var(--key-black)",
+};
 
 export type MarkerGlyphProps = {
   kind: MarkerKind;
@@ -41,7 +63,7 @@ export type MarkerGlyphProps = {
   cy: number;
   r?: number;
   label?: string;
-  /** Sobre a madeira os traços claros usam madrepérola; na página, a cor do texto. */
+  /** Sobre a madeira os traços claros usam madrepérola; na página, a cor do texto; no teclado, a serigrafia ou o marfim. */
   surface?: MarkerSurface;
   /** id do <pattern> de hachura (veja MarkerDefs). */
   hatchId?: string;
@@ -62,7 +84,7 @@ export function MarkerDefs({ hatchId }: { hatchId: string }) {
 }
 
 export function MarkerGlyph({ kind, cx, cy, r = 15, label, surface = "wood", hatchId, className, animate = true }: MarkerGlyphProps) {
-  const light = surface === "wood" ? "var(--pearl)" : "var(--fg)";
+  const light = SURFACE_LIGHT[surface];
   const hollow = kind === "out" || kind === "ghost";
   const fill = kind === "tension" && hatchId ? `url(#${hatchId})` : MARKER_FILL[kind];
   const textFill = hollow ? light : "var(--on-deg)";
@@ -92,7 +114,7 @@ export function MarkerGlyph({ kind, cx, cy, r = 15, label, surface = "wood", hat
         cx={cx}
         cy={cy}
         r={hollow ? r - 1 : r}
-        fill={hollow ? (surface === "wood" ? "var(--wood)" : "var(--surface)") : fill}
+        fill={hollow ? SURFACE_HOLE[surface] : fill}
         stroke={kind === "out" ? "var(--note-out)" : kind === "ghost" ? light : "var(--marker-ring)"}
         strokeWidth={hollow ? 2.5 : 2}
         strokeDasharray={kind === "ghost" ? "4 3" : undefined}
@@ -116,7 +138,7 @@ export function MarkerGlyph({ kind, cx, cy, r = 15, label, surface = "wood", hat
   );
 }
 
-/** Legenda dos tipos de marcador, para usar abaixo do braço ou do diagrama. */
+/** Legenda dos tipos de marcador, para usar abaixo do braço, do teclado ou do diagrama. */
 export type MarkerLegendProps = {
   kinds: MarkerKind[];
   labels: Partial<Record<MarkerKind, string>>;

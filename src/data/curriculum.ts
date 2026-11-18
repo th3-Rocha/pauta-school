@@ -12,7 +12,7 @@ export type Month = {
   milestone: { title: string; goal: string; criteria: string[]; targetBpm: number };
 };
 
-type MonthSeed = Omit<Month, "firstDay" | "lastDay">;
+export type MonthSeed = Omit<Month, "firstDay" | "lastDay">;
 
 const SEEDS: MonthSeed[] = [
   {
@@ -163,11 +163,16 @@ const SEEDS: MonthSeed[] = [
 
 export const TOTAL_DAYS = 365;
 
-export const MONTHS: Month[] = SEEDS.map((s, i) => {
-  const firstDay = i * 30 + 1;
-  const lastDay = s.month === 12 ? TOTAL_DAYS : firstDay + 29;
-  return { ...s, firstDay, lastDay };
-});
+/** Meses 1–11 têm 30 dias; o 12 fica com o resto até 365. */
+export function buildMonths(seeds: MonthSeed[]): Month[] {
+  return seeds.map((s, i) => {
+    const firstDay = i * 30 + 1;
+    const lastDay = s.month === 12 ? TOTAL_DAYS : firstDay + 29;
+    return { ...s, firstDay, lastDay };
+  });
+}
+
+export const MONTHS: Month[] = buildMonths(SEEDS);
 
 export function monthOfDay(day: number): Month {
   return MONTHS.find((m) => day >= m.firstDay && day <= m.lastDay) ?? MONTHS[0];

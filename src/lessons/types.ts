@@ -2,6 +2,7 @@
 // O texto aceita **negrito**, *itálico* e `código`.
 
 import type { MarkerKind } from "../components/music/markers";
+import type { Finger, Hand } from "../lib/piano";
 
 export type Text = string;
 
@@ -46,7 +47,22 @@ export type Node =
   | { w: "selfcheck"; id: string; title?: Text; items: { id: string; label: Text; hint?: Text }[] }
   | { w: "ear"; kind: EarKind; chords?: string[] }
   | { w: "minute"; id: string; label: Text }
-  | { w: "bpmlog"; month: number; target: number };
+  | { w: "bpmlog"; month: number; target: number }
+  // ── Teclado ──
+  | { w: "key-input" }
+  | {
+      w: "keys";
+      from: number;
+      to: number;
+      markers?: { midi: number; kind?: MarkerKind; label?: string; hand?: Hand; finger?: Finger }[];
+      zones?: { hand: Hand; from: number; to: number; label?: string }[];
+      names?: "none" | "c-only" | "all";
+      caption?: Text;
+    }
+  | { w: "hand"; name: Text; description?: Text; positions: { hand: Hand; notes: [number, number, number, number, number] }[] }
+  | { w: "find-keys"; mode: "all" | "quiz"; from: number; to: number; targets: number[]; rounds?: number; names?: "none" | "c-only" | "all"; title?: Text }
+  | { w: "sequence"; title?: Text; notes: { midi: number; finger?: Finger }[]; hand?: Hand; from: number; to: number; bpm?: number; goal?: number }
+  | { w: "key-echo"; notes: number[] };
 
 export type Block = { title?: Text; subtitle?: Text; minutes: number; body: Node[] };
 

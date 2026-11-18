@@ -14,6 +14,7 @@ import { ChordCards, ChordChanger, StrumPattern } from "./widgets/Chords";
 import { TabPlayer } from "./widgets/TabPlayer";
 import { Ear } from "./widgets/Ear";
 import { BpmLog, MinuteChallenge } from "./widgets/Records";
+import { FindKeys, HandWidget, InputPanel, KeyEcho, KeysWidget, Sequence } from "./widgets/Keys";
 
 const KINDS = ["revisao", "conceito", "laboratorio", "ouvido"] as const;
 
@@ -105,10 +106,32 @@ function render(node: Node, i: number, day: number): React.ReactNode {
       return <MinuteChallenge key={i} id={node.id} label={node.label} />;
     case "bpmlog":
       return <BpmLog key={i} month={node.month} target={node.target} />;
+    case "key-input":
+      return <InputPanel key={i} />;
+    case "keys":
+      return (
+        <KeysWidget
+          key={i}
+          from={node.from}
+          to={node.to}
+          markers={node.markers?.map((m) => ({ ...m, kind: m.kind ?? "in" }))}
+          handZones={node.zones}
+          names={node.names}
+          caption={node.caption}
+        />
+      );
+    case "hand":
+      return <HandWidget key={i} name={node.name} description={node.description} positions={node.positions} />;
+    case "find-keys":
+      return <FindKeys key={i} {...node} />;
+    case "sequence":
+      return <Sequence key={i} {...node} />;
+    case "key-echo":
+      return <KeyEcho key={i} notes={node.notes} />;
   }
 }
 
-export function Lesson({ lesson }: { lesson: LessonData }) {
+export function Lesson({ lesson, href = (d: number) => `/dia/${d}`, homeHref = "/" }: { lesson: LessonData; href?: (day: number) => string; homeHref?: string }) {
   const p = useProgress();
   const done = new Set(p.blocks[lesson.day] ?? []);
   const blocks = lesson.blocks.map(
@@ -134,18 +157,18 @@ export function Lesson({ lesson }: { lesson: LessonData }) {
       completed={p.completed.includes(lesson.day)}
       onComplete={() => {
         completeDay(lesson.day);
-        window.location.href = "/";
+        window.location.href = homeHref;
       }}
       footer={
         <nav className="flex justify-between gap-3 text-sm">
           {lesson.day > 1 ? (
-            <a className="text-muted underline decoration-line-strong underline-offset-4 hover:text-fg" href={`/dia/${lesson.day - 1}`}>
+            <a className="text-muted underline decoration-line-strong underline-offset-4 hover:text-fg" href={href(lesson.day - 1)}>
               ← Dia {lesson.day - 1}
             </a>
           ) : (
             <span />
           )}
-          <a className="text-muted underline decoration-line-strong underline-offset-4 hover:text-fg" href="/">
+          <a className="text-muted underline decoration-line-strong underline-offset-4 hover:text-fg" href={homeHref}>
             Seu ano
           </a>
         </nav>

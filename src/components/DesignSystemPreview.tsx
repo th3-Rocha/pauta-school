@@ -16,6 +16,7 @@ import { Slider } from "./ui/Slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/Tabs";
 import { ToggleGroup, ToggleGroupItem } from "./ui/ToggleGroup";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/Tooltip";
+import { KeyboardPreviewSection } from "./music/keyboard/KeyboardPreviewSection";
 import { AppHeader, type Theme } from "./course/AppHeader";
 import { YearMap, type YearMonth, type DayState } from "./course/YearMap";
 import { LessonBlock } from "./course/LessonBlock";
@@ -756,6 +757,9 @@ function Showcase() {
         </div>
         <Item name="NoteFixPuzzle"><NoteFixDemo /></Item>
       </Section>
+      <div id="teclado" className="border-t border-line pt-8">
+        <KeyboardPreviewSection />
+      </div>
       <Section id="curso" title="Estrutura do curso">
         <Item name="AppHeader"><div className="overflow-hidden rounded-md border border-line"><AppHeaderDemo /></div></Item>
         <Item name="YearMap"><YearMapDemo /></Item>
@@ -794,7 +798,7 @@ export function DesignSystemPreview({ defaultView = "dark" }: DesignSystemPrevie
           <div>
             <p className="panel-label text-accent">Design system</p>
             <h1 className="font-display text-4xl font-extrabold tracking-tight">Pauta</h1>
-            <p className="text-muted">Curso de guitarra gratuito. Madeira, níquel e madrepérola, nos dois temas.</p>
+            <p className="text-muted">Escola de música gratuita. Guitarra: madeira, níquel e madrepérola. Teclado: marfim, ébano e feltro. Nos dois temas.</p>
           </div>
           <ToggleGroup type="single" value={view} onValueChange={(v) => v && setView(v as typeof view)} aria-label="Tema da vitrine">
             <ToggleGroupItem value="dark">Escuro</ToggleGroupItem>

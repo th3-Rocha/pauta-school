@@ -2,6 +2,8 @@
 // Todo texto fixo dos componentes. Para traduzir, passe um objeto com a mesma
 // forma na prop `strings` de cada componente (parcial é aceito).
 
+type HandKey = "right" | "left";
+
 export const strings = {
   common: {
     close: "Fechar",
@@ -234,6 +236,199 @@ export const strings = {
     token: (i: number, string: number, fret: number) => `Nota ${i}: corda ${string}, casa ${fret}`,
     solved: "Resolvido! Agora toque o trecho certo.",
     selected: "selecionada",
+  },
+  keyboard: {
+    label: "Teclado",
+    white: "tecla branca",
+    black: "tecla preta",
+    hand: { right: "mão direita", left: "mão esquerda" } as Record<HandKey, string>,
+    handShort: { right: "MD", left: "ME" } as Record<HandKey, string>,
+    handLetter: { right: "D", left: "E" } as Record<HandKey, string>,
+    finger: (n: number) => `dedo ${n}`,
+    middleC: "Dó central",
+    kinds: {
+      root: "tônica",
+      "deg-3": "terça",
+      "deg-5": "quinta",
+      "deg-7": "sétima",
+      ext: "tensão",
+      in: "nota da escala",
+      tension: "nota tensa",
+      out: "fora da escala",
+      ghost: "próxima posição",
+      active: "tocando agora",
+    },
+    pressed: "pressionada",
+    computerKey: (k: string) => `tecla ${k} do computador`,
+    /** "Dó 4, tecla branca, dedo 1, mão direita" */
+    keyAria: (parts: string[]) => parts.filter(Boolean).join(", "),
+    octaveDown: "Oitava",
+    octaveUp: "Oitava",
+    octaveDownAria: "Mostrar uma oitava abaixo",
+    octaveUpAria: "Mostrar uma oitava acima",
+    rotateHint: "Deite o celular para ver mais teclas",
+    scrollHint: "Arraste para ver o resto do teclado",
+    pedalOn: "Pedal",
+    feedback: { hit: "certa", wrong: "tecla errada", missed: "faltou" },
+    count: {
+      hit: (n: number) => `${n} ${n === 1 ? "certa" : "certas"}`,
+      wrong: (n: number) => `${n} ${n === 1 ? "errada" : "erradas"}`,
+      missed: (n: number) => `${n} faltando`,
+    },
+    summary: (hit: number, wrong: number, missed: number) =>
+      [
+        `${hit} ${hit === 1 ? "certa" : "certas"}`,
+        wrong ? `${wrong} ${wrong === 1 ? "errada" : "erradas"}` : "",
+        missed ? `${missed} faltando` : "",
+      ]
+        .filter(Boolean)
+        .join(", "),
+    allHit: "Tudo certo.",
+    zone: (hand: string, label?: string) => (label ? `${hand} · ${label}` : hand),
+  },
+
+  grandStaff: {
+    label: "Partitura em sistema duplo",
+    treble: "Clave de sol",
+    bass: "Clave de fá",
+    trebleHint: "mão direita",
+    bassHint: "mão esquerda",
+    clefLabels: "Nomes das claves",
+    hands: "Mão",
+    both: "Ambas",
+    rightOnly: "Só MD",
+    leftOnly: "Só ME",
+    bothAria: "Tocar as duas mãos",
+    rightOnlyAria: "Tocar só a mão direita",
+    leftOnlyAria: "Tocar só a mão esquerda",
+    otherHand: "Outra mão",
+    otherBackground: "De fundo",
+    otherMuted: "Muda",
+    otherBackgroundAria: "A outra mão toca baixinho, de fundo",
+    otherMutedAria: "A outra mão fica muda",
+  },
+
+  keyChord: {
+    chord: (name: string) => `Acorde ${name}`,
+    inversion: ["Posição fundamental", "1ª inversão", "2ª inversão", "3ª inversão"],
+    fingering: "Dedilhado",
+    bass: "Baixo",
+    legend: "Condução de vozes",
+    stays: "Dedo fica",
+    moves: "Dedo move",
+    previous: "Acorde anterior",
+    moveAria: (finger: number, from: string, to: string) => `Dedo ${finger} sai de ${from} e vai para ${to}`,
+    stayAria: (finger: number, note: string) => `Dedo ${finger} fica em ${note}`,
+    from: (name: string) => `vindo de ${name}`,
+  },
+
+  pianoRoll: {
+    label: "Rolo de notas",
+    bar: (n: number) => `${n}`,
+    now: "Agora",
+    note: (name: string, hand: string, finger?: number) => `${name}, ${hand}${finger ? `, dedo ${finger}` : ""}`,
+    summary: (count: number, bars: number) => `${count} notas em ${bars} compassos`,
+  },
+
+  handPosition: {
+    label: "Posição da mão",
+    thumbIsOne: "No teclado, o polegar é o 1.",
+    guitarNote: "Na guitarra o indicador é o 1 e o polegar não tem número. Aqui o polegar é o 1 e o mínimo é o 5.",
+    fingers: ["polegar", "indicador", "médio", "anelar", "mínimo"],
+    thumbOn: (note: string) => `polegar no ${note}`,
+    fingerOn: (finger: number, note: string) => `Dedo ${finger} no ${note}`,
+    handTitle: { right: "Mão direita", left: "Mão esquerda" } as Record<HandKey, string>,
+  },
+
+  midi: {
+    label: "Entrada",
+    sources: {
+      midi: "Teclado MIDI",
+      computador: "Teclado do computador",
+      tela: "Toque na tela",
+      microfone: "Microfone",
+    },
+    sourcesShort: {
+      midi: "MIDI",
+      computador: "Computador",
+      tela: "Tela",
+      microfone: "Microfone",
+    },
+    states: {
+      "sem-suporte": "Este navegador não fala com teclados MIDI. Use Chrome ou Edge no computador, ou toque na tela.",
+      "pedir-permissao": "Ligue o teclado no USB e toque em Conectar.",
+      "nenhum-aparelho": "Nenhum teclado encontrado. Confira o cabo e ligue o teclado.",
+      conectado: "Conectado",
+      negado: "Acesso ao MIDI bloqueado. Libere nas configurações do site e recarregue.",
+    },
+    connect: "Conectar teclado MIDI",
+    retry: "Procurar de novo",
+    explain: "Funciona com qualquer teclado USB. As notas ficam no seu aparelho: nada é enviado.",
+    computerHint: "Fileira A S D F… são as brancas; W E T Y U… as pretas.",
+    micHint: "O microfone reconhece só uma nota por vez. Para acordes, use MIDI ou a tela.",
+    activity: "Sinal",
+    activityAria: (note?: string) => (note ? `Última nota recebida: ${note}` : "Nenhuma nota recebida ainda"),
+    choose: "Como você vai tocar",
+  },
+
+  pedal: {
+    label: "Pedal",
+    on: "Pedal pisado",
+    off: "Pedal solto",
+    sustain: "Sustentação",
+    spaceKey: "Espaço",
+    holdTouch: "Segure para pisar",
+    holdAria: "Pedal de sustentação: segure para pisar",
+    noPedal: "Sem pedal? Segure a barra de Espaço (ou o botão).",
+    ped: "Ped.",
+    release: "*",
+    marks: "Marcação na partitura",
+    markAria: (start: number, end: number) => `Pedal do tempo ${start} ao tempo ${end}`,
+  },
+
+  chordCheck: {
+    label: "Confira o acorde",
+    target: "Alvo",
+    holding: "Você está segurando",
+    correct: "certa",
+    missing: "faltando",
+    extra: "sobrando",
+    ok: (name: string) => `${name}: certo`,
+    wrongBass: (note: string) => `As notas estão certas, mas o baixo tem de ser ${note}.`,
+    missingList: (notes: string) => `Falta ${notes}.`,
+    extraList: (notes: string) => `Sobrando: ${notes}.`,
+    waiting: "Segure as notas do acorde.",
+    emptyTitle: "Conecte um MIDI ou toque na tela",
+    emptyBody: "Com MIDI dá para segurar o acorde inteiro. Na tela, toque as teclas uma de cada vez: elas ficam presas até você tocar de novo.",
+  },
+
+  keyFix: {
+    label: "Ache a nota errada",
+    instructions: "Uma nota está errada. Toque na ficha e mova meio tom até soar certo.",
+    back: "Meio tom",
+    forward: "Meio tom",
+    backAria: "Descer meio tom",
+    forwardAria: "Subir meio tom",
+    hint: "Dica",
+    play: "Ouvir trecho",
+    selectFirst: "Escolha uma ficha",
+    token: (i: number, note: string, finger?: number, hand?: string) =>
+      `Nota ${i}: ${note}${finger ? `, dedo ${finger}` : ""}${hand ? `, ${hand}` : ""}`,
+    solved: "Resolvido! Agora toque o trecho certo.",
+    selected: "selecionada",
+  },
+
+  dynamics: {
+    label: "Dinâmica",
+    target: "Alvo",
+    levels: { p: "p · piano", mf: "mf · meio forte", f: "f · forte" },
+    levelHint: { p: "fraco", mf: "médio", f: "forte" },
+    inRange: "Na faixa",
+    softer: "Mais leve",
+    harder: "Mais forte",
+    hit: (v: number) => `Força ${v}`,
+    score: (ok: number, total: number) => `${ok} de ${total} na faixa`,
+    empty: "Toque algumas notas. A força vem do teclado MIDI.",
   },
 };
 

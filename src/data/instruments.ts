@@ -8,11 +8,13 @@ export type Instrument = {
   /** Uma linha sobre o curso. */
   tagline: string;
   available: boolean;
+  /** Aberto, mas com poucas aulas ainda. */
+  preview?: boolean;
 };
 
 export const INSTRUMENTS: Instrument[] = [
   { id: "guitarra", name: "Guitarra", tagline: "Do zero ao solo em 365 aulas", available: true },
-  { id: "teclado", name: "Teclado", tagline: "Acordes, leitura e acompanhamento", available: false },
+  { id: "teclado", name: "Teclado", tagline: "Acordes, leitura e acompanhamento", available: true, preview: true },
   { id: "gaita", name: "Gaita", tagline: "Blues, bends e melodias", available: false },
   { id: "violao", name: "Violão", tagline: "Levadas e dedilhados", available: false },
   { id: "baixo", name: "Baixo", tagline: "Groove e linhas de baixo", available: false },

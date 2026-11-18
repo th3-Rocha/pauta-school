@@ -29,6 +29,11 @@ export type ScoreFrameProps = {
   disabled?: boolean;
   /** Altura mínima da área da partitura. */
   minHeight?: number;
+  /**
+   * Controles extras numa faixa própria, acima da barra padrão (ex.: mão isolada
+   * no GrandStaffFrame). Opcional: sem ele, o ScoreFrame fica idêntico ao da guitarra.
+   */
+  extraControls?: React.ReactNode;
   strings?: Partial<Strings["score"]>;
   className?: string;
 };
@@ -55,6 +60,7 @@ export function ScoreFrame({
   position,
   disabled,
   minHeight = 220,
+  extraControls,
   strings: stringsOverride,
   className,
 }: ScoreFrameProps) {
@@ -83,7 +89,16 @@ export function ScoreFrame({
         {children}
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-line bg-surface-2 p-3 sm:flex-row sm:items-center sm:gap-4">
+      {extraControls && (
+        <div className="flex flex-wrap items-center gap-2 border-t border-line bg-surface-2 px-3 pt-3 sm:gap-3">{extraControls}</div>
+      )}
+
+      <div
+        className={cn(
+          "flex flex-col gap-3 bg-surface-2 p-3 sm:flex-row sm:items-center sm:gap-4",
+          !extraControls && "border-t border-line",
+        )}
+      >
         <div className="flex items-center gap-3">
           <PlayButton playing={playing} onClick={onPlayPause} playLabel={s.play} pauseLabel={s.pause} disabled={disabled} />
           <div className="flex min-w-0 flex-1 items-center gap-3 sm:w-56 sm:flex-none">
