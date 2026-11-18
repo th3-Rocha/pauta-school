@@ -46,7 +46,15 @@ export default function LessonApp({ day, instrument = "guitar", locale = "pt" }:
   setLocale(locale);
   setActiveInstrument(instrument, { silent: true });
   const course = getCourse(instrument);
-  const lesson = course.lessons[day];
+  const raw = course.lessons[day];
+  // Toda aula de teclado mostra de onde vêm as notas (MIDI, computador, tela) no primeiro bloco.
+  const lesson = React.useMemo(() => {
+    if (!raw || instrument !== "keyboard") return raw;
+    const has = raw.blocks.some((b) => b.body.some((n) => typeof n === "object" && "w" in n && n.w === "key-input"));
+    if (has) return raw;
+    const [first, ...rest] = raw.blocks;
+    return { ...raw, blocks: [{ ...first, body: [{ w: "key-input" as const }, ...first.body] }, ...rest] as typeof raw.blocks };
+  }, [raw, instrument]);
   React.useEffect(() => selectInstrument(instrument), [instrument]);
   return <Shell>{lesson ? <Lesson lesson={lesson} href={course.href} homeHref={localePath("/")} /> : <Soon day={day} course={course} />}</Shell>;
 }

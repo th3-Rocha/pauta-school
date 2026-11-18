@@ -16,7 +16,7 @@ export type Instrument = {
 
 export const INSTRUMENTS: Instrument[] = [
   { id: "guitar", name: "Guitarra", tagline: "Do zero ao solo em 365 aulas", available: true, en: ["Guitar", "From zero to soloing in 365 lessons"] },
-  { id: "keyboard", name: "Teclado", tagline: "Acordes, leitura e acompanhamento", available: true, preview: true, en: ["Keyboard", "Chords, reading and accompaniment"] },
+  { id: "keyboard", name: "Teclado", tagline: "Acordes, leitura e acompanhamento", available: true, en: ["Keyboard", "Chords, reading and accompaniment"] },
   { id: "harmonica", name: "Gaita", tagline: "Blues, bends e melodias", available: false, en: ["Harmonica", "Blues, bends and melodies"] },
   { id: "acoustic-guitar", name: "Violão", tagline: "Levadas e dedilhados", available: false, en: ["Acoustic guitar", "Strumming and fingerpicking"] },
   { id: "bass", name: "Baixo", tagline: "Groove e linhas de baixo", available: false, en: ["Bass", "Groove and bass lines"] },

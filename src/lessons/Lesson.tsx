@@ -16,7 +16,8 @@ import { TabPlayer } from "./widgets/TabPlayer";
 import { Ear } from "./widgets/Ear";
 import { BpmLog, MinuteChallenge } from "./widgets/Records";
 import { PlayAlong } from "./widgets/PlayAlong";
-import { FindKeys, HandWidget, InputPanel, KeyEcho, KeysWidget, Sequence } from "./widgets/Keys";
+import { StaffNotes } from "../components/music/StaffNotes";
+import { DynamicsWidget, StaffQuiz, FindKeys, HandWidget, InputPanel, KeyEcho, KeysWidget, Sequence } from "./widgets/Keys";
 
 const KINDS = ["review", "concept", "lab", "ear"] as const;
 
@@ -132,6 +133,17 @@ function render(node: Node, i: number, day: number): React.ReactNode {
       return <KeyEcho key={i} notes={node.notes} />;
     case "play-along":
       return <PlayAlong key={i} {...node} />;
+    case "staff":
+      return (
+        <figure key={i} className="flex flex-col gap-2">
+          <StaffNotes notes={node.notes} clef={node.clef} beatsPerBar={node.beatsPerBar} showNames={node.names} />
+          {node.caption && <figcaption className="text-sm text-muted">{md(node.caption)}</figcaption>}
+        </figure>
+      );
+    case "staff-quiz":
+      return <StaffQuiz key={i} {...node} />;
+    case "dynamics":
+      return <DynamicsWidget key={i} target={node.target} />;
   }
 }
 

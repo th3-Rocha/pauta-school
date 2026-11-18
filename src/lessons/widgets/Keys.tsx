@@ -5,6 +5,8 @@ import { Keyboard, type HandZone, type KeyMarker } from "../../components/music/
 import { MidiStatus, type InputSource } from "../../components/music/keyboard/MidiStatus";
 import { HandPosition, type HandPlacement } from "../../components/music/keyboard/HandPosition";
 import { EarTrainer } from "../../components/music/EarTrainer";
+import { StaffNotes } from "../../components/music/StaffNotes";
+import { DynamicsMeter, type DynamicLevel } from "../../components/music/keyboard/DynamicsMeter";
 import { Panel } from "../../components/music/controls";
 import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
@@ -277,7 +279,7 @@ export function FindKeys({
 
 /* ───────── sequência com dedilhado ───────── */
 
-export type SeqNote = { midi: number; finger?: Finger };
+export type SeqNote = { midi: number; finger?: Finger; d?: number };
 
 export function Sequence({
   title,
@@ -287,6 +289,8 @@ export function Sequence({
   to,
   bpm = 60,
   goal = 3,
+  staff = false,
+  hideKeys = false,
 }: {
   title?: string;
   notes: SeqNote[];
@@ -296,6 +300,10 @@ export function Sequence({
   bpm?: number;
   /** Quantas vezes seguidas sem erro para concluir. */
   goal?: number;
+  /** Mostra as notas na pauta (com duração `d`, padrão 1 tempo). */
+  staff?: boolean | "treble" | "bass";
+  /** Esconde as marcas no teclado: o aluno lê só pela pauta. */
+  hideKeys?: boolean;
 }) {
   const kb = useKeyInput();
   const ex = useExercise();
@@ -333,11 +341,12 @@ export function Sequence({
   const target = notes[idx];
   const markers: KeyMarker[] = [];
   const seen = new Set<number>();
-  notes.forEach((n) => {
-    if (seen.has(n.midi)) return;
-    seen.add(n.midi);
-    markers.push({ midi: n.midi, kind: n.midi === target.midi ? "active" : "in", hand, finger: n.finger });
-  });
+  if (!hideKeys)
+    notes.forEach((n) => {
+      if (seen.has(n.midi)) return;
+      seen.add(n.midi);
+      markers.push({ midi: n.midi, kind: n.midi === target.midi ? "active" : "in", hand, finger: n.finger });
+    });
   if (wrong !== null && !seen.has(wrong)) markers.push({ midi: wrong, kind: "out", label: "✕" });
 
   const done = clean >= goal;
@@ -352,6 +361,15 @@ export function Sequence({
       }
     >
       <div className="flex flex-col gap-3">
+        {staff && (
+          <StaffNotes
+            notes={notes.map((n) => ({ midi: n.midi, d: n.d ?? 1 }))}
+            clef={staff === "bass" ? "bass" : "treble"}
+            active={idx}
+            done={notes.map((_, i) => i).filter((i) => i < idx)}
+          />
+        )}
+        {!staff && (
         <ol className="flex flex-wrap gap-1.5 font-mono text-sm" aria-label={L("Notas da sequência", "Sequence notes")}>
           {notes.map((n, i) => (
             <li
@@ -366,6 +384,7 @@ export function Sequence({
             </li>
           ))}
         </ol>
+        )}
         <Keyboard
           from={from}
           to={to}
@@ -452,4 +471,123 @@ export function KeyEcho({ notes }: { notes: number[] }) {
     />
     </div>
   );
+}
+
+/* ───────── leitura: a nota na pauta, toque a tecla ───────── */
+
+export function StaffQuiz({
+  notes,
+  clef = "treble",
+  rounds = 10,
+  from,
+  to,
+  title,
+}: {
+  /** Notas que podem aparecer (MIDI, só naturais). */
+  notes: number[];
+  clef?: "treble" | "bass";
+  rounds?: number;
+  from: number;
+  to: number;
+  title?: string;
+}) {
+  const kb = useKeyInput();
+  const ex = useExercise();
+  const [asked, setAsked] = React.useState(() => notes[0]);
+  const [score, setScore] = React.useState({ correct: 0, total: 0 });
+  const [wrong, setWrong] = React.useState<number | null>(null);
+  const [flash, setFlash] = React.useState<"hit" | "miss" | null>(null);
+  const done = score.total >= rounds;
+
+  React.useEffect(
+    () =>
+      onNote((e) => {
+        if (!e.on || done || !ex.activeRef.current) return;
+        // Vale a mesma nota em qualquer oitava? Não: na pauta, a altura é exata.
+        const ok = e.midi === asked;
+        setScore((s) => ({ correct: s.correct + (ok ? 1 : 0), total: s.total + 1 }));
+        setFlash(ok ? "hit" : "miss");
+        if (!ok) {
+          setWrong(e.midi);
+          window.setTimeout(() => setWrong(null), 700);
+        }
+        window.setTimeout(() => {
+          setFlash(null);
+          setAsked((prev) => {
+            let next = prev;
+            while (notes.length > 1 && next === prev) next = notes[rnd(notes.length)];
+            return next;
+          });
+        }, 600);
+      }),
+    [asked, done, notes], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
+  const pct = score.total ? Math.round((score.correct / score.total) * 100) : 0;
+  return (
+    <ExerciseFrame
+      ex={ex}
+      label={title ?? L("Leia e toque", "Read and play")}
+      aside={
+        <Badge mono tone={done && pct >= 80 ? "good" : "neutral"}>
+          {score.correct}/{score.total}
+        </Badge>
+      }
+    >
+      <div className="flex flex-col gap-3">
+        {!done && (
+          <div className="flex flex-wrap items-center gap-4">
+            <StaffNotes notes={[{ midi: asked, d: 4 }]} clef={clef} className={flash === "hit" ? "border-good" : flash === "miss" ? "border-bad" : undefined} label={L("Nota na pauta", "Note on the staff")} />
+            <p className="text-muted">{L("Toque essa nota, na altura certa.", "Play this note, at the right pitch.")}</p>
+          </div>
+        )}
+        <Keyboard
+          from={from}
+          to={to}
+          markers={wrong !== null ? [{ midi: wrong, kind: "out", label: "✕" }] : []}
+          pressed={kb.pressed}
+          showNoteNames="none"
+          computerKeys
+          onPress={(m, v) => press(m, v ?? 90, "screen")}
+          onRelease={(m) => release(m, "screen")}
+        />
+        <Progress value={Math.min(100, (score.total / rounds) * 100)} aria-label={L("Rodadas", "Rounds")} />
+        {done && (
+          <div className="flex flex-wrap items-center gap-3">
+            <p className={pct >= 80 ? "text-good" : "text-warn"}>
+              {pct >= 80 ? L(`${pct}% de acerto. Meta batida!`, `${pct}% correct. Goal reached!`) : L(`${pct}% de acerto. A meta é 80%: mais uma rodada?`, `${pct}% correct. The goal is 80%: one more round?`)}
+            </p>
+            <Button variant="secondary" size="sm" onClick={() => setScore({ correct: 0, total: 0 })}>
+              <RotateCcw aria-hidden />
+              {L("De novo", "Again")}
+            </Button>
+          </div>
+        )}
+      </div>
+    </ExerciseFrame>
+  );
+}
+
+/* ───────── dinâmica: forte e piano ───────── */
+
+export function DynamicsWidget({ target }: { target: DynamicLevel }) {
+  const kb = useKeyInput();
+  const [hits, setHits] = React.useState<{ velocity: number }[]>([]);
+  React.useEffect(
+    () =>
+      onNote((e) => {
+        if (e.on && e.source === "midi") setHits((h) => [...h.slice(-11), { velocity: e.velocity }]);
+      }),
+    [],
+  );
+  if (kb.midiState !== "connected")
+    return (
+      <p className="rounded-md border border-line bg-surface-2 p-4 text-sm text-muted">
+        {L(
+          "Este medidor precisa de um teclado MIDI sensível ao toque. Sem ele, faça o exercício no seu teclado e ouça a diferença você mesmo.",
+          "This meter needs a touch-sensitive MIDI keyboard. Without one, do the exercise on your keyboard and listen for the difference yourself.",
+        )}
+      </p>
+    );
+  return <DynamicsMeter hits={hits} target={target} />;
 }

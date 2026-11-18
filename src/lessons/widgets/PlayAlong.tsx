@@ -17,7 +17,7 @@ import { L } from "../../i18n";
 
 export type PlayMode = "listen" | "wait" | "tempo";
 
-type Result = "hit" | "close" | "miss";
+type Result = "hit" | "close" | "miss" | "auto";
 
 /** Em tempos: até aqui conta como certo; até CLOSE, como quase. */
 const HIT = 0.18;
@@ -33,6 +33,7 @@ export function PlayAlong({
   modes = ["listen", "wait", "tempo"],
   defaultMode = "wait",
   goal = 0.8,
+  auto = [],
 }: {
   title?: string;
   notes: RollNote[];
@@ -44,6 +45,8 @@ export function PlayAlong({
   defaultMode?: PlayMode;
   /** Meta do modo no tempo (0–1). */
   goal?: number;
+  /** Mãos que o site toca sozinho (não contam na nota). Ex.: ["left"] para o aluno tocar só a direita. */
+  auto?: ("right" | "left")[];
 }) {
   const kb = useKeyInput();
   const ex = useExercise();
@@ -101,6 +104,16 @@ export function PlayAlong({
       e.last = t;
       let pos = e.pos + dt / spb;
 
+      // Mão que o site toca: soa quando chega na linha e não conta na nota.
+      if (mode !== "listen" && auto.length) {
+        sorted.forEach((n, i) => {
+          if (e.results[i] === null && auto.includes(n.hand) && n.start <= pos) {
+            e.results[i] = "auto";
+            playKey(n.midi, n.duration * spb * 0.95);
+          }
+        });
+      }
+
       if (mode === "wait") {
         const hold = pendingGroupStart();
         if (hold !== null && pos > hold) pos = hold;
@@ -128,7 +141,7 @@ export function PlayAlong({
       if (mode === "tempo") {
         let changed = false;
         sorted.forEach((n, i) => {
-          if (e.results[i] === null && pos - n.start > CLOSE) {
+          if (e.results[i] === null && !auto.includes(n.hand) && pos - n.start > CLOSE) {
             e.results[i] = "miss";
             changed = true;
           }
@@ -147,14 +160,15 @@ export function PlayAlong({
       }
       e.raf = requestAnimationFrame(frame);
     },
-    [mode, spb, sorted, end, beatsPerBar],
+    [mode, spb, sorted, end, beatsPerBar, auto],
   );
 
   const start = () => {
     ex.activate();
     if (finished) reset();
     audio();
-    eng.current.last = 0;
+    // Conta o tempo a partir do clique, não do primeiro quadro desenhado.
+    eng.current.last = performance.now();
     setRunning(true);
     eng.current.raf = requestAnimationFrame(frame);
   };
@@ -169,7 +183,7 @@ export function PlayAlong({
           const hold = pendingGroupStart();
           if (hold === null) return;
           // Pode apertar um pouco antes de a nota chegar na linha.
-          const i = sorted.findIndex((n, k) => e.results[k] === null && n.start === hold && n.midi === evt.midi);
+          const i = sorted.findIndex((n, k) => e.results[k] === null && !auto.includes(n.hand) && n.start === hold && n.midi === evt.midi);
           // Parado, aceita a próxima nota e já começa; andando, pode apertar até 1 tempo antes.
           if (i >= 0 && (!runningRef.current || hold - e.pos <= 1.01)) {
             e.results[i] = "hit";
@@ -186,7 +200,7 @@ export function PlayAlong({
         let best = -1;
         let bestDt = Infinity;
         sorted.forEach((n, k) => {
-          if (e.results[k] !== null || n.midi !== evt.midi) return;
+          if (e.results[k] !== null || auto.includes(n.hand) || n.midi !== evt.midi) return;
           const d = Math.abs(e.pos - n.start);
           if (d < bestDt) {
             bestDt = d;
@@ -210,7 +224,7 @@ export function PlayAlong({
   if (mode === "wait" && !finished) {
     const hold = pendingGroupStart();
     sorted.forEach((n, k) => {
-      if (hold !== null && n.start === hold && results[k] === null && position >= hold - 0.01)
+      if (hold !== null && n.start === hold && results[k] === null && !auto.includes(n.hand) && position >= hold - 0.01)
         markers.push({ midi: n.midi, kind: "active", hand: n.hand, finger: n.finger });
     });
   }
@@ -219,7 +233,8 @@ export function PlayAlong({
   const hits = results.filter((r) => r === "hit").length;
   const close = results.filter((r) => r === "close").length;
   const miss = results.filter((r) => r === "miss").length;
-  const score = sorted.length ? (hits + close * 0.5) / sorted.length : 0;
+  const scored = sorted.filter((n) => !auto.includes(n.hand)).length;
+  const score = scored ? (hits + close * 0.5) / scored : 0;
   const pct = Math.round(score * 100);
   const counting = position < 0 && running && mode !== "wait";
   const tally = L(
@@ -236,7 +251,7 @@ export function PlayAlong({
           <Badge mono tone={finished ? (score >= goal ? "good" : "warn") : "neutral"}>{pct}%</Badge>
         ) : mode === "wait" ? (
           <Badge mono tone={finished ? "good" : "neutral"}>
-            {hits}/{sorted.length}
+            {hits}/{scored}
           </Badge>
         ) : undefined
       }
