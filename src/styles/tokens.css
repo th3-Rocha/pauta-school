@@ -1,0 +1,314 @@
+/* src/styles/tokens.css
+ * Pauta — tokens do design system (Tailwind CSS v4).
+ *
+ * Uso no Astro (src/styles/global.css):
+ *   @import "tailwindcss";
+ *   @import "./tokens.css";
+ *
+ * Tema: <html data-theme="dark"> (padrão) ou <html data-theme="light">.
+ * Sem atributo, o tema segue o sistema operacional, começando pelo escuro.
+ */
+
+/* @values:start ─────────────────────────────────────────────────────────
+ * Valores. Os componentes NUNCA usam cor literal: só os nomes abaixo.
+ * ────────────────────────────────────────────────────────────────────── */
+
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Interface */
+  --bg: #131211;            /* fundo da página: tolex grafite */
+  --surface: #1c1a18;       /* cartões, blocos da aula */
+  --surface-2: #262320;     /* controles, áreas rebaixadas */
+  --line: #36312c;          /* divisórias decorativas */
+  --line-strong: #7a7167;   /* bordas de controles (3:1) */
+  --fg: #f1ece4;            /* texto principal */
+  --muted: #a9a097;         /* texto secundário */
+  --accent: #3fd2c2;        /* teal: ação principal, foco, "agora" */
+  --on-accent: #0b1f1d;     /* texto sobre accent */
+  --accent-soft: #173a36;   /* fundo de seleção suave */
+  --focus: #3fd2c2;         /* anel de foco */
+  --overlay: rgba(5, 4, 3, 0.72);
+
+  /* Feedback (sempre com ícone + palavra) */
+  --good: #5fd39a;
+  --good-soft: #163026;
+  --warn: #f5b942;
+  --warn-soft: #33280f;
+  --bad: #ff7d6e;
+  --bad-soft: #3a1a16;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f1f0ed;
+  --surface: #ffffff;
+  --surface-2: #e7e5e0;
+  --line: #d9d5ce;
+  --line-strong: #8f877e;
+  --fg: #1a1715;
+  --muted: #5f5851;
+  --accent: #0b6f66;
+  --on-accent: #ffffff;
+  --accent-soft: #d9efec;
+  --focus: #0b6f66;
+  --overlay: rgba(26, 23, 21, 0.5);
+
+  --good: #0c6e47;
+  --good-soft: #dcf1e6;
+  --warn: #865600;
+  --warn-soft: #f8ecd2;
+  --bad: #b0302a;
+  --bad-soft: #f8e0dc;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    color-scheme: light;
+    --bg: #f1f0ed;
+    --surface: #ffffff;
+    --surface-2: #e7e5e0;
+    --line: #d9d5ce;
+    --line-strong: #8f877e;
+    --fg: #1a1715;
+    --muted: #5f5851;
+    --accent: #0b6f66;
+    --on-accent: #ffffff;
+    --accent-soft: #d9efec;
+    --focus: #0b6f66;
+    --overlay: rgba(26, 23, 21, 0.5);
+    --good: #0c6e47;
+    --good-soft: #dcf1e6;
+    --warn: #865600;
+    --warn-soft: #f8ecd2;
+    --bad: #b0302a;
+    --bad-soft: #f8e0dc;
+  }
+}
+
+/* Objeto físico: iguais nos dois temas, como uma foto. */
+:root {
+  --wood: #3b2518;          /* escala de jacarandá */
+  --wood-grain: #4a2f1f;    /* veios da madeira */
+  --headstock: #24160e;     /* mão / área das cordas soltas */
+  --nut: #ece6d6;           /* capotraste de osso */
+  --fret: #bdb9ae;          /* trastes de níquel */
+  --fret-shine: #e4e1d8;    /* brilho do traste */
+  --string: #e7dcc4;        /* cordas lisas */
+  --string-wound: #c9b996;  /* cordas encapadas (4, 5, 6) */
+  --pearl: #efe7d4;         /* marcações de madrepérola */
+
+  /* Graus e notas: preenchimentos, nunca texto. Sempre com contorno
+     --marker-ring e rótulo em --on-deg. */
+  --deg-root: #f26a4b;
+  --deg-3: #f5c542;
+  --deg-5: #5ab0f0;
+  --deg-7: #c79bf0;
+  --deg-ext: #9be07a;
+  --note-in: #e4ddd0;
+  --note-tension: #f0a04b;
+  --note-out: #8a8178;
+  --note-active: #3fd2c2;   /* tocando agora: teal fixo, legível na madeira */
+  --marker-ring: #17110d;
+  --on-deg: #17110d;
+}
+
+/* @values:end ──────────────────────────────────────────────────────── */
+
+/* Movimento e alvo de toque (não são cores; ficam fora de tokens.json) */
+:root {
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-pluck: cubic-bezier(0.3, 1.6, 0.5, 1);
+  --tap: 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Ponte Tailwind: gera bg-surface, text-muted, fill-deg-root, etc. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-focus: var(--focus);
+  --color-overlay: var(--overlay);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+
+  --color-wood: var(--wood);
+  --color-wood-grain: var(--wood-grain);
+  --color-headstock: var(--headstock);
+  --color-nut: var(--nut);
+  --color-fret: var(--fret);
+  --color-fret-shine: var(--fret-shine);
+  --color-string: var(--string);
+  --color-string-wound: var(--string-wound);
+  --color-pearl: var(--pearl);
+
+  --color-deg-root: var(--deg-root);
+  --color-deg-3: var(--deg-3);
+  --color-deg-5: var(--deg-5);
+  --color-deg-7: var(--deg-7);
+  --color-deg-ext: var(--deg-ext);
+  --color-note-in: var(--note-in);
+  --color-note-tension: var(--note-tension);
+  --color-note-out: var(--note-out);
+  --color-note-active: var(--note-active);
+  --color-marker-ring: var(--marker-ring);
+  --color-on-deg: var(--on-deg);
+}
+
+@theme {
+  /* Tipografia */
+  --font-display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+  --font-sans: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --text-xs: 0.75rem;     /* 12 legenda, rótulo de painel */
+  --text-xs--line-height: 1rem;
+  --text-sm: 0.875rem;    /* 14 texto auxiliar */
+  --text-sm--line-height: 1.25rem;
+  --text-base: 1rem;      /* 16 texto corrido */
+  --text-base--line-height: 1.5rem;
+  --text-lg: 1.1875rem;   /* 19 lead */
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.3125rem;   /* 21 título de bloco */
+  --text-xl--line-height: 1.625rem;
+  --text-2xl: 1.75rem;    /* 28 título de seção */
+  --text-2xl--line-height: 2rem;
+  --text-3xl: 2.25rem;    /* 36 título da aula */
+  --text-3xl--line-height: 2.5rem;
+  --text-4xl: 3rem;       /* 48 display */
+  --text-4xl--line-height: 3.125rem;
+  --text-5xl: 4.5rem;     /* 72 BPM, leitura de longe */
+  --text-5xl--line-height: 4.5rem;
+
+  /* Raios: diferentes por papel, nunca iguais em tudo */
+  --radius-xs: 3px;   /* badges, fichas de tablatura */
+  --radius-sm: 6px;   /* botões, campos, toggles */
+  --radius-md: 10px;  /* cartões, callouts */
+  --radius-lg: 16px;  /* blocos da aula, diálogos */
+
+  /* Sombras: no escuro quase não aparecem; borda faz o trabalho */
+  --shadow-sm: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 6px 16px -6px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 24px 48px -12px rgba(0, 0, 0, 0.55);
+  --shadow-knob: 0 1px 0 rgba(255, 255, 255, 0.35) inset, 0 -1px 0 rgba(0, 0, 0, 0.25) inset, 0 2px 4px rgba(0, 0, 0, 0.4);
+
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-pluck: cubic-bezier(0.3, 1.6, 0.5, 1);
+
+  --animate-pluck: pluck 320ms var(--ease-pluck);
+  --animate-vibrate: vibrate 280ms linear;
+  --animate-vibrate-x: vibrate-x 280ms linear;
+  --animate-fade-in: fade-in var(--dur-base) var(--ease-out);
+  --animate-sheet-in: sheet-in var(--dur-slow) var(--ease-out);
+  --animate-beat: beat 180ms var(--ease-out);
+  --animate-pulse-ring: pulse-ring 1.6s var(--ease-out) infinite;
+
+  @keyframes pluck {
+    0% { transform: scale(0.6); }
+    100% { transform: scale(1); }
+  }
+  @keyframes vibrate {
+    0%, 100% { transform: translateY(0); }
+    20% { transform: translateY(-1.5px); }
+    40% { transform: translateY(1.2px); }
+    60% { transform: translateY(-0.8px); }
+    80% { transform: translateY(0.4px); }
+  }
+  @keyframes vibrate-x {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-1.5px); }
+    40% { transform: translateX(1.2px); }
+    60% { transform: translateX(-0.8px); }
+    80% { transform: translateX(0.4px); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes sheet-in {
+    from { transform: translateY(24px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes beat {
+    0% { transform: scale(1.18); }
+    100% { transform: scale(1); }
+  }
+  @keyframes pulse-ring {
+    0% { transform: scale(1); opacity: 0.55; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+}
+
+/* Base */
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+}
+
+/* Rótulo de painel de amplificador: MONO, CAIXA ALTA, espaçado. */
+@utility panel-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Anel de foco padrão dos componentes */
+@utility focus-ring {
+  outline: none;
+  &:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+}
+
+/* Foco sobre a madeira: madrepérola por fora, tinta por dentro */
+@utility focus-ring-wood {
+  outline: none;
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--marker-ring), 0 0 0 4px var(--pearl);
+  }
+}

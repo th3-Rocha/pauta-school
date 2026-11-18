@@ -1,0 +1,589 @@
+<title>Laboratório de Notas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: uma coluna de leitura, cada passo é texto curto + uma bancada com o braço da guitarra */
+:root {
+  --bg: #eef1f4;
+  --surface: #ffffff;
+  --fg: #171a20;
+  --muted: #5d6573;
+  --line: #d5dbe3;
+  --accent: #0d7a70;
+  --accent-ink: #ffffff;
+  --good: #1f8a4c;
+  --bad: #c9353b;
+  --warn: #a86a00;
+  /* braço da guitarra: objeto físico, igual nos dois temas */
+  --wood: #3b2518;
+  --head: #24160e;
+  --fret: #bdb9ae;
+  --string: #e7dcc4;
+  --pearl: #efe7d4;
+  --mk-penta: #2ec4b6;
+  --mk-tens: #f2b632;
+  --mk-out: #ef5b5f;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111418; --surface: #1a1e24; --fg: #e9edf2; --muted: #9aa3b0; --line: #2b313a;
+    --accent: #3fd2c2; --accent-ink: #06201d; --good: #4cc77f; --bad: #ff6b70; --warn: #f2b632;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111418; --surface: #1a1e24; --fg: #e9edf2; --muted: #9aa3b0; --line: #2b313a;
+  --accent: #3fd2c2; --accent-ink: #06201d; --good: #4cc77f; --bad: #ff6b70; --warn: #f2b632;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 16px/1.6 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 64px;
+}
+main { max-width: 860px; margin: 0 auto; display: grid; gap: 56px; }
+h1, h2 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.1; }
+h1 { font-size: clamp(2rem, 5vw, 3.1rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.45rem, 3.2vw, 1.9rem); font-weight: 800; }
+p { margin: 0; max-width: 65ch; }
+.lead { font-size: 1.12rem; color: var(--muted); }
+header { display: grid; gap: 14px; }
+.eyebrow { font: 700 0.75rem/1 var(--f-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+section { display: grid; gap: 16px; }
+.text { display: grid; gap: 10px; }
+b, strong { font-weight: 600; }
+.bench {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  padding: 18px; display: grid; gap: 14px; min-width: 0;
+}
+.fb-scroll { overflow-x: auto; padding-bottom: 4px; }
+.fb-scroll svg { display: block; max-width: none; touch-action: manipulation; }
+.fb-hit { fill: transparent; cursor: pointer; }
+.fb-hit:hover { fill: rgba(255,255,255,0.06); }
+.fb-wood { fill: var(--wood); }
+.fb-head { fill: var(--head); }
+.fb-nut { fill: var(--pearl); }
+.fb-fret { stroke: var(--fret); stroke-width: 2; }
+.fb-string { stroke: var(--string); }
+.fb-inlay { fill: var(--pearl); opacity: 0.35; }
+.fb-num { fill: var(--muted); font: 600 11px var(--f-mono); text-anchor: middle; }
+.fb-sname { fill: var(--pearl); opacity: 0.6; font: 700 10px var(--f-mono); }
+.fb-box { fill: rgba(46,196,182,0.10); stroke: rgba(46,196,182,0.55); stroke-dasharray: 5 4; }
+.mk text { font: 700 10px var(--f-mono); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.mk circle { pointer-events: none; }
+.mk.ghost circle { fill: rgba(255,255,255,0.10); stroke: rgba(255,255,255,0.22); }
+.mk.ghost text { fill: var(--pearl); opacity: 0.75; }
+.mk.scale circle { fill: var(--pearl); }
+.mk.scale text { fill: var(--head); }
+.mk.on circle { fill: var(--mk-penta); stroke: #ffffff; stroke-width: 2.5; }
+.mk.on text { fill: #06201d; }
+.mk.prev circle { fill: rgba(46,196,182,0.18); stroke: var(--mk-penta); stroke-width: 2; }
+.mk.prev text { fill: var(--pearl); }
+.mk.root circle { stroke: var(--mk-penta); stroke-width: 3; }
+.mk.penta circle { fill: var(--mk-penta); }
+.mk.penta text { fill: #06201d; }
+.mk.tens circle { fill: var(--mk-tens); }
+.mk.tens text { fill: #2b1d00; }
+.mk.out circle { fill: var(--mk-out); }
+.mk.out text { fill: #ffffff; }
+.mk.penta.root circle { stroke: #ffffff; stroke-width: 2.5; stroke-dasharray: 3 2; }
+.mk.hl circle { stroke: #ffffff; stroke-width: 3; }
+.ping { fill: none; stroke: #ffffff; stroke-width: 2; animation: ping 0.55s ease-out forwards; pointer-events: none; }
+@keyframes ping { from { r: 11; opacity: 0.9; } to { r: 24; opacity: 0; } }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+button {
+  font: 600 0.92rem var(--f-body); color: var(--fg); background: transparent;
+  border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.readout {
+  font: 500 0.95rem/1.5 var(--f-body); padding: 10px 14px; border-radius: 10px;
+  background: var(--bg); border: 1px solid var(--line); min-height: 46px;
+}
+.readout.good { border-color: var(--good); color: var(--good); }
+.readout.bad { border-color: var(--bad); color: var(--bad); }
+.readout.warn { border-color: var(--warn); color: var(--warn); }
+.mono { font-family: var(--f-mono); }
+.chroma { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.chip {
+  font: 700 0.8rem var(--f-mono); min-width: 38px; text-align: center; padding: 6px 4px;
+  border-radius: 8px; border: 1px solid var(--line); background: var(--bg);
+}
+.chip.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.chip.nat { font-weight: 700; }
+.chip.sharp { color: var(--muted); font-weight: 500; }
+.gap-mark { font: 700 0.7rem var(--f-mono); color: var(--warn); padding: 0 2px; }
+.steps { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.step { font: 700 0.72rem var(--f-mono); color: var(--muted); }
+.step.s { color: var(--warn); }
+.tab {
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  padding: 12px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line);
+}
+.tab .lbl { font: 700 0.85rem var(--f-mono); color: var(--muted); margin-right: 4px; }
+.tok {
+  font: 700 0.95rem var(--f-mono); min-width: 40px; padding: 6px 0; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--surface); text-align: center;
+}
+.tok small { display: block; font: 500 0.66rem var(--f-body); color: var(--muted); }
+.tok.sel { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
+.tok.playing { background: var(--accent); color: var(--accent-ink); }
+.tok.playing small { color: var(--accent-ink); }
+.tok.hint { border-color: var(--bad); border-style: dashed; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.88rem; color: var(--muted); }
+.legend span { display: inline-flex; gap: 6px; align-items: center; }
+.dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.callout { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; color: var(--muted); }
+footer { color: var(--muted); font-size: 0.88rem; border-top: 1px solid var(--line); padding-top: 18px; }
+@media (prefers-reduced-motion: reduce) { .ping { animation: none; opacity: 0; } }
+</style>
+
+<main>
+  <header>
+    <span class="eyebrow">Trastes · laboratório</span>
+    <h1>Por que uma nota soa certa e a do lado soa errada?</h1>
+    <p class="lead">Quatro experimentos com uma guitarra simulada. Clique nas casas do braço para ouvir. Funciona melhor com fone ou caixa de som.</p>
+  </header>
+
+  <section id="passo-1">
+    <div class="text">
+      <span class="eyebrow">Passo 1 de 4</span>
+      <h2>Cada casa é meio tom</h2>
+      <p>Uma nota é só uma vibração numa altura. Na guitarra, cada casa que você anda muda a nota na menor distância possível da música ocidental. Essa distância se chama <b>semitom</b> (ou <b>meio tom</b>). Duas casas somam um <b>tom</b>.</p>
+      <p>Abaixo está a corda Lá (a 5ª corda). Clique numa casa e depois em outra: o quadro conta a distância.</p>
+    </div>
+    <div class="bench">
+      <div class="fb-scroll" id="fb1"></div>
+      <div class="row">
+        <button type="button" id="b1-semi">Ouvir meio tom (casa 5 → 6)</button>
+        <button type="button" id="b1-tom">Ouvir um tom (casa 5 → 7)</button>
+      </div>
+      <div class="readout" id="r1" aria-live="polite">Clique em qualquer casa do braço.</div>
+      <div class="chroma" id="chroma" aria-label="As 12 notas"></div>
+      <p class="callout">Existem só 12 notas, e depois elas se repetem (a casa 12 é o mesmo Lá da corda solta, só que mais agudo). Repare que entre <b>Si e Dó</b> e entre <b>Mi e Fá</b> não tem nota no meio: ali o passo natural já é meio tom.</p>
+    </div>
+  </section>
+
+  <section id="passo-2">
+    <div class="text">
+      <span class="eyebrow">Passo 2 de 4</span>
+      <h2>Escala é uma receita de passos</h2>
+      <p>Uma escala é um conjunto de notas escolhidas com uma regra de distâncias. A <b>escala maior</b> (o famoso Dó Ré Mi Fá Sol Lá Si) segue sempre a mesma receita: <span class="mono">T T S T T T S</span>, onde T é um tom (2 casas) e S é um semitom (1 casa).</p>
+      <p>Toque a receita certa e depois uma receita errada, só com tons. A diferença no som é a diferença na receita.</p>
+    </div>
+    <div class="bench">
+      <div class="fb-scroll" id="fb2"></div>
+      <div class="row">
+        <button type="button" class="primary" id="b2-maior">Tocar escala maior</button>
+        <button type="button" id="b2-tons">Tocar só com tons</button>
+      </div>
+      <div class="steps" id="steps2"></div>
+      <div class="readout" id="r2" aria-live="polite">Corda Si (2ª corda), começando no Dó da casa 1.</div>
+    </div>
+  </section>
+
+  <section id="passo-3">
+    <div class="text">
+      <span class="eyebrow">Passo 3 de 4</span>
+      <h2>Ache a nota errada</h2>
+      <p>Esta é a melodia do <i>Hino à Alegria</i> (Beethoven, domínio público), escrita em tablatura na corda Si. Uma das notas está meio tom fora do lugar. Toque, escute onde soa estranho, selecione a nota e mova uma casa para frente ou para trás.</p>
+    </div>
+    <div class="bench">
+      <div class="tab" id="tab3" aria-label="Tablatura da melodia"></div>
+      <div class="fb-scroll" id="fb3"></div>
+      <div class="row">
+        <button type="button" class="primary" id="b3-play">Tocar melodia</button>
+        <button type="button" id="b3-back">← 1 casa para trás</button>
+        <button type="button" id="b3-fwd">1 casa para frente →</button>
+        <button type="button" id="b3-hint">Dica</button>
+        <button type="button" id="b3-next" hidden>Próximo nível</button>
+      </div>
+      <div class="readout" id="r3" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section id="passo-4">
+    <div class="text">
+      <span class="eyebrow">Passo 4 de 4</span>
+      <h2>Por que a pentatônica não erra</h2>
+      <p>A escala de <b>Lá menor</b> tem 7 notas: Lá, Si, Dó, Ré, Mi, Fá, Sol. Duas delas, <b>Si</b> e <b>Fá</b>, ficam a meio tom de uma vizinha (Si–Dó, Mi–Fá). Elas não são erradas, mas se você parar nelas em cima do acorde, o som fica tenso.</p>
+      <p>Tire essas duas e sobram 5 notas sem nenhum meio tom entre elas. Isso é a <b>pentatônica</b> (penta = cinco). Qualquer nota dela soa bem em cima do acorde, e por isso é a primeira escala de quase todo guitarrista que sola.</p>
+      <p>Ligue a base e toque à vontade. Depois mostre todas as notas e experimente as vermelhas.</p>
+    </div>
+    <div class="bench">
+      <div class="row">
+        <button type="button" class="primary" id="b4-loop" aria-pressed="false">▶ Ligar base em Lá menor</button>
+        <button type="button" id="b4-lick">Ouvir um solo curto</button>
+      </div>
+      <div class="row" role="group" aria-label="Quais notas mostrar">
+        <button type="button" data-mode="penta" aria-pressed="true">Pentatônica (5)</button>
+        <button type="button" data-mode="natural" aria-pressed="false">Escala menor (7)</button>
+        <button type="button" data-mode="all" aria-pressed="false">Todas as 12</button>
+      </div>
+      <div class="fb-scroll" id="fb4"></div>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--mk-penta)"></i>pentatônica</span>
+        <span><i class="dot" style="background:var(--mk-tens)"></i>da escala, mas tensa</span>
+        <span><i class="dot" style="background:var(--mk-out)"></i>fora da escala</span>
+        <span>tracejado = Lá, a tônica</span>
+      </div>
+      <div class="readout" id="r4" aria-live="polite">A área tracejada (casas 5 a 8) é a primeira "caixa" da pentatônica. Comece por ela.</div>
+    </div>
+  </section>
+
+  <footer>Protótipo do Trastes, curso de guitarra livre e open source. Estes experimentos viram componentes do site (<span class="mono">&lt;Fretboard /&gt;</span>, <span class="mono">&lt;AcheANota /&gt;</span>) e aparecem nas aulas da semana 1 e do mês 4.</footer>
+</main>
+
+<script>
+/* ---------- notas ---------- */
+const NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const PT = { C:'Dó', D:'Ré', E:'Mi', F:'Fá', G:'Sol', A:'Lá', B:'Si' };
+const pc = m => ((m % 12) + 12) % 12;
+const nm = m => NAMES[pc(m)];
+const pt = m => { const n = nm(m); return PT[n[0]] + (n[1] ? '♯' : ''); };
+const label = m => `${nm(m)} (${pt(m)})`;
+const $ = s => document.querySelector(s);
+
+/* ---------- som: corda dedilhada (Karplus-Strong) ---------- */
+let ctx, master;
+const bufs = new Map();
+function ac() {
+  if (!ctx) {
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -14; comp.ratio.value = 4;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 5200;
+    master = ctx.createGain(); master.gain.value = 0.8;
+    master.connect(lp); lp.connect(comp); comp.connect(ctx.destination);
+  }
+  if (ctx.state === 'suspended') ctx.resume();
+  return ctx;
+}
+function pluckBuffer(midi) {
+  if (bufs.has(midi)) return bufs.get(midi);
+  const c = ac(), sr = c.sampleRate;
+  const freq = 440 * Math.pow(2, (midi - 69) / 12);
+  const N = Math.max(2, Math.round(sr / freq - 0.5));
+  const len = Math.floor(sr * 2.4);
+  const buf = c.createBuffer(1, len, sr), d = buf.getChannelData(0);
+  const ring = new Float32Array(N);
+  let prev = 0;
+  for (let i = 0; i < N; i++) { const r = Math.random() * 2 - 1; ring[i] = (r + prev) * 0.5; prev = r; }
+  const decay = midi < 50 ? 0.9975 : 0.996;
+  let peak = 0;
+  for (let i = 0; i < len; i++) {
+    const a = i % N, b = (a + 1) % N;
+    const v = ring[a];
+    ring[a] = decay * 0.5 * (ring[a] + ring[b]);
+    d[i] = v; if (Math.abs(v) > peak) peak = Math.abs(v);
+  }
+  for (let i = 0; i < len; i++) d[i] /= peak || 1;
+  const entry = { buf, rate: freq / (sr / (N + 0.5)) };
+  bufs.set(midi, entry);
+  return entry;
+}
+function play(midi, when, opt = {}) {
+  const c = ac();
+  const t = when ?? c.currentTime;
+  const { buf, rate } = pluckBuffer(midi);
+  const src = c.createBufferSource(); src.buffer = buf; src.playbackRate.value = rate;
+  const g = c.createGain(); const vol = opt.gain ?? 0.55;
+  g.gain.setValueAtTime(vol, t);
+  if (opt.dur) { g.gain.setValueAtTime(vol, t + opt.dur); g.gain.linearRampToValueAtTime(0.0001, t + opt.dur + 0.08); }
+  src.connect(g); g.connect(master); src.start(t);
+  src.stop(t + (opt.dur ? opt.dur + 0.1 : 2.4));
+}
+const after = (sec, fn) => setTimeout(fn, Math.max(0, sec * 1000));
+
+/* ---------- braço da guitarra em SVG ---------- */
+const SNAME = { 64:'e', 59:'B', 55:'G', 50:'D', 45:'A', 40:'E' };
+function fretboard(host, opts) {
+  const { tuning, frets, mark, onPress } = opts;
+  const FW = 54, X0 = 44, SH = 30, TOP = 10, n = tuning.length;
+  const W = X0 + frets * FW + 6, H = TOP + n * SH + 24;
+  const px = f => f === 0 ? X0 / 2 + 2 : X0 + (f - 0.5) * FW;
+  const py = s => TOP + SH / 2 + s * SH;
+  const api = { box: opts.box || null };
+  api.render = () => {
+    let h = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Braço da guitarra com ${frets} casas">`;
+    h += `<rect class="fb-head" x="0" y="${TOP}" width="${X0 - 2}" height="${n * SH}" rx="6"/>`;
+    h += `<rect class="fb-wood" x="${X0}" y="${TOP}" width="${frets * FW}" height="${n * SH}" rx="2"/>`;
+    const mid = TOP + n * SH / 2;
+    [3, 5, 7, 9, 15].forEach(f => { if (f <= frets) h += `<circle class="fb-inlay" cx="${px(f)}" cy="${mid}" r="5"/>`; });
+    if (frets >= 12) {
+      if (n > 1) h += `<circle class="fb-inlay" cx="${px(12)}" cy="${TOP + n * SH * 0.3}" r="5"/><circle class="fb-inlay" cx="${px(12)}" cy="${TOP + n * SH * 0.7}" r="5"/>`;
+      else h += `<circle class="fb-inlay" cx="${px(12) - 8}" cy="${mid}" r="4"/><circle class="fb-inlay" cx="${px(12) + 8}" cy="${mid}" r="4"/>`;
+    }
+    if (api.box) h += `<rect class="fb-box" x="${X0 + (api.box[0] - 1) * FW + 2}" y="${TOP + 2}" width="${(api.box[1] - api.box[0] + 1) * FW - 4}" height="${n * SH - 4}" rx="8"/>`;
+    h += `<rect class="fb-nut" x="${X0 - 3}" y="${TOP}" width="5" height="${n * SH}"/>`;
+    for (let f = 1; f <= frets; f++) h += `<line class="fb-fret" x1="${X0 + f * FW}" y1="${TOP}" x2="${X0 + f * FW}" y2="${TOP + n * SH}"/>`;
+    tuning.forEach((m, s) => {
+      const w = m <= 45 ? 2.6 : m <= 50 ? 2.1 : m <= 55 ? 1.6 : 1.1;
+      h += `<line class="fb-string" x1="${X0 - 6}" y1="${py(s)}" x2="${W - 6}" y2="${py(s)}" stroke-width="${w}"/>`;
+      h += `<text class="fb-sname" x="4" y="${py(s) + 3.5}">${SNAME[m] || ''}</text>`;
+    });
+    for (let f = 0; f <= frets; f++) if ([0, 1, 3, 5, 7, 9, 12, 13, 15].includes(f)) h += `<text class="fb-num" x="${px(f)}" y="${TOP + n * SH + 16}">${f}</text>`;
+    tuning.forEach((m, s) => {
+      for (let f = 0; f <= frets; f++) {
+        const k = mark(s, f, m + f);
+        if (k) h += `<g class="mk ${k.cls}"><circle cx="${px(f)}" cy="${py(s)}" r="11"/><text x="${px(f)}" y="${py(s)}">${k.text}</text></g>`;
+      }
+    });
+    tuning.forEach((m, s) => {
+      for (let f = 0; f <= frets; f++) {
+        const x = f === 0 ? 0 : X0 + (f - 1) * FW;
+        h += `<rect class="fb-hit" data-s="${s}" data-f="${f}" x="${x}" y="${TOP + s * SH}" width="${f === 0 ? X0 : FW}" height="${SH}"><title>${label(m + f)}, casa ${f}</title></rect>`;
+      }
+    });
+    host.innerHTML = h + '</svg>';
+  };
+  api.ping = (s, f) => {
+    const svg = host.querySelector('svg'); if (!svg) return;
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('class', 'ping'); c.setAttribute('cx', px(f)); c.setAttribute('cy', py(s)); c.setAttribute('r', 11);
+    svg.appendChild(c); setTimeout(() => c.remove(), 600);
+  };
+  host.addEventListener('pointerdown', e => {
+    const r = e.target.closest('.fb-hit'); if (!r) return;
+    const s = +r.dataset.s, f = +r.dataset.f;
+    onPress && onPress(s, f, tuning[s] + f);
+    api.ping(s, f);
+  });
+  api.render();
+  return api;
+}
+
+function tons(d) {
+  if (d === 0) return 'a mesma nota';
+  if (d === 1) return 'meio tom (1 semitom)';
+  if (d === 12) return 'uma oitava inteira (12 semitons): a mesma nota, mais aguda';
+  const t = Math.floor(d / 2), h = d % 2;
+  return `${t} ${t > 1 ? 'tons' : 'tom'}${h ? ' e meio' : ''} (${d} semitons)`;
+}
+
+/* ---------- Passo 1 ---------- */
+const s1 = { last: null, prev: null };
+const fb1 = fretboard($('#fb1'), {
+  tuning: [45], frets: 12,
+  mark: (s, f, m) => ({ cls: f === s1.last ? 'on' : f === s1.prev ? 'prev' : 'ghost', text: nm(m) }),
+  onPress: (s, f, m) => { play(m); s1.prev = s1.last; s1.last = f; fb1.render(); update1(); }
+});
+function update1() {
+  const r = $('#r1');
+  const m = 45 + s1.last;
+  if (s1.prev === null) r.innerHTML = `Casa ${s1.last}: <b>${label(m)}</b>. Agora clique em outra casa.`;
+  else {
+    const d = Math.abs(s1.last - s1.prev);
+    r.innerHTML = `Da casa ${s1.prev} (<b>${nm(45 + s1.prev)}</b>) para a casa ${s1.last} (<b>${nm(m)}</b>): ${d} ${d === 1 ? 'casa' : 'casas'} = <b>${tons(d)}</b>.`;
+  }
+  renderChroma();
+}
+function renderChroma() {
+  const box = $('#chroma'); let h = '';
+  for (let i = 0; i <= 12; i++) {
+    const m = 45 + i, n = nm(m);
+    const on = s1.last !== null && (s1.last === i);
+    h += `<span class="chip ${n.length > 1 ? 'sharp' : 'nat'} ${on ? 'on' : ''}" title="${label(m)}">${n}</span>`;
+    if (i < 12) { const nx = nm(m + 1); if ((n === 'B' && nx === 'C') || (n === 'E' && nx === 'F')) h += `<span class="gap-mark" title="meio tom natural">½</span>`; }
+  }
+  box.innerHTML = h;
+}
+function pair(a, b) {
+  const c = ac(), t = c.currentTime + 0.05;
+  play(45 + a, t); play(45 + b, t + 0.7);
+  s1.prev = null; s1.last = a; fb1.render(); update1();
+  after(0.75, () => { s1.prev = a; s1.last = b; fb1.render(); update1(); });
+}
+$('#b1-semi').onclick = () => pair(5, 6);
+$('#b1-tom').onclick = () => pair(5, 7);
+renderChroma();
+
+/* ---------- Passo 2 ---------- */
+const RECIPES = {
+  maior: { frets: [1, 3, 5, 6, 8, 10, 12, 13], steps: ['T','T','S','T','T','T','S'] },
+  tons:  { frets: [1, 3, 5, 7, 9, 11, 13],     steps: ['T','T','T','T','T','T'] }
+};
+const s2 = { mode: 'maior', idx: -1, timers: [] };
+const fb2 = fretboard($('#fb2'), {
+  tuning: [59], frets: 13,
+  mark: (s, f, m) => {
+    const R = RECIPES[s2.mode], i = R.frets.indexOf(f);
+    if (i < 0) return null;
+    const cls = (i === s2.idx ? 'on' : 'scale') + (f === 1 || f === 13 ? ' root' : '');
+    return { cls, text: nm(m) };
+  },
+  onPress: (s, f, m) => { play(m); $('#r2').innerHTML = `Casa ${f}: <b>${label(m)}</b>`; }
+});
+function renderSteps() {
+  const R = RECIPES[s2.mode]; let h = '';
+  R.frets.forEach((f, i) => {
+    h += `<span class="chip ${i === s2.idx ? 'on' : ''}">${pt(59 + f)}</span>`;
+    if (i < R.steps.length) h += `<span class="step ${R.steps[i] === 'S' ? 's' : ''}">${R.steps[i]}</span>`;
+  });
+  $('#steps2').innerHTML = h;
+}
+function playScale(mode) {
+  s2.timers.forEach(clearTimeout); s2.timers = [];
+  s2.mode = mode; s2.idx = -1; fb2.render(); renderSteps();
+  const R = RECIPES[mode], c = ac(), t0 = c.currentTime + 0.05, gapS = 0.42;
+  R.frets.forEach((f, i) => {
+    play(59 + f, t0 + i * gapS, { dur: i === R.frets.length - 1 ? 1.2 : gapS });
+    s2.timers.push(setTimeout(() => { s2.idx = i; fb2.render(); renderSteps(); }, i * gapS * 1000 + 50));
+  });
+  s2.timers.push(setTimeout(() => { s2.idx = -1; fb2.render(); renderSteps(); }, R.frets.length * gapS * 1000 + 900));
+  $('#r2').innerHTML = mode === 'maior'
+    ? 'Escala maior: <span class="mono">T T S T T T S</span>. Soa como "Dó Ré Mi Fá Sol Lá Si Dó", aquela que todo mundo reconhece.'
+    : 'Só tons: <span class="mono">T T T T T T</span>. As notas são quase as mesmas no começo, mas o resto sai flutuando, sem chegar em casa. Mudou a receita, mudou o som.';
+}
+$('#b2-maior').onclick = () => playScale('maior');
+$('#b2-tons').onclick = () => playScale('tons');
+renderSteps();
+
+/* ---------- Passo 3 ---------- */
+const CORRECT = [5, 5, 6, 8, 8, 6, 5, 3, 1, 1, 3, 5, 5, 3, 3];
+const BEATS   = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.5, 0.5, 2];
+const LEVELS = [
+  { wrong: { 11: 4 }, tip: 'Escute o fim da segunda frase.' },
+  { wrong: { 5: 7 },  tip: 'Escute a primeira descida, logo depois das duas notas iguais.' },
+  { wrong: { 2: 7, 13: 2 }, tip: 'Agora são duas notas erradas.' }
+];
+const s3 = { level: 0, notes: [], sel: 0, playing: -1, hint: false, timers: [] };
+function loadLevel(i) {
+  s3.level = i; s3.notes = CORRECT.slice(); s3.hint = false; s3.sel = 0;
+  for (const [k, v] of Object.entries(LEVELS[i].wrong)) s3.notes[k] = v;
+  $('#b3-next').hidden = true;
+  setR3(`Nível ${i + 1} de ${LEVELS.length}. Toque a melodia e procure a nota que soa fora.`, '');
+  render3();
+}
+function setR3(html, cls) { const r = $('#r3'); r.innerHTML = html; r.className = 'readout ' + cls; }
+const fb3 = fretboard($('#fb3'), {
+  tuning: [59], frets: 10,
+  mark: (s, f, m) => {
+    const cur = s3.notes[s3.sel];
+    if (f === cur) return { cls: 'on', text: nm(m) };
+    if (s3.notes.includes(f)) return { cls: 'ghost', text: nm(m) };
+    return null;
+  },
+  onPress: (s, f, m) => { moveTo(f); }
+});
+function render3() {
+  let h = '<span class="lbl">B|</span>';
+  s3.notes.forEach((f, i) => {
+    const wrong = s3.hint && f !== CORRECT[i];
+    h += `<button type="button" class="tok ${i === s3.sel ? 'sel' : ''} ${i === s3.playing ? 'playing' : ''} ${wrong ? 'hint' : ''}" data-i="${i}" aria-label="Nota ${i + 1}, casa ${f}">${f}<small>${pt(59 + f)}</small></button>`;
+  });
+  $('#tab3').innerHTML = h + '<span class="lbl">|</span>';
+  fb3.render();
+}
+$('#tab3').addEventListener('click', e => {
+  const b = e.target.closest('.tok'); if (!b) return;
+  s3.sel = +b.dataset.i; play(59 + s3.notes[s3.sel]); render3();
+});
+function moveTo(f) {
+  if (f < 0 || f > 10) return;
+  s3.notes[s3.sel] = f; play(59 + f); render3(); check3(true);
+}
+function check3(fromMove) {
+  const wrongN = s3.notes.filter((f, i) => f !== CORRECT[i]).length;
+  if (wrongN === 0) {
+    setR3('Agora sim! A melodia está certa. Foi só mover meio tom. Toque de novo para ouvir a diferença.', 'good');
+    $('#b3-next').hidden = s3.level >= LEVELS.length - 1;
+    if (s3.level >= LEVELS.length - 1) setR3('Agora sim, todos os níveis resolvidos! Você acabou de usar o ouvido para achar um erro de meio tom, que é a menor distância entre duas notas.', 'good');
+  } else if (fromMove) {
+    const i = s3.sel, d = s3.notes[i] - CORRECT[i];
+    if (d === 0) setR3(`Essa nota agora está no lugar. ${wrongN > 0 ? 'Ainda falta outra.' : ''}`, 'warn');
+    else setR3(`Nota ${i + 1} na casa ${s3.notes[i]} (${label(59 + s3.notes[i])}). Toque a melodia para conferir.`, '');
+  }
+}
+function playMelody() {
+  s3.timers.forEach(clearTimeout); s3.timers = [];
+  const c = ac(), beat = 0.42; let t = c.currentTime + 0.05, acc = 0;
+  s3.notes.forEach((f, i) => {
+    const dur = BEATS[i] * beat;
+    play(59 + f, t + acc, { dur: dur * 0.95 });
+    s3.timers.push(setTimeout(() => { s3.playing = i; render3(); }, acc * 1000 + 50));
+    acc += dur;
+  });
+  s3.timers.push(setTimeout(() => { s3.playing = -1; render3(); check3(false); }, acc * 1000 + 200));
+}
+$('#b3-play').onclick = playMelody;
+$('#b3-back').onclick = () => moveTo(s3.notes[s3.sel] - 1);
+$('#b3-fwd').onclick = () => moveTo(s3.notes[s3.sel] + 1);
+$('#b3-hint').onclick = () => { s3.hint = true; render3(); setR3(`${LEVELS[s3.level].tip} A nota errada está marcada com borda tracejada.`, 'warn'); };
+$('#b3-next').onclick = () => loadLevel(s3.level + 1);
+loadLevel(0);
+
+/* ---------- Passo 4 ---------- */
+const PENTA = new Set([9, 0, 2, 4, 7]);   // A C D E G
+const TENS  = new Set([11, 5]);            // B F
+const s4 = { mode: 'penta', hl: null };
+const kind = m => PENTA.has(pc(m)) ? 'penta' : TENS.has(pc(m)) ? 'tens' : 'out';
+const fb4 = fretboard($('#fb4'), {
+  tuning: [64, 59, 55, 50, 45, 40], frets: 12, box: [5, 8],
+  mark: (s, f, m) => {
+    const k = kind(m);
+    const show = s4.mode === 'all' || (s4.mode === 'natural' && k !== 'out') || k === 'penta';
+    if (!show) return null;
+    const hl = s4.hl && s4.hl[0] === s && s4.hl[1] === f;
+    return { cls: `${k}${pc(m) === 9 ? ' root' : ''}${hl ? ' hl' : ''}`, text: nm(m) };
+  },
+  onPress: (s, f, m) => { play(m, undefined, { gain: 0.6 }); s4.hl = [s, f]; fb4.render(); feedback4(m); }
+});
+function feedback4(m) {
+  const r = $('#r4'), p = pc(m), k = kind(m);
+  if (p === 9) { r.className = 'readout good'; r.innerHTML = `<b>Lá</b>: a tônica, a "casa" da música. Terminar uma frase aqui sempre soa resolvido.`; return; }
+  if (k === 'penta') { r.className = 'readout good'; r.innerHTML = `<b>${label(m)}</b> faz parte da pentatônica. Soa bem em cima do Lá menor.`; return; }
+  if (p === 11) { r.className = 'readout warn'; r.innerHTML = `<b>Si</b> é da escala, mas fica meio tom abaixo do Dó. Funciona de passagem; parar nele deixa o som em suspenso.`; return; }
+  if (p === 5) { r.className = 'readout warn'; r.innerHTML = `<b>Fá</b> é da escala, mas fica meio tom acima do Mi, que é nota do acorde. Parar nele soa tenso.`; return; }
+  const down = m - 1, up = m + 1, opts = [];
+  if (kind(down) === 'penta') opts.push(`volte 1 casa para <b>${pt(down)}</b>`);
+  if (kind(up) === 'penta') opts.push(`avance 1 casa para <b>${pt(up)}</b>`);
+  r.className = 'readout bad';
+  r.innerHTML = `<b>${label(m)}</b> está fora da escala e briga com o acorde. ${opts.length ? 'Para consertar: ' + opts.join(' ou ') + '.' : 'Mova uma casa para qualquer lado.'}`;
+}
+document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => {
+  s4.mode = b.dataset.mode;
+  document.querySelectorAll('[data-mode]').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+  fb4.render();
+});
+// base: acorde de Lá menor dedilhado em loop
+const AM = [45, 52, 57, 60, 64];
+let loopTimer = null, nextT = 0;
+function strum(t, vel, down) { (down ? AM : AM.slice().reverse()).forEach((m, i) => play(m, t + i * 0.02, { gain: vel })); }
+function tick() {
+  const c = ac();
+  while (nextT < c.currentTime + 0.6) {
+    play(33, nextT, { gain: 0.35, dur: 1.1 });
+    strum(nextT, 0.2, true); strum(nextT + 1.2, 0.12, false); strum(nextT + 1.8, 0.1, true);
+    nextT += 2.4;
+  }
+}
+$('#b4-loop').onclick = e => {
+  const b = e.currentTarget;
+  if (loopTimer) { clearInterval(loopTimer); loopTimer = null; b.textContent = '▶ Ligar base em Lá menor'; b.setAttribute('aria-pressed', 'false'); return; }
+  nextT = ac().currentTime + 0.05; tick(); loopTimer = setInterval(tick, 150);
+  b.textContent = '■ Desligar base'; b.setAttribute('aria-pressed', 'true');
+};
+const LICK = [[0, 8, 0.3], [0, 5, 0.3], [1, 8, 0.3], [1, 5, 0.3], [2, 7, 0.3], [2, 5, 0.6], [3, 7, 0.3], [3, 5, 0.3], [2, 5, 0.3], [3, 7, 1.2]];
+$('#b4-lick').onclick = () => {
+  const c = ac(); let t = c.currentTime + 0.05, acc = 0;
+  const tun = [64, 59, 55, 50, 45, 40];
+  LICK.forEach(([s, f, d]) => {
+    play(tun[s] + f, t + acc, { gain: 0.6, dur: d });
+    setTimeout(() => { s4.hl = [s, f]; fb4.render(); }, acc * 1000 + 30);
+    acc += d;
+  });
+  $('#r4').className = 'readout';
+  $('#r4').innerHTML = 'Esse solo usa só notas da pentatônica, de cima para baixo, e termina no <b>Lá</b> (corda D, casa 7). Por isso soa "fechado".';
+};
+</script>
