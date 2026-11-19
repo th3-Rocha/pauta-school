@@ -36,7 +36,7 @@ export function ToggleGroupItem({ className, ...props }: ToggleGroupItemProps) {
     <ToggleGroupPrimitive.Item
       data-slot="toggle-group-item"
       className={cn(
-        "inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-[4px] font-semibold text-muted focus-ring",
+        "inline-flex flex-auto items-center justify-center gap-1.5 whitespace-nowrap rounded-[4px] font-semibold text-muted focus-ring",
         "transition-colors duration-[var(--dur-fast)] hover:text-fg",
         "data-[state=on]:bg-surface-2 data-[state=on]:text-fg data-[state=on]:shadow-knob",
         "disabled:opacity-45 [&_svg]:size-4",
