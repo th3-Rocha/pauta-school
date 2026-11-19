@@ -2,17 +2,19 @@
 import Base from "../../../../layouts/Base.astro";
 import LessonApp from "../../../../app/LessonApp";
 import { TOTAL_DAYS } from "../../../../data/curriculum";
-import { getCourse } from "../../../../data/courses";
+import { GUITAR_TITLES_EN, LESSONS_EN } from "../../../../lessons/en";
 
 export function getStaticPaths() {
   return Array.from({ length: TOTAL_DAYS }, (_, i) => ({ params: { day: String(i + 1) } }));
 }
 
 const day = Number(Astro.params.day);
-const t = getCourse("guitar", "en").titles[day];
+// Tradução feita aqui, no build: o navegador recebe só a aula do dia, já em inglês.
+const translated = LESSONS_EN[day] ?? null;
+const t = GUITAR_TITLES_EN[day];
 const title = t ? `Day ${day}: ${t} · Guitar · Pauta` : `Day ${day} · Guitar · Pauta`;
 ---
 
 <Base title={title} lang="en">
-  <LessonApp day={day} instrument="guitar" locale="en" client:load />
+  <LessonApp day={day} instrument="guitar" locale="en" translated={translated} titles={GUITAR_TITLES_EN} client:load />
 </Base>

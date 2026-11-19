@@ -1,8 +1,9 @@
 ---
 import Base from "../../layouts/Base.astro";
 import HomeApp from "../../app/HomeApp";
+import { GUITAR_TITLES_EN } from "../../lessons/en";
 ---
 
 <Base title="Pauta · free music school" lang="en">
-  <HomeApp locale="en" client:load />
+  <HomeApp locale="en" guitarTitles={GUITAR_TITLES_EN} client:load />
 </Base>

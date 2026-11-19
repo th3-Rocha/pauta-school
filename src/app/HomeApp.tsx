@@ -7,7 +7,7 @@ import { InstrumentPicker } from "../components/course/InstrumentPicker";
 import { instrumentsIn } from "../data/instruments";
 import { selectInstrument, useInstrument } from "./instrument";
 import { L, localePath, setLocale, type Locale } from "../i18n";
-import { getCourse, type CourseInfo } from "../data/courses";
+import { getCourse, registerTitles, type CourseInfo } from "../data/courses";
 import { Shell } from "./Shell";
 import { currentDay, setActiveInstrument, useProgress, type Progress } from "./progress";
 
@@ -31,8 +31,9 @@ function buildMonths(course: CourseInfo, p: Progress, today: number): YearMonth[
   }));
 }
 
-export default function HomeApp({ locale = "pt" }: { locale?: Locale }) {
+export default function HomeApp({ locale = "pt", guitarTitles }: { locale?: Locale; guitarTitles?: Record<number, string> }) {
   setLocale(locale);
+  if (guitarTitles) registerTitles("guitar", locale, guitarTitles);
   const instrument = useInstrument();
   setActiveInstrument(instrument, { silent: true });
   const course = getCourse(instrument);
@@ -55,8 +56,8 @@ export default function HomeApp({ locale = "pt" }: { locale?: Locale }) {
             </h2>
             <p className="text-muted">
               {L(
-                "Guitarra e teclado já têm o primeiro mês inteiro. Gaita e os outros estão sendo preparados.",
-                "Guitar and keyboard already have their whole first month. Harmonica and the others are on the way.",
+                "A guitarra já tem o ano inteiro, 365 aulas. O teclado tem o primeiro mês. Gaita e os outros estão sendo preparados.",
+                "Guitar has the whole year, all 365 lessons. Keyboard has its first month. Harmonica and the others are on the way.",
               )}{" "}
               <a href={localePath("/setup")} className="underline decoration-line-strong underline-offset-4 hover:text-fg focus-ring">
                 {L("Testar meu equipamento", "Test my setup")}

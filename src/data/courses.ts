@@ -1,7 +1,6 @@
 // Um curso por instrumento: meses, aulas e endereços, em cada idioma.
 import type { Lesson } from "../lessons/types";
 import { LESSONS } from "../lessons";
-import { LESSONS_EN } from "../lessons/en";
 import { KEYBOARD_LESSONS } from "../lessons/keyboard";
 import { KEYBOARD_LESSONS_EN } from "../lessons/keyboard/en";
 import { MONTHS, type Month } from "./curriculum";
@@ -21,9 +20,15 @@ type CourseText = {
 
 type CourseDef = { instrument: InstrumentId; path: string; pt: CourseText; en: CourseText };
 
+/** Títulos já traduzidos, entregues pela página (veja registerTitles). */
+const TITLE_OVERRIDES = new Map<string, Record<number, string>>();
+
 function make(def: CourseDef, locale: Locale) {
   const c = def[locale];
-  const titles: Record<number, string> = Object.fromEntries(Object.values(c.lessons).map((l) => [l.day, l.title]));
+  const titles: Record<number, string> = {
+    ...Object.fromEntries(Object.values(c.lessons).map((l) => [l.day, l.title])),
+    ...TITLE_OVERRIDES.get(`${def.instrument}:${locale}`),
+  };
   return {
     instrument: def.instrument,
     ...c,
@@ -42,7 +47,9 @@ const DEFS: Partial<Record<InstrumentId, CourseDef>> = {
     instrument: "guitar",
     path: "guitar",
     pt: { name: "Guitarra", pitch: "com a guitarra no colo", months: MONTHS, lessons: LESSONS },
-    en: { name: "Guitar", pitch: "with the guitar on your lap", months: GUITAR_MONTHS_EN, lessons: LESSONS_EN },
+    // A tradução das aulas acontece no build (lessons/en, só no servidor). No navegador, o curso
+    // em inglês usa as aulas em português como base; a página manda a aula e os títulos já traduzidos.
+    en: { name: "Guitar", pitch: "with the guitar on your lap", months: GUITAR_MONTHS_EN, lessons: LESSONS },
   },
   keyboard: {
     instrument: "keyboard",
@@ -53,6 +60,13 @@ const DEFS: Partial<Record<InstrumentId, CourseDef>> = {
 };
 
 const cache = new Map<string, CourseInfo>();
+
+/** Registra títulos traduzidos no servidor (a página em inglês passa como prop). */
+export function registerTitles(id: InstrumentId, locale: Locale, titles: Record<number, string>) {
+  const key = `${id}:${locale}`;
+  TITLE_OVERRIDES.set(key, titles);
+  cache.delete(key);
+}
 
 /** O curso no idioma atual (ou no pedido). */
 export function getCourse(id: InstrumentId, locale: Locale = getLocale()): CourseInfo {

@@ -2,7 +2,8 @@ import * as React from "react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { Callout } from "../components/ui/Callout";
-import { getCourse, type CourseInfo } from "../data/courses";
+import { getCourse, registerTitles, type CourseInfo } from "../data/courses";
+import type { Lesson as LessonData } from "../lessons/types";
 import type { InstrumentId } from "../data/instruments";
 import { setActiveInstrument } from "./progress";
 import { selectInstrument } from "./instrument";
@@ -42,11 +43,26 @@ function Soon({ day, course }: { day: number; course: CourseInfo }) {
   );
 }
 
-export default function LessonApp({ day, instrument = "guitar", locale = "pt" }: { day: number; instrument?: InstrumentId; locale?: Locale }) {
+export default function LessonApp({
+  day,
+  instrument = "guitar",
+  locale = "pt",
+  translated,
+  titles,
+}: {
+  day: number;
+  instrument?: InstrumentId;
+  locale?: Locale;
+  /** Aula já traduzida no build (inglês). Sem ela, usa a aula do curso. */
+  translated?: LessonData | null;
+  /** Títulos traduzidos, para o curso em inglês. */
+  titles?: Record<number, string>;
+}) {
   setLocale(locale);
   setActiveInstrument(instrument, { silent: true });
+  if (titles) registerTitles(instrument, locale, titles);
   const course = getCourse(instrument);
-  const raw = course.lessons[day];
+  const raw = translated ?? course.lessons[day];
   // Toda aula de teclado mostra de onde vêm as notas (MIDI, computador, tela) no primeiro bloco.
   const lesson = React.useMemo(() => {
     if (!raw || instrument !== "keyboard") return raw;
@@ -56,5 +72,35 @@ export default function LessonApp({ day, instrument = "guitar", locale = "pt" }:
     return { ...raw, blocks: [{ ...first, body: [{ w: "key-input" as const }, ...first.body] }, ...rest] as typeof raw.blocks };
   }, [raw, instrument]);
   React.useEffect(() => selectInstrument(instrument), [instrument]);
-  return <Shell>{lesson ? <Lesson lesson={lesson} href={course.href} homeHref={localePath("/")} /> : <Soon day={day} course={course} />}</Shell>;
+  // Em inglês, a página manda `translated` quando a aula está traduzida; null = ainda não.
+  const untranslated = locale === "en" && !!lesson && translated === null;
+  return (
+    <Shell>
+      {untranslated && (
+        <div className="mx-auto w-full max-w-6xl px-4 pt-6">
+          <Callout variant="tip" label="Translation in progress">
+            <p>
+              This lesson hasn't been translated to English yet, so it's shown in Portuguese. The exercises, audio and controls work the same.{" "}
+              <a
+                className="underline"
+                href={`/${instrument}/day/${day}`}
+                hrefLang="pt-BR"
+                onClick={() => {
+                  try {
+                    localStorage.setItem("pauta:lang", "pt");
+                  } catch {
+                    /* sem armazenamento */
+                  }
+                }}
+              >
+                Open the Portuguese page
+              </a>
+              .
+            </p>
+          </Callout>
+        </div>
+      )}
+      {lesson ? <Lesson lesson={lesson} href={course.href} homeHref={localePath("/")} /> : <Soon day={day} course={course} />}
+    </Shell>
+  );
 }

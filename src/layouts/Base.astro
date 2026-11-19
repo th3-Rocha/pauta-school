@@ -30,6 +30,20 @@ const enHref = path === "/" ? "/en" : `/en${path}`;
     <title>{title}</title>
     <link rel="alternate" hreflang="pt-BR" href={ptHref} />
     <link rel="alternate" hreflang="en" href={enHref} />
+    <script is:inline define:vars={{ pageLang: lang, ptHref, enHref }}>
+      // Idioma: a escolha do botão PT/EN vale sempre; sem escolha, segue o idioma do navegador.
+      (function () {
+        var want = null;
+        try { want = localStorage.getItem("pauta:lang"); } catch (e) {}
+        if (want !== "pt" && want !== "en") {
+          var langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || "pt"];
+          want = langs.some(function (l) { return /^pt\b/i.test(l); }) ? "pt" : "en";
+        }
+        if (want !== pageLang && !/bot|crawl|spider/i.test(navigator.userAgent)) {
+          location.replace((want === "en" ? enHref : ptHref) + location.search + location.hash);
+        }
+      })();
+    </script>
     <script is:inline>
       (function () {
         var t = null;

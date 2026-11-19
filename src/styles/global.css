@@ -39,3 +39,38 @@ body {
   /* Texto na largura de leitura; exercícios usam a largura toda do bloco. */
   & > :where(p, ul, ol, h3, figcaption) { max-width: 72ch; }
 }
+
+/* O Tailwind v4 não põe mais a mãozinha nos botões. Tudo que é clicável ganha o cursor de clique. */
+@layer base {
+  :where(
+      button,
+      [role="button"],
+      [role="tab"],
+      [role="checkbox"],
+      [role="radio"],
+      [role="switch"],
+      [role="option"],
+      [role="menuitem"],
+      summary,
+      label:has(input, button, [role="checkbox"]),
+      label[for],
+      select,
+      input[type="checkbox"],
+      input[type="radio"],
+      input[type="range"],
+      input[type="file"],
+      input[type="color"]
+    ):not(:disabled, [aria-disabled="true"], [data-disabled]) {
+    cursor: pointer;
+  }
+  :where([role="slider"]) {
+    cursor: grab;
+  }
+  :where([role="slider"]):active {
+    cursor: grabbing;
+  }
+  :where(button, [role="button"], input, select):disabled,
+  :where([aria-disabled="true"], [data-disabled]) {
+    cursor: not-allowed;
+  }
+}

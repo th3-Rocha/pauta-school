@@ -16,6 +16,13 @@ function LangSwitch() {
     <a
       href={href}
       hrefLang={other === "en" ? "en" : "pt-BR"}
+      onClick={() => {
+        try {
+          localStorage.setItem("pauta:lang", other);
+        } catch {
+          /* sem armazenamento: só não lembra */
+        }
+      }}
       aria-label={other === "en" ? "Read in English" : "Ler em português"}
       className="inline-flex h-10 items-center rounded-sm px-2.5 font-mono text-sm font-bold text-muted hover:bg-surface-2 hover:text-fg focus-ring"
     >
