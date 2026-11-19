@@ -27,6 +27,8 @@ export const midiToFreq = (m: number) => 440 * Math.pow(2, (m - 69) / 12);
 /* ───────── corda dedilhada ───────── */
 
 const plucks = new Map<number, { buf: AudioBuffer; rate: number }>();
+/** Duração máxima de uma nota solta (a corda vai morrendo sozinha até lá). */
+const PLUCK_SECONDS = 4.2;
 
 function pluckBuffer(midi: number) {
   const hit = plucks.get(midi);
@@ -35,7 +37,7 @@ function pluckBuffer(midi: number) {
   const sr = c.sampleRate;
   const freq = midiToFreq(midi);
   const N = Math.max(2, Math.round(sr / freq - 0.5));
-  const len = Math.floor(sr * 2.6);
+  const len = Math.floor(sr * PLUCK_SECONDS);
   const buf = c.createBuffer(1, len, sr);
   const d = buf.getChannelData(0);
   const ring = new Float32Array(N);
@@ -54,7 +56,15 @@ function pluckBuffer(midi: number) {
     d[i] = v;
     peak = Math.max(peak, Math.abs(v));
   }
-  for (let i = 0; i < len; i++) d[i] /= peak || 1;
+  // Fim suave: o último trecho do buffer desce até zero em curva de cosseno,
+  // para a nota nunca parar com um corte seco.
+  const fade = Math.floor(sr * 1.4);
+  for (let i = 0; i < len; i++) {
+    let v = d[i] / (peak || 1);
+    const k = i - (len - fade);
+    if (k > 0) v *= 0.5 * (1 + Math.cos((Math.PI * k) / fade));
+    d[i] = v;
+  }
   // O filtro de média atrasa meio sample: corrige a afinação no playbackRate.
   const entry = { buf, rate: freq / (sr / (N + 0.5)) };
   plucks.set(midi, entry);
@@ -97,12 +107,12 @@ export function pluck(
   const vol = opts.gain ?? 0.55;
   g.gain.setValueAtTime(vol, t);
   if (opts.dur) {
-    g.gain.setValueAtTime(vol, t + opts.dur);
-    g.gain.linearRampToValueAtTime(0.0001, t + opts.dur + 0.08);
+    // abafar a corda: queda exponencial curta, como a mão encostando, sem clique
+    g.gain.setTargetAtTime(0, t + opts.dur, 0.07);
   }
   src.connect(g).connect(master!);
   src.start(t);
-  src.stop(t + (opts.dur ? opts.dur + 0.1 : 2.6));
+  src.stop(t + (opts.dur ? Math.min(opts.dur + 0.5, PLUCK_SECONDS) : PLUCK_SECONDS));
 }
 
 /* ───────── metrônomo ───────── */

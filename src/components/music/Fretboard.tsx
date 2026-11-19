@@ -52,9 +52,109 @@ const BAND = 26; // faixa dos números das casas
 const WIRE = 3;
 const STRING_W = [1.1, 1.4, 1.8, 2.3, 2.8, 3.3];
 
-function fretWidth(n: number) {
-  // encurta como numa guitarra de verdade, sem ficar menor que um dedo
-  return Math.max(48, Math.round(86 * Math.pow(0.9715, n - 1)));
+/** Largura relativa da casa n, como numa guitarra de verdade: cada casa é 2^(-1/12) da anterior (regra do 17,817). */
+function fretRatio(n: number) {
+  return Math.pow(2, -(n - 1) / 12);
+}
+const FRET1 = 86; // largura da casa 1 quando não há espaço sobrando
+const MIN_FRET = 40; // a casa mais estreita nunca fica menor que um dedo
+
+/**
+ * Uma corda. Ao ser tocada, o trecho entre a casa apertada e o cavalete vibra como uma
+ * onda presa nas duas pontas: amplitude que decai, oscilação rápida (o olho vê um borrão)
+ * e um "envelope" translúcido mostrando até onde a corda vai. O trecho até a casa fica parado.
+ */
+function GuitarString({
+  index,
+  cross,
+  length,
+  fretAt,
+  vib,
+  P,
+}: {
+  index: number;
+  cross: number;
+  length: number;
+  /** Posição (ao longo do braço) onde a corda está presa ao vibrar: traste da casa, ou o capotraste. */
+  fretAt: (f: number) => number;
+  vib?: { f: number; k: number };
+  P: (al: number, cr: number) => [number, number];
+}) {
+  const w = STRING_W[index] ?? 2;
+  const wound = index >= 3;
+  const refs = [React.useRef<SVGPathElement>(null), React.useRef<SVGPathElement>(null), React.useRef<SVGPathElement>(null)];
+  const env = React.useRef<SVGPathElement>(null);
+
+  const path = React.useCallback(
+    (from: number, amp: number) => {
+      // ponto fixo virtual (cavalete) além da borda direita: a corda visível é parte da onda
+      if (amp === 0) {
+        const [ax, ay] = P(0, cross);
+        const [bx, by] = P(length, cross);
+        return `M${ax} ${ay} L${bx} ${by}`;
+      }
+      const bridge = length + (length - from) * 0.55;
+      const span = bridge - from;
+      const pts: string[] = [];
+      const [sx, sy] = P(0, cross);
+      pts.push(`M${sx.toFixed(1)} ${sy.toFixed(1)}`);
+      const [fx, fy] = P(from, cross);
+      pts.push(`L${fx.toFixed(1)} ${fy.toFixed(1)}`);
+      const N = 28;
+      for (let i = 1; i <= N; i++) {
+        const al = from + ((length - from) * i) / N;
+        const y = amp * Math.sin((Math.PI * (al - from)) / span);
+        const [x2, y2] = P(al, cross + y);
+        pts.push(`L${x2.toFixed(1)} ${y2.toFixed(1)}`);
+      }
+      return pts.join(" ");
+    },
+    [length, cross, P],
+  );
+
+  const rest = path(0, 0);
+
+  React.useEffect(() => {
+    if (!vib) return;
+    const from = vib.f === 0 ? fretAt(0) : fretAt(vib.f);
+    const amp0 = 3 + index * 0.7; // cordas graves balançam mais
+    const t0 = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const t = (now - t0) / 1000;
+      const decay = Math.exp(-t / (0.45 + index * 0.08));
+      // oscilação rápida + um pouco de irregularidade (harmônicos)
+      const osc = Math.cos(t * 2 * Math.PI * 19) * 0.8 + Math.cos(t * 2 * Math.PI * 41 + 1.3) * 0.2;
+      const a = amp0 * decay;
+      const d = path(from, a * osc);
+      for (const r of refs) r.current?.setAttribute("d", d);
+      if (env.current) {
+        env.current.setAttribute("d", `${path(from, a)} ${path(from, -a).replace(/^M[^L]*L/, "M")}`);
+        env.current.style.opacity = String(Math.min(0.35, a / 8));
+      }
+      if (a > 0.08) raf = requestAnimationFrame(tick);
+      else {
+        for (const r of refs) r.current?.setAttribute("d", rest);
+        if (env.current) env.current.style.opacity = "0";
+      }
+    };
+    raf = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(raf);
+      for (const r of refs) r.current?.setAttribute("d", rest);
+      if (env.current) env.current.style.opacity = "0";
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vib?.k]);
+
+  return (
+    <g>
+      <path ref={env} d={rest} fill="none" stroke={wound ? "var(--string-wound)" : "var(--string)"} strokeWidth={w} style={{ opacity: 0 }} />
+      <path ref={refs[0]} d={rest} fill="none" stroke="rgba(0,0,0,0.35)" strokeWidth={w + 1.2} transform="translate(0 1.2)" />
+      <path ref={refs[1]} d={rest} fill="none" stroke={wound ? "var(--string-wound)" : "var(--string)"} strokeWidth={w} />
+      {wound && <path ref={refs[2]} d={rest} fill="none" stroke="var(--marker-ring)" strokeOpacity={0.3} strokeWidth={w} strokeDasharray="0.8 1.4" />}
+    </g>
+  );
 }
 
 export function Fretboard({
@@ -83,8 +183,26 @@ export function Fretboard({
   const showOpen = first === 0;
   const firstCell = Math.max(1, first);
 
+  // Largura disponível (horizontal): o braço estica as casas para ocupar o espaço.
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const [avail, setAvail] = React.useState(0);
+  React.useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || vertical) return;
+    const ro = new ResizeObserver(([e]) => setAvail(Math.floor(e.contentRect.width)));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [vertical]);
+
   // Posições ao longo do braço
   const geo = React.useMemo(() => {
+    const fixed = (showOpen ? OPEN + NUT : WIRE) + WIRE;
+    let rel = 0;
+    for (let f = firstCell; f <= lastFret; f++) rel += fretRatio(f);
+    // unidade = largura da casa 1; nunca deixa a última casa menor que MIN_FRET
+    const minUnit = Math.max(FRET1, MIN_FRET / fretRatio(lastFret));
+    const fill = !vertical && avail > 0 ? (avail - fixed) / rel : 0;
+    const unit = Math.max(minUnit, fill);
     const start: Record<number, number> = {};
     const end: Record<number, number> = {};
     let a = 0;
@@ -97,11 +215,11 @@ export function Fretboard({
     }
     for (let f = firstCell; f <= lastFret; f++) {
       start[f] = a;
-      a += fretWidth(f);
+      a += fretRatio(f) * unit;
       end[f] = a;
     }
-    return { start, end, length: a + WIRE };
-  }, [showOpen, firstCell, lastFret]);
+    return { start, end, length: Math.floor(a + WIRE) };
+  }, [showOpen, firstCell, lastFret, avail, vertical]);
 
   const crossOf = (stringIdx: number) => {
     // stringIdx: 0 = corda 1
@@ -124,11 +242,29 @@ export function Fretboard({
 
   // Pressionar: animação curta da corda
   const [pluck, setPluck] = React.useState<{ s: number; f: number; k: number } | null>(null);
+  const [vibs, setVibs] = React.useState<Record<number, { f: number; k: number }>>({});
   const press = (stringNo: number, fret: number) => {
     if (readOnly) return;
     setPluck((p) => ({ s: stringNo, f: fret, k: (p?.k ?? 0) + 1 }));
+    setVibs((v) => ({ ...v, [stringNo]: { f: fret, k: (v[stringNo]?.k ?? 0) + 1 } }));
     onPress?.(stringNo, fret);
   };
+  // Deslizar com o botão apertado: descobre a casa sob o ponteiro.
+  const lastCell = React.useRef<{ s: number; f: number } | null>(null);
+  const cellAt = (el: HTMLElement, cx: number, cy: number) => {
+    const r = el.getBoundingClientRect();
+    const x = cx - r.left;
+    const y = cy - r.top;
+    const al = vertical ? y : x;
+    const cr = vertical ? x - BAND : y - TOP;
+    const ordered = Math.round((cr - EDGE) / GAP);
+    if (ordered < 0 || ordered >= nStrings) return null;
+    const idx = vertical ? nStrings - 1 - ordered : highStringOnTop ? ordered : nStrings - 1 - ordered;
+    const f = cells.find((c) => al >= geo.start[c] && al < geo.end[c]);
+    return f === undefined ? null : { s: idx + 1, f };
+  };
+  // onde a corda fica presa: o traste da casa (fim da casa) ou o capotraste (corda solta)
+  const fretAt = (f: number) => (f === 0 ? (showOpen ? OPEN : 0) : (geo.end[f] ?? 0));
 
   // Foco itinerante (uma parada de Tab; setas navegam)
   const cells: number[] = [];
@@ -179,7 +315,6 @@ export function Fretboard({
   };
 
   // Rola até a área de interesse
-  const scrollRef = React.useRef<HTMLDivElement>(null);
   const target = scrollToFret ?? highlightRange?.from ?? firstMarker?.fret;
   React.useEffect(() => {
     const el = scrollRef.current;
@@ -267,21 +402,9 @@ export function Fretboard({
             })}
             {!showOpen && <rect {...R(0, WIRE, 0, woodAcross)} fill="var(--fret)" />}
             {/* Cordas */}
-            {Array.from({ length: nStrings }, (_, i) => {
-              const c = crossOf(i);
-              const [x0, y0] = P(0, c);
-              const [x1, y1] = P(geo.length, c);
-              const w = STRING_W[i] ?? 2;
-              const wound = i >= 3;
-              const plucked = pluck && pluck.s === i + 1;
-              return (
-                <g key={`${i}-${plucked ? pluck!.k : 0}`} className={plucked ? (vertical ? "animate-vibrate-x" : "animate-vibrate") : undefined}>
-                  <line x1={x0} y1={y0} x2={x1} y2={y1} stroke="rgba(0,0,0,0.35)" strokeWidth={w + 1.2} transform={vertical ? "translate(1.2 0)" : "translate(0 1.2)"} />
-                  <line x1={x0} y1={y0} x2={x1} y2={y1} stroke={wound ? "var(--string-wound)" : "var(--string)"} strokeWidth={w} />
-                  {wound && <line x1={x0} y1={y0} x2={x1} y2={y1} stroke="var(--marker-ring)" strokeOpacity={0.3} strokeWidth={w} strokeDasharray="0.8 1.4" />}
-                </g>
-              );
-            })}
+            {Array.from({ length: nStrings }, (_, i) => (
+              <GuitarString key={i} index={i} cross={crossOf(i)} length={geo.length} fretAt={fretAt} vib={vibs[i + 1]} P={P} />
+            ))}
             {/* Números das casas */}
             {cells.map((f) => {
               const a = centerAlong(f);
@@ -363,7 +486,28 @@ export function Fretboard({
           </svg>
 
           {/* Camada de toque e teclado */}
-          <div role="grid" aria-label={ariaLabel ?? s.label} aria-readonly={readOnly || undefined} className="absolute inset-0">
+          <div
+            role="grid"
+            aria-label={ariaLabel ?? s.label}
+            aria-readonly={readOnly || undefined}
+            className="absolute inset-0 select-none"
+            onDragStart={(e) => e.preventDefault()}
+            onPointerDown={(e) => {
+              lastCell.current = cellAt(e.currentTarget, e.clientX, e.clientY);
+            }}
+            onPointerMove={(e) => {
+              if (e.pointerType === "touch" || !(e.buttons & 1) || readOnly) return;
+              const cur = cellAt(e.currentTarget, e.clientX, e.clientY);
+              const last = lastCell.current;
+              if (!cur || (last && last.s === cur.s && last.f === cur.f)) return;
+              lastCell.current = cur;
+              if (!last || last.s === cur.s) return press(cur.s, cur.f);
+              // cruzou várias cordas num movimento só: toca todas no caminho, como uma palhetada
+              const dir = cur.s > last.s ? 1 : -1;
+              for (let sNo = last.s + dir; dir > 0 ? sNo <= cur.s : sNo >= cur.s; sNo += dir) press(sNo, cur.f);
+            }}
+            onPointerUp={() => (lastCell.current = null)}
+          >
             {Array.from({ length: nStrings }, (_, i) => {
               const sNo = i + 1;
               return (
@@ -384,6 +528,12 @@ export function Fretboard({
                         onFocus={() => setFocus({ s: sNo, f })}
                         onPointerDown={(e) => {
                           if (e.pointerType === "mouse" && e.button !== 0) return;
+                          // solta a captura implícita para que as outras casas recebam o deslizar
+                          try {
+                            (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
+                          } catch {
+                            /* ponteiro sem captura: nada a soltar */
+                          }
                           press(sNo, f);
                         }}
                         onKeyDown={(e) => onKeyDown(e, sNo, f)}
