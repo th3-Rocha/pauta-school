@@ -13,6 +13,6 @@ const t = getCourse("keyboard", "pt").titles[day];
 const title = t ? `Dia ${day}: ${t} · Teclado · Pauta` : `Dia ${day} · Teclado · Pauta`;
 ---
 
-<Base title={title}>
+<Base title={title} instrument="keyboard">
   <LessonApp day={day} instrument="keyboard" locale="pt" client:load />
 </Base>

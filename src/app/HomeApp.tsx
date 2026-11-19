@@ -3,7 +3,7 @@ import { ArrowRight, Cable, Ear, Headphones, Smartphone } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { YearMap, type YearMonth, type DayState } from "../components/course/YearMap";
 import { MilestoneCard } from "../components/course/MilestoneCard";
-import { InstrumentPicker } from "../components/course/InstrumentPicker";
+import { InstrumentTabs } from "../components/course/InstrumentTabs";
 import { instrumentsIn } from "../data/instruments";
 import { selectInstrument, useInstrument } from "./instrument";
 import { L, localePath, setLocale, type Locale } from "../i18n";
@@ -48,24 +48,8 @@ export default function HomeApp({ locale = "pt", guitarTitles }: { locale?: Loca
 
   return (
     <Shell>
-      <main className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-4 pb-20 pt-8 sm:pt-14">
-        <section aria-labelledby="instrumento" className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <h2 id="instrumento" className="font-display text-2xl font-bold text-fg">
-              {L("Escolha seu instrumento", "Choose your instrument")}
-            </h2>
-            <p className="text-muted">
-              {L(
-                "A guitarra já tem o ano inteiro, 365 aulas. O teclado tem o primeiro mês. Gaita e os outros estão sendo preparados.",
-                "Guitar has the whole year, all 365 lessons. Keyboard has its first month. Harmonica and the others are on the way.",
-              )}{" "}
-              <a href={localePath("/setup")} className="underline decoration-line-strong underline-offset-4 hover:text-fg focus-ring">
-                {L("Testar meu equipamento", "Test my setup")}
-              </a>
-            </p>
-          </div>
-          <InstrumentPicker instruments={instrumentsIn(locale)} selected={instrument} onSelect={selectInstrument} />
-        </section>
+      <main className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 pb-20 pt-6 sm:pt-10">
+        <InstrumentTabs instruments={instrumentsIn(locale)} selected={instrument} onSelect={selectInstrument} />
 
         <section className="grid gap-8 lg:grid-cols-[1.3fr_1fr] lg:items-end">
           <div className="flex flex-col gap-5">
@@ -87,6 +71,9 @@ export default function HomeApp({ locale = "pt", guitarTitles }: { locale?: Loca
                 <ArrowRight aria-hidden />
               </Button>
               {!ready && <span className="text-sm text-muted">{L("Novas aulas chegam toda semana.", "New lessons arrive every week.")}</span>}
+              <a href={localePath("/setup")} className="text-sm text-muted underline decoration-line-strong underline-offset-4 hover:text-fg focus-ring">
+                {L("Testar meu equipamento", "Test my setup")}
+              </a>
             </div>
           </div>
 

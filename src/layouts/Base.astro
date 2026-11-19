@@ -5,8 +5,10 @@ interface Props {
   title: string;
   description?: string;
   lang?: "pt" | "en";
+  /** Instrumento da página (aulas). Sem ele, usa o último escolhido neste navegador. */
+  instrument?: string;
 }
-const { lang = "pt" } = Astro.props;
+const { lang = "pt", instrument: pageInstrument = "" } = Astro.props;
 const {
   title,
   description = lang === "en"
@@ -42,6 +44,16 @@ const enHref = path === "/" ? "/en" : `/en${path}`;
         if (want !== pageLang && !/bot|crawl|spider/i.test(navigator.userAgent)) {
           location.replace((want === "en" ? enHref : ptHref) + location.search + location.hash);
         }
+      })();
+    </script>
+    <script is:inline define:vars={{ pageInstrument }}>
+      // Cor de destaque do instrumento, antes de pintar a página.
+      (function () {
+        var ins = pageInstrument;
+        if (!ins) {
+          try { ins = localStorage.getItem("pauta:instrument"); } catch (e) {}
+        }
+        document.documentElement.setAttribute("data-instrument", ins || "guitar");
       })();
     </script>
     <script is:inline>

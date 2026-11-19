@@ -88,6 +88,38 @@
   }
 }
 
+
+/* Cor de destaque por instrumento (o <html> recebe data-instrument). */
+/* A cor de cada um, para mostrar na lista de troca. */
+html { --accent-guitar: #ff6b5c; --accent-keyboard: #3fd2c2; --accent-harmonica: #6aa8ff; --accent-acoustic-guitar: #f2a93b; --accent-bass: #a78bfa; --accent-ukulele: #a3d65c; --accent-drums: #ff8f4d; --accent-voice: #f47cc0; }
+html[data-theme="light"] { --accent-guitar: #b3261e; --accent-keyboard: #0b6f66; --accent-harmonica: #1f5fbf; --accent-acoustic-guitar: #8a5a00; --accent-bass: #6a46d6; --accent-ukulele: #4c7a12; --accent-drums: #b04a0c; --accent-voice: #b0307a; }
+html[data-instrument="guitar"] { --accent: #ff6b5c; --on-accent: #2a0805; --accent-soft: #3d1813; --focus: #ff6b5c; }
+html[data-instrument="keyboard"] { --accent: #3fd2c2; --on-accent: #0b1f1d; --accent-soft: #173a36; --focus: #3fd2c2; }
+html[data-instrument="harmonica"] { --accent: #6aa8ff; --on-accent: #06162e; --accent-soft: #172a45; --focus: #6aa8ff; }
+html[data-instrument="acoustic-guitar"] { --accent: #f2a93b; --on-accent: #2a1a03; --accent-soft: #3a2a10; --focus: #f2a93b; }
+html[data-instrument="bass"] { --accent: #a78bfa; --on-accent: #1a1033; --accent-soft: #2a2145; --focus: #a78bfa; }
+html[data-instrument="ukulele"] { --accent: #a3d65c; --on-accent: #15210a; --accent-soft: #26331a; --focus: #a3d65c; }
+html[data-instrument="drums"] { --accent: #ff8f4d; --on-accent: #2a1205; --accent-soft: #3d2214; --focus: #ff8f4d; }
+html[data-instrument="voice"] { --accent: #f47cc0; --on-accent: #2b0a1d; --accent-soft: #3d1a2e; --focus: #f47cc0; }
+html[data-theme="light"][data-instrument="guitar"] { --accent: #b3261e; --on-accent: #ffffff; --accent-soft: #f8dcd8; --focus: #b3261e; }
+html[data-theme="light"][data-instrument="keyboard"] { --accent: #0b6f66; --on-accent: #ffffff; --accent-soft: #d9efec; --focus: #0b6f66; }
+html[data-theme="light"][data-instrument="harmonica"] { --accent: #1f5fbf; --on-accent: #ffffff; --accent-soft: #dce8fb; --focus: #1f5fbf; }
+html[data-theme="light"][data-instrument="acoustic-guitar"] { --accent: #8a5a00; --on-accent: #ffffff; --accent-soft: #f6ead2; --focus: #8a5a00; }
+html[data-theme="light"][data-instrument="bass"] { --accent: #6a46d6; --on-accent: #ffffff; --accent-soft: #e8e1fb; --focus: #6a46d6; }
+html[data-theme="light"][data-instrument="ukulele"] { --accent: #4c7a12; --on-accent: #ffffff; --accent-soft: #e5f1d3; --focus: #4c7a12; }
+html[data-theme="light"][data-instrument="drums"] { --accent: #b04a0c; --on-accent: #ffffff; --accent-soft: #fae2d3; --focus: #b04a0c; }
+html[data-theme="light"][data-instrument="voice"] { --accent: #b0307a; --on-accent: #ffffff; --accent-soft: #f7dcea; --focus: #b0307a; }
+@media (prefers-color-scheme: light) {
+  html:not([data-theme])[data-instrument="guitar"] { --accent: #b3261e; --on-accent: #ffffff; --accent-soft: #f8dcd8; --focus: #b3261e; }
+  html:not([data-theme])[data-instrument="keyboard"] { --accent: #0b6f66; --on-accent: #ffffff; --accent-soft: #d9efec; --focus: #0b6f66; }
+  html:not([data-theme])[data-instrument="harmonica"] { --accent: #1f5fbf; --on-accent: #ffffff; --accent-soft: #dce8fb; --focus: #1f5fbf; }
+  html:not([data-theme])[data-instrument="acoustic-guitar"] { --accent: #8a5a00; --on-accent: #ffffff; --accent-soft: #f6ead2; --focus: #8a5a00; }
+  html:not([data-theme])[data-instrument="bass"] { --accent: #6a46d6; --on-accent: #ffffff; --accent-soft: #e8e1fb; --focus: #6a46d6; }
+  html:not([data-theme])[data-instrument="ukulele"] { --accent: #4c7a12; --on-accent: #ffffff; --accent-soft: #e5f1d3; --focus: #4c7a12; }
+  html:not([data-theme])[data-instrument="drums"] { --accent: #b04a0c; --on-accent: #ffffff; --accent-soft: #fae2d3; --focus: #b04a0c; }
+  html:not([data-theme])[data-instrument="voice"] { --accent: #b0307a; --on-accent: #ffffff; --accent-soft: #f7dcea; --focus: #b0307a; }
+}
+
 /* Objeto físico: iguais nos dois temas, como uma foto. */
 :root {
   --wood: #3b2518;          /* escala de jacarandá */

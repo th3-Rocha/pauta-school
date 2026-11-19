@@ -13,6 +13,6 @@ const t = getCourse("guitar", "pt").titles[day];
 const title = t ? `Dia ${day}: ${t} · Guitarra · Pauta` : `Dia ${day} · Guitarra · Pauta`;
 ---
 
-<Base title={title}>
+<Base title={title} instrument="guitar">
   <LessonApp day={day} instrument="guitar" locale="pt" client:load />
 </Base>

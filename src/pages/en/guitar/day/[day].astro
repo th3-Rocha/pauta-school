@@ -15,6 +15,6 @@ const t = GUITAR_TITLES_EN[day];
 const title = t ? `Day ${day}: ${t} · Guitar · Pauta` : `Day ${day} · Guitar · Pauta`;
 ---
 
-<Base title={title} lang="en">
+<Base title={title} lang="en" instrument="guitar">
   <LessonApp day={day} instrument="guitar" locale="en" translated={translated} titles={GUITAR_TITLES_EN} client:load />
 </Base>

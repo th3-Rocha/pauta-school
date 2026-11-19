@@ -19,6 +19,7 @@ function read(): InstrumentId {
 
 export function selectInstrument(id: InstrumentId) {
   selected = id;
+  if (typeof document !== "undefined") document.documentElement.setAttribute("data-instrument", id);
   try {
     localStorage.setItem(KEY, id);
   } catch {
