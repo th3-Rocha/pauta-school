@@ -2,11 +2,11 @@
 import { L } from "../../i18n";
 import * as React from "react";
 import { ScoreFrame } from "../../components/music/ScoreFrame";
-import { STANDARD_TUNING } from "../../lib/music";
-import { pluck, strum, tick } from "../../app/audio";
-import { chordMidis, CHORDS } from "../chords";
+import { bass, strum, tick } from "../../app/audio";
+import { chordFrets, chordMidis, chordName } from "../chords";
 import type { TabNote } from "../types";
 import { runSequence, type SeqEvent } from "./seq";
+import { playTabNote, swingTime, techLabel } from "./tabSound";
 
 type Placed = { note: TabNote; start: number; measure: number };
 
@@ -35,13 +35,20 @@ function Figure({ x, d, rest }: { x: number; d: number; rest?: boolean }) {
     return <path d={`M${x - 2} ${y - 16} l5 6 l-5 5 l5 6 l-6 -2 l2 4`} stroke={ink} strokeWidth={2} fill="none" />;
   }
   const hollow = d >= 2;
-  const dotted = d === 3 || d === 1.5;
+  const dotted = d === 3 || d === 1.5 || d === 0.75 || d === 6;
+  const triplet = Math.abs(d * 3 - Math.round(d * 3)) < 0.01 && Math.abs(d * 2 - Math.round(d * 2)) > 0.01;
   return (
     <g>
       <ellipse cx={x} cy={y} rx={5.5} ry={4} transform={`rotate(-20 ${x} ${y})`} fill={hollow ? "none" : ink} stroke={ink} strokeWidth={1.6} />
       {d < 4 && <line x1={x + 5} y1={y - 1} x2={x + 5} y2={y - 22} stroke={ink} strokeWidth={1.6} />}
-      {d === 0.5 && <path d={`M${x + 5} ${y - 22} q7 5 4 12`} stroke={ink} strokeWidth={1.6} fill="none" />}
+      {d <= 0.75 && <path d={`M${x + 5} ${y - 22} q7 5 4 12`} stroke={ink} strokeWidth={1.6} fill="none" />}
+      {d <= 0.375 && <path d={`M${x + 5} ${y - 16} q7 5 4 12`} stroke={ink} strokeWidth={1.6} fill="none" />}
       {dotted && <circle cx={x + 10} cy={y} r={1.8} fill={ink} />}
+      {triplet && (
+        <text x={x} y={y + 14} textAnchor="middle" className="fill-muted font-mono text-[9px]">
+          3
+        </text>
+      )}
     </g>
   );
 }
@@ -100,26 +107,33 @@ export function TabStaff({
         const { x, y0 } = posOf(p);
         const on = i === active;
         const n = p.note;
-        const frets: { s: number; f: number }[] =
-          "s" in n ? [{ s: n.s, f: n.f }] : "chord" in n ? [...CHORDS[n.chord].shape].map((c, k) => ({ s: 6 - k, f: c === "x" ? -1 : Number(c) })).filter((q) => q.f >= 0) : [];
+        const frets: { s: number; f: number }[] = "s" in n ? [{ s: n.s, f: n.f }] : "multi" in n ? n.multi : "chord" in n ? chordFrets(n.chord) : [];
+        const muted = "t" in n && n.t === "x";
+        const tech = muted ? null : techLabel(n);
+        const harm = "t" in n && n.t === "harm";
         return (
           <g key={i}>
             {on && <rect x={x - 11} y={y0 + TOP - 9} width={22} height={LINE * 5 + 18} rx={4} fill="var(--accent-soft)" />}
             {"chord" in n && (
               <text x={x} y={y0 + TOP - 8} textAnchor="middle" className="fill-fg font-mono text-[11px] font-bold">
-                {n.chord}
+                {chordName(n.chord)}
+              </text>
+            )}
+            {tech && (
+              <text x={x} y={y0 + TOP - 8} textAnchor="middle" className="fill-accent font-mono text-[10px] font-bold">
+                {tech}
               </text>
             )}
             {frets.map((q) => (
               <g key={q.s}>
-                <rect x={x - 7} y={y0 + TOP + (q.s - 1) * LINE - 7} width={14} height={14} fill={on ? "var(--accent-soft)" : "var(--surface)"} />
+                <rect x={x - (q.f >= 10 || harm ? 10 : 7)} y={y0 + TOP + (q.s - 1) * LINE - 7} width={q.f >= 10 || harm ? 20 : 14} height={14} fill={on ? "var(--accent-soft)" : "var(--surface)"} />
                 <text
                   x={x}
                   y={y0 + TOP + (q.s - 1) * LINE + 4.5}
                   textAnchor="middle"
                   className={on ? "fill-accent font-mono text-[13px] font-bold" : "fill-fg font-mono text-[13px] font-bold"}
                 >
-                  {q.f}
+                  {muted ? "x" : harm ? `<${q.f}>` : q.f}
                 </text>
               </g>
             ))}
@@ -144,7 +158,22 @@ function useWidth(ref: React.RefObject<HTMLElement | null>) {
   return w;
 }
 
-export function TabPlayer({ title, bpm, notes, beatsPerMeasure = 4 }: { title?: string; bpm: number; notes: TabNote[]; beatsPerMeasure?: number }) {
+export function TabPlayer({
+  title,
+  bpm,
+  notes,
+  beatsPerMeasure = 4,
+  swing = false,
+  backing,
+}: {
+  title?: string;
+  bpm: number;
+  notes: TabNote[];
+  beatsPerMeasure?: number;
+  swing?: boolean;
+  /** Um acorde por compasso, tocado baixinho por trás ("C G" = dois no compasso). */
+  backing?: string[];
+}) {
   const box = React.useRef<HTMLDivElement>(null);
   const width = useWidth(box);
   const [playing, setPlaying] = React.useState(false);
@@ -172,13 +201,30 @@ export function TabPlayer({ title, bpm, notes, beatsPerMeasure = 4 }: { title?: 
     for (let b = 0; b < pre; b++) ev.push({ t: b * spb, sound: (w) => tick(w, b === 0) });
     const total = measures * beatsPerMeasure;
     if (metro) for (let b = 0; b < total; b++) ev.push({ t: (pre + b) * spb, sound: (w) => tick(w, b % beatsPerMeasure === 0) });
+    if (backing?.length)
+      for (let mi = 0; mi < measures; mi++) {
+        const parts = backing[mi % backing.length].split(/\s+/);
+        const each = beatsPerMeasure / parts.length;
+        parts.forEach((c, k) => {
+          const at = (pre + mi * beatsPerMeasure + k * each) * spb;
+          const ms = chordMidis(c);
+          ev.push({
+            t: at,
+            sound: (w) => {
+              strum(ms, { when: w, gain: 0.22, dur: each * spb * 0.95 });
+              bass(ms[0], w, each * spb * 0.9, 0.35);
+            },
+          });
+        });
+      }
     let t = 0;
     notes.forEach((n, i) => {
-      const at = (pre + t) * spb;
-      const dur = n.d * spb * 0.95;
-      if ("s" in n) ev.push({ t: at, sound: (w) => pluck(STANDARD_TUNING[n.s - 1] + n.f, { when: w, dur }), ui: () => setActive(i) });
-      else if ("chord" in n) ev.push({ t: at, sound: (w) => strum(chordMidis(n.chord), { when: w, dur }), ui: () => setActive(i) });
-      else ev.push({ t: at, ui: () => setActive(i) });
+      const t0 = swing ? swingTime(t) : t;
+      const t1 = swing ? swingTime(t + n.d) : t + n.d;
+      const at = (pre + t0) * spb;
+      const dur = (t1 - t0) * spb * 0.95;
+      const prev = notes[i - 1];
+      ev.push({ t: at, sound: "rest" in n ? undefined : (w) => playTabNote(n, w, dur, prev), ui: () => setActive(i) });
       t += n.d;
     });
     stopRef.current = runSequence(ev, (pre + total) * spb, { loop, onEnd: stop });
@@ -188,7 +234,7 @@ export function TabPlayer({ title, bpm, notes, beatsPerMeasure = 4 }: { title?: 
   return (
     <ScoreFrame
       title={title}
-      subtitle={`${bpm} BPM · ${measures} ${measures === 1 ? L("compasso", "bar") : L("compassos", "bars")}`}
+      subtitle={`${bpm} BPM · ${measures} ${measures === 1 ? L("compasso", "bar") : L("compassos", "bars")}${swing ? " · swing" : ""}${backing?.length ? ` · ${L("com base", "with backing")}` : ""}`}
       playing={playing}
       onPlayPause={() => (playing ? stop() : start())}
       speed={speed}

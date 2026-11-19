@@ -61,13 +61,38 @@ function pluckBuffer(midi: number) {
   return entry;
 }
 
-export function pluck(midi: number, opts: { when?: number; gain?: number; dur?: number } = {}) {
+export function pluck(
+  midi: number,
+  opts: {
+    when?: number;
+    gain?: number;
+    dur?: number;
+    /** Muda a altura durante a nota: bend, slide, vibrato. `semis` relativo à nota tocada. */
+    glide?: { semis: number; at: number; time: number }[];
+    vibrato?: boolean;
+  } = {},
+) {
   const c = audio();
   const t = opts.when ?? c.currentTime;
   const { buf, rate } = pluckBuffer(midi);
   const src = c.createBufferSource();
   src.buffer = buf;
-  src.playbackRate.value = rate;
+  src.playbackRate.setValueAtTime(rate, t);
+  let cur = rate;
+  for (const gl of opts.glide ?? []) {
+    src.playbackRate.setValueAtTime(cur, t + gl.at);
+    cur = rate * Math.pow(2, gl.semis / 12);
+    src.playbackRate.linearRampToValueAtTime(cur, t + gl.at + gl.time);
+  }
+  if (opts.vibrato) {
+    const lfo = c.createOscillator();
+    const depth = c.createGain();
+    lfo.frequency.value = 5.5;
+    depth.gain.value = rate * 0.012;
+    lfo.connect(depth).connect(src.playbackRate);
+    lfo.start(t + 0.15);
+    lfo.stop(t + (opts.dur ?? 2.5) + 0.1);
+  }
   const g = c.createGain();
   const vol = opts.gain ?? 0.55;
   g.gain.setValueAtTime(vol, t);
@@ -247,4 +272,93 @@ export function strum(midis: number[], opts: { when?: number; down?: boolean; ga
 export function tick(when: number, accent = false) {
   audio();
   click(when, accent);
+}
+
+/** Batida abafada (chuck / scratch): ruído curto filtrado. */
+export function mutedStrum(when?: number, gain = 0.35) {
+  const c = audio();
+  const t = when ?? c.currentTime;
+  const len = Math.floor(c.sampleRate * 0.06);
+  const buf = c.createBuffer(1, len, c.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+  const src = c.createBufferSource();
+  src.buffer = buf;
+  const bp = c.createBiquadFilter();
+  bp.type = "bandpass";
+  bp.frequency.value = 1800;
+  bp.Q.value = 0.8;
+  const g = c.createGain();
+  g.gain.value = gain;
+  src.connect(bp).connect(g).connect(master!);
+  src.start(t);
+}
+
+/** Baixo: corda grave com ataque redondo. */
+export function bass(midi: number, when: number, dur: number, gain = 0.6) {
+  pluck(midi, { when, dur, gain });
+}
+
+/** Bateria sintetizada: bumbo, caixa, chimbal, aro (rim) e ganzá (shaker). */
+export function drum(kind: "kick" | "snare" | "hat" | "rim" | "shaker", when: number, gain = 1) {
+  const c = audio();
+  const t = when;
+  if (kind === "kick") {
+    const o = c.createOscillator();
+    const g = c.createGain();
+    o.frequency.setValueAtTime(140, t);
+    o.frequency.exponentialRampToValueAtTime(45, t + 0.12);
+    g.gain.setValueAtTime(0.9 * gain, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+    o.connect(g).connect(master!);
+    o.start(t);
+    o.stop(t + 0.3);
+    return;
+  }
+  const lenS = kind === "snare" ? 0.18 : kind === "shaker" ? 0.07 : kind === "rim" ? 0.03 : 0.04;
+  const len = Math.floor(c.sampleRate * lenS);
+  const buf = c.createBuffer(1, len, c.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2);
+  const src = c.createBufferSource();
+  src.buffer = buf;
+  const f = c.createBiquadFilter();
+  f.type = kind === "snare" ? "bandpass" : "highpass";
+  f.frequency.value = kind === "snare" ? 1900 : kind === "rim" ? 2500 : 7000;
+  const g = c.createGain();
+  g.gain.value = (kind === "snare" ? 0.55 : kind === "rim" ? 0.5 : kind === "shaker" ? 0.18 : 0.22) * gain;
+  src.connect(f).connect(g).connect(master!);
+  src.start(t);
+}
+
+/** Drone contínuo numa classe de altura (0 = C). Devolve a função de parar. */
+export function startDrone(pc: number): () => void {
+  const c = audio();
+  const t = c.currentTime;
+  const out = c.createGain();
+  out.gain.setValueAtTime(0.0001, t);
+  out.gain.exponentialRampToValueAtTime(0.22, t + 0.6);
+  const lp = c.createBiquadFilter();
+  lp.type = "lowpass";
+  lp.frequency.value = 900;
+  lp.connect(out).connect(master!);
+  const root = 36 + pc; // C2..B2
+  const oscs = [root, root + 12, root + 19].map((m, i) => {
+    const o = c.createOscillator();
+    o.type = i === 0 ? "sawtooth" : "triangle";
+    o.frequency.value = midiToFreq(m);
+    o.detune.value = i === 1 ? 4 : 0;
+    const g = c.createGain();
+    g.gain.value = i === 0 ? 0.5 : 0.35;
+    o.connect(g).connect(lp);
+    o.start(t);
+    return o;
+  });
+  return () => {
+    const n = c.currentTime;
+    out.gain.cancelScheduledValues(n);
+    out.gain.setValueAtTime(out.gain.value, n);
+    out.gain.exponentialRampToValueAtTime(0.0001, n + 0.3);
+    oscs.forEach((o) => o.stop(n + 0.35));
+  };
 }

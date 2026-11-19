@@ -6,13 +6,41 @@ import type { Finger, Hand } from "../lib/piano";
 
 export type Text = string;
 
+/**
+ * Técnica escrita sobre a nota da tablatura.
+ * h = hammer-on, p = pull-off, "/" e "\\" = slide subindo/descendo (vindo da nota anterior),
+ * b = bend (sobe `b` semitons, padrão 2), pb = pre-bend (já começa esticada e solta),
+ * r = release (solta um bend), "~" = vibrato, pm = palm mute, x = nota abafada,
+ * harm = harmônico natural, t = tapping, "^" = acento.
+ */
+export type Tech = "h" | "p" | "/" | "\\" | "b" | "pb" | "r" | "~" | "pm" | "x" | "harm" | "t" | "^";
+
 /** Nota de tablatura. `s` = corda (1 aguda … 6 grave), `f` = casa, `d` = duração em tempos. */
 export type TabNote =
-  | { s: number; f: number; d: number }
+  | { s: number; f: number; d: number; t?: Tech; b?: number }
   | { chord: string; d: number }
+  | { multi: { s: number; f: number }[]; d: number; t?: Tech }
   | { rest: true; d: number };
 
-export type Stroke = "down" | "up" | "rest" | null;
+export type Stroke = "down" | "up" | "rest" | "hit" | null;
+
+/** Levadas da base de acompanhamento. */
+export type Feel =
+  | "rock"
+  | "pop"
+  | "ballad"
+  | "shuffle"
+  | "blues"
+  | "funk"
+  | "reggae"
+  | "bossa"
+  | "samba"
+  | "baiao"
+  | "xote"
+  | "jazz"
+  | "waltz"
+  | "six8"
+  | "drone";
 
 export type EarKind =
   | "highlow-strings" // duas cordas soltas: subiu ou desceu?
@@ -20,7 +48,13 @@ export type EarKind =
   | "same-diff" // mesma nota ou diferente?
   | "duration" // quantos tempos a nota durou?
   | "major-minor" // acorde maior ou menor?
-  | "which-chord"; // qual destes acordes?
+  | "which-chord" // qual destes acordes?
+  | "interval" // qual intervalo? (options: "2m","2M","3m","3M","4J","TT","5J","6m","6M","7m","7M","8J")
+  | "interval-harmonic" // o mesmo, com as duas notas juntas
+  | "quality" // qualidade do acorde (options: sufixos: "", "m", "dim", "aug", "sus2", "sus4", "maj7", "m7", "7", "m7b5", "dim7"…)
+  | "progression" // qual progressão? (options: graus separados por espaço: "I IV V I")
+  | "scale" // qual escala ou modo? (options: chaves de SCALES)
+  | "degree"; // qual grau da escala? (options: "1","2","3","4","5","6","7")
 
 export type Node =
   | Text
@@ -30,22 +64,37 @@ export type Node =
   | { w: "strings" }
   | { w: "letters" }
   | { w: "tuner" }
+  /** Checagem de bend pelo microfone: casa `f` da corda `s`, subindo `semis` semitons. */
+  | { w: "bend"; s: number; f: number; semis: number }
+  /** Gravador: grava pelo microfone e toca de volta. */
+  | { w: "recorder"; id: string; label?: Text }
+  /** Drone: nota pedal contínua (classe de altura 0–11, 0 = C). */
+  | { w: "drone"; note: number }
+  /**
+   * Base de acompanhamento. `chords`: um item por compasso ("C", "G7") ou "C G" para dois acordes no compasso.
+   * `beats`: tempos por compasso (padrão 4; 3 na valsa, 6 no 6/8, 12 no 12/8).
+   */
+  | { w: "jam"; title?: Text; key: string; bpm: number; feel: Feel; chords: string[]; beats?: number }
   | { w: "metronome"; bpm: number }
-  | { w: "fretboard"; frets?: number; markers: { s: number; f: number; label?: string; kind?: MarkerKind }[]; caption?: Text }
+  | { w: "fretboard"; frets?: number; from?: number; markers: { s: number; f: number; label?: string; kind?: MarkerKind }[]; caption?: Text }
   | { w: "chords"; chords: string[] }
   | { w: "changes"; chords: string[]; beats: number; bpm: number; title?: Text }
-  | { w: "tab"; title?: Text; bpm: number; notes: TabNote[]; beatsPerMeasure?: number }
+  | { w: "tab"; title?: Text; bpm: number; notes: TabNote[]; beatsPerMeasure?: number; swing?: boolean; backing?: string[] }
   | {
       w: "strum";
       title?: Text;
       bpm: number;
       /** Um compasso por item: acorde + batidas (uma por tempo). */
       measures: { chord: string; strokes: Stroke[] }[];
+      /** Tempos por compasso (padrão 4). */
+      beats?: number;
+      /** Colcheias suingadas (shuffle). */
+      swing?: boolean;
       /** Melodia que o app toca junto enquanto você acompanha. */
       melody?: TabNote[];
     }
   | { w: "selfcheck"; id: string; title?: Text; items: { id: string; label: Text; hint?: Text }[] }
-  | { w: "ear"; kind: EarKind; chords?: string[] }
+  | { w: "ear"; kind: EarKind; chords?: string[]; options?: string[] }
   | { w: "minute"; id: string; label: Text }
   | { w: "bpmlog"; month: number; target: number }
   // ── Teclado ──

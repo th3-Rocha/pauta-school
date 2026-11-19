@@ -7,8 +7,12 @@ import { PlayButton, LedToggle } from "../../components/music/controls";
 import { Button } from "../../components/ui/Button";
 import { cn } from "../../lib/cn";
 import { STANDARD_TUNING } from "../../lib/music";
-import { pluck, strum, tick } from "../../app/audio";
-import { CHORDS, chordMidis, chordPositions } from "../chords";
+import { mutedStrum, pluck, strum, tick } from "../../app/audio";
+import { getLocale } from "../../i18n";
+import { chordBarre, chordLabel, chordMidis, chordName, chordPositions, hasDiagram } from "../chords";
+import { swingTime } from "./tabSound";
+
+const label = (k: string) => chordLabel(k, getLocale() === "en");
 import type { Stroke, TabNote } from "../types";
 import { runSequence, type SeqEvent } from "./seq";
 
@@ -19,8 +23,12 @@ export function ChordCards({ chords }: { chords: string[] }) {
     <div className="flex flex-wrap gap-4">
       {chords.map((name) => (
         <div key={name} className="flex flex-col items-center gap-2 rounded-md border border-line bg-surface-2 p-3">
-          <ChordDiagram name={name} positions={chordPositions(name)} size="md" />
-          <p className="text-sm text-muted">{L(CHORDS[name].label, CHORDS[name].labelEn)}</p>
+          {hasDiagram(name) ? (
+            <ChordDiagram name={chordName(name)} positions={chordPositions(name)} barre={chordBarre(name)} size="md" />
+          ) : (
+            <span className="font-display text-4xl font-bold">{chordName(name)}</span>
+          )}
+          <p className="max-w-40 text-center text-sm text-muted">{label(name)}</p>
           <div className="flex gap-1.5">
             <Button size="sm" variant="secondary" onClick={() => strum(chordMidis(name), { gain: 0.6 })}>
               <Volume2 aria-hidden />
@@ -45,7 +53,7 @@ export function ChordCards({ chords }: { chords: string[] }) {
 
 /* ─────────── BPM -/+ ─────────── */
 
-function BpmControl({ bpm, onChange, min = 40, max = 160 }: { bpm: number; onChange: (b: number) => void; min?: number; max?: number }) {
+export function BpmControl({ bpm, onChange, min = 40, max = 160 }: { bpm: number; onChange: (b: number) => void; min?: number; max?: number }) {
   return (
     <div className="flex items-center gap-2" role="group" aria-label="Andamento">
       <Button size="icon" variant="secondary" aria-label={L("Diminuir 5 BPM", "Slower by 5 BPM")} onClick={() => onChange(Math.max(min, bpm - 5))}>
@@ -112,20 +120,20 @@ export function ChordChanger({ chords, beats, bpm: initialBpm, title }: { chords
       <header className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="panel-label text-muted">{title ?? L("Trocas no pulso", "Changes in time")}</h3>
         <p className="font-mono text-sm text-muted">
-          {chords.join(" → ")} · {beats} {L("tempos cada", "beats each")}
+          {chords.map(chordName).join(" → ")} · {beats} {L("tempos cada", "beats each")}
         </p>
       </header>
       <div className="grid grid-cols-[1fr_auto] items-center gap-4">
         <div className="flex items-center gap-4">
           <div className="flex flex-col items-center">
-            <span className="font-display text-6xl font-extrabold leading-none text-fg sm:text-7xl">{cur}</span>
-            <span className="mt-1 text-sm text-muted">{CHORDS[cur] && L(CHORDS[cur].label, CHORDS[cur].labelEn)}</span>
+            <span className="font-display text-6xl font-extrabold leading-none text-fg sm:text-7xl">{chordName(cur)}</span>
+            <span className="mt-1 text-sm text-muted">{label(cur)}</span>
           </div>
-          <ChordDiagram name={cur} positions={chordPositions(cur)} size="sm" className="hidden sm:block" />
+          {hasDiagram(cur) && <ChordDiagram name={chordName(cur)} positions={chordPositions(cur)} barre={chordBarre(cur)} size="sm" className="hidden sm:block" />}
         </div>
         <div className="flex flex-col items-center gap-1 rounded-md border border-line bg-surface-2 px-3 py-2">
           <span className="panel-label text-muted">{L("Próximo", "Next")}</span>
-          <span className="font-display text-3xl font-bold text-muted">{next}</span>
+          <span className="font-display text-3xl font-bold text-muted">{chordName(next)}</span>
         </div>
       </div>
       <div className="flex gap-2" aria-hidden>
@@ -147,7 +155,7 @@ export function ChordChanger({ chords, beats, bpm: initialBpm, title }: { chords
           {L("Ouvir exemplo", "Play example")}
         </LedToggle>
       </div>
-      <p className="text-sm text-muted">O último tempo de cada acorde fica amarelo: é a hora de começar a trocar.</p>
+      <p className="text-sm text-muted">{L("O último tempo de cada acorde fica amarelo: é a hora de começar a trocar.", "The last beat of each chord turns yellow: time to start changing.")}</p>
     </section>
   );
 }
@@ -159,11 +167,15 @@ export function StrumPattern({
   bpm: initialBpm,
   measures,
   melody,
+  beats = 4,
+  swing = false,
 }: {
   title?: string;
   bpm: number;
   measures: { chord: string; strokes: Stroke[] }[];
   melody?: TabNote[];
+  beats?: number;
+  swing?: boolean;
 }) {
   const [bpm, setBpm] = React.useState(initialBpm);
   const [playing, setPlaying] = React.useState(false);
@@ -171,7 +183,8 @@ export function StrumPattern({
   const [pos, setPos] = React.useState({ m: -1, b: -1 });
   const stopRef = React.useRef<(() => void) | null>(null);
   React.useEffect(() => () => stopRef.current?.(), []);
-  const perBar = 4;
+  const perBar = beats;
+  const sw = (t: number) => (swing ? swingTime(t) : t);
 
   const stop = () => {
     stopRef.current?.();
@@ -191,16 +204,17 @@ export function StrumPattern({
         ev.push({ t, sound: (w) => tick(w, b === 0), ui: () => setPos({ m: mi, b }) });
       }
       m.strokes.forEach((s, k) => {
-        if (!example || (s !== "down" && s !== "up")) return;
-        const t = (pre + mi * perBar + k / sub) * spb;
-        ev.push({ t, sound: (w) => strum(chordMidis(m.chord), { when: w, down: s === "down", gain: s === "down" ? 0.5 : 0.35, dur: spb / sub }) });
+        if (!example || (s !== "down" && s !== "up" && s !== "hit")) return;
+        const t = (pre + mi * perBar + sw(k / sub)) * spb;
+        if (s === "hit") ev.push({ t, sound: (w) => mutedStrum(w) });
+        else ev.push({ t, sound: (w) => strum(chordMidis(m.chord), { when: w, down: s === "down", gain: s === "down" ? 0.5 : 0.35, dur: spb / sub }) });
       });
     });
     if (melody) {
       let t = 0;
       for (const n of melody) {
         if ("s" in n) {
-          const at = (pre + t) * spb;
+          const at = (pre + sw(t)) * spb;
           const dur = n.d * spb * 0.95;
           ev.push({ t: at, sound: (w) => pluck(STANDARD_TUNING[n.s - 1] + n.f, { when: w, gain: 0.7, dur }) });
         }
@@ -215,9 +229,9 @@ export function StrumPattern({
     <section className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-4 shadow-md sm:p-5" aria-label={title ?? L("Levada", "Strumming")}>
       <header className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="panel-label text-muted">{title ?? L("Levada", "Strumming")}</h3>
-        <span className="text-sm text-muted">{L("↓ para baixo · ↑ para cima · conta 4 antes de começar", "↓ down · ↑ up · counts 4 before starting")}</span>
+        <span className="text-sm text-muted">{L("↓ para baixo · ↑ para cima · ✕ abafado", "↓ down · ↑ up · ✕ muted")}{swing ? " · swing" : ""}</span>
       </header>
-      <RhythmSlashes measures={measures.map((m) => ({ chord: m.chord, strokes: m.strokes }))} beatsPerMeasure={perBar} currentMeasure={pos.m} currentBeat={pos.b} perRow={4} />
+      <RhythmSlashes measures={measures.map((m) => ({ chord: chordName(m.chord), strokes: m.strokes }))} beatsPerMeasure={perBar} currentMeasure={pos.m} currentBeat={pos.b} perRow={4} />
       <div className="flex flex-wrap items-center gap-3">
         <PlayButton playing={playing} playLabel={L("Tocar", "Play")} pauseLabel={L("Parar", "Stop")} showLabel onClick={() => (playing ? stop() : start())} />
         <BpmControl bpm={bpm} onChange={(b) => !playing && setBpm(b)} />
@@ -225,7 +239,7 @@ export function StrumPattern({
           {melody ? L("Tocar os acordes também", "Play the chords too") : L("Ouvir exemplo", "Play example")}
         </LedToggle>
       </div>
-      {melody && <p className="text-sm text-muted">O app toca a melodia. Você faz os acordes, no pulso do clique.</p>}
+      {melody && <p className="text-sm text-muted">{L("O app toca a melodia. Você faz os acordes, no pulso do clique.", "The app plays the melody. You play the chords, on the click.")}</p>}
     </section>
   );
 }

@@ -16,7 +16,8 @@ pnpm build    # site estático em dist/
 |---|---|
 | `src/components/` | Design system (tokens em `src/styles/tokens.css`). Componentes visuais, sem áudio nem estado. |
 | `src/app/` | Lógica do app: `audio.ts` (corda, metrônomo, afinador), `progress.ts` (localStorage + código hex), `Shell`, `HomeApp`, `LessonApp`. |
-| `src/lessons/` | Aulas como dados (`m01/*.ts`, formato em `types.ts`) e os widgets interativos. Nova aula = novo objeto na lista do mês. |
+| `src/lessons/` | Aulas como dados (`guitar/m01/*.ts`, `guitar/m02.ts` … `m12.ts`, formato em `types.ts`) e os widgets interativos. Nova aula = novo objeto na lista do mês. As ferramentas para escrever aulas (escalas no braço, arpejos, 3NPS, levadas) ficam em `guitar/lib.ts`. |
+| `src/lib/harmony.ts` | Teoria para o som: lê cifras, graus romanos e escalas. |
 | `src/data/curriculum.ts` | Os 12 meses, desafios e títulos das aulas. |
 | `docs/curricula/` | Um currículo por instrumento (`guitar.md`, `keyboard.md`, `harmonica.md`…). |
 | `/design` | Vitrine do design system. |

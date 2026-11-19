@@ -17,6 +17,7 @@ import { Ear } from "./widgets/Ear";
 import { BpmLog, MinuteChallenge } from "./widgets/Records";
 import { PlayAlong } from "./widgets/PlayAlong";
 import { StaffNotes } from "../components/music/StaffNotes";
+import { BendCheck, DroneWidget, Jam, Recorder } from "./widgets/Guitar";
 import { DynamicsWidget, StaffQuiz, FindKeys, HandWidget, InputPanel, KeyEcho, KeysWidget, Sequence } from "./widgets/Keys";
 
 const KINDS = ["review", "concept", "lab", "ear"] as const;
@@ -27,6 +28,7 @@ function FretboardWidget({ node }: { node: Extract<Node, { w: "fretboard" }> }) 
     <div className="flex flex-col gap-2">
       <Fretboard
         frets={node.frets ?? 5}
+        startFret={node.from ?? 0}
         markers={node.markers.map((m) => ({
           string: m.s,
           fret: m.f,
@@ -98,13 +100,21 @@ function render(node: Node, i: number, day: number): React.ReactNode {
     case "changes":
       return <ChordChanger key={i} chords={node.chords} beats={node.beats} bpm={node.bpm} title={node.title} />;
     case "tab":
-      return <TabPlayer key={i} title={node.title} bpm={node.bpm} notes={node.notes} beatsPerMeasure={node.beatsPerMeasure} />;
+      return <TabPlayer key={i} title={node.title} bpm={node.bpm} notes={node.notes} beatsPerMeasure={node.beatsPerMeasure} swing={node.swing} backing={node.backing} />;
     case "strum":
-      return <StrumPattern key={i} title={node.title} bpm={node.bpm} measures={node.measures} melody={node.melody} />;
+      return <StrumPattern key={i} title={node.title} bpm={node.bpm} measures={node.measures} melody={node.melody} beats={node.beats} swing={node.swing} />;
+    case "jam":
+      return <Jam key={i} title={node.title} keyName={node.key} bpm={node.bpm} feel={node.feel} chords={node.chords} beats={node.beats} />;
+    case "drone":
+      return <DroneWidget key={i} note={node.note} />;
+    case "bend":
+      return <BendCheck key={i} s={node.s} f={node.f} semis={node.semis} />;
+    case "recorder":
+      return <Recorder key={i} id={node.id} label={node.label} />;
     case "selfcheck":
       return <Checks key={i} day={day} node={node} />;
     case "ear":
-      return <Ear key={i} kind={node.kind} chords={node.chords} />;
+      return <Ear key={i} kind={node.kind} chords={node.chords} options={node.options} />;
     case "minute":
       return <MinuteChallenge key={i} id={node.id} label={node.label} />;
     case "bpmlog":

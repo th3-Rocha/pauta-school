@@ -106,7 +106,9 @@ export function ChordDiagram({
   const start = startFret ?? (maxF <= Math.max(4, rows) ? 1 : minF);
   const nRows = Math.max(rows, maxF - start + 1);
 
-  const left = r + (size === "sm" ? 16 : 24); // espaço do número romano
+  // espaço do número romano: cresce com o tamanho do numeral (VIII, XII…)
+  const numeral = start > 1 ? toRoman(start).length : 0;
+  const left = r + (size === "sm" ? 16 : 24) + Math.max(0, numeral - 2) * (size === "sm" ? 5 : 7);
   const top = r * 2 + 8; // linha do X/O
   const W = left + gx * (n - 1) + r + 6;
   const H = top + gy * nRows + 6;
