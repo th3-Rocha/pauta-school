@@ -2,6 +2,8 @@
 @import "./tokens.css";
 
 /* Fontes hospedadas no próprio site (subconjunto latin, fontes variáveis) */
+@font-face { font-family: "Hershey"; src: url("/fonts/AVHersheySimplexLight.otf") format("opentype"); font-weight: 100 400; font-display: swap; }
+@font-face { font-family: "Hershey"; src: url("/fonts/AVHersheySimplexMedium.otf") format("opentype"); font-weight: 401 900; font-display: swap; }
 @font-face {
   font-family: "Bricolage Grotesque";
   src: url("/fonts/BricolageGrotesque-latin.woff2") format("woff2");

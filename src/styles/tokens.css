@@ -1,5 +1,5 @@
 /* src/styles/tokens.css
- * Pauta — tokens do design system (Tailwind CSS v4). Guitarra + Teclado.
+ * Pauta — tokens do design system (Tailwind CSS v4). Guitarra (Trastes), Teclado, Gaita e Canto.
  *
  * Uso no Astro (src/styles/global.css):
  *   @import "tailwindcss";
@@ -38,6 +38,17 @@
   --warn-soft: #33280f;
   --bad: #ff7d6e;
   --bad-soft: #3a1a16;
+
+  /* Canto: as duas vozes, a respiração e os registros (por tema) */
+  --voice-guide: #ffb340;            /* Chimera, a guia: âmbar (o "som" do Chimera) */
+  --voice-you: #3fd2c2;              /* você: o teal da Pauta */
+  --voice-target: rgba(241, 236, 228, 0.12); /* faixa de tolerância do alvo */
+  --breath-in: #7cc4ff;
+  --breath-hold: #c4b2ff;
+  --breath-out: #f2a7c3;
+  --register-chest: #e8875a;
+  --register-mix: #b9a4f5;
+  --register-head: #8fd8f5;
 }
 
 [data-theme="light"] {
@@ -62,6 +73,16 @@
   --warn-soft: #f8ecd2;
   --bad: #b0302a;
   --bad-soft: #f8e0dc;
+
+  --voice-guide: #8a5a00;            /* âmbar escuro: 5,9:1 sobre surface, 5,2:1 sobre bg */
+  --voice-you: #0b6f66;
+  --voice-target: rgba(26, 23, 21, 0.09);
+  --breath-in: #1f6fb2;
+  --breath-hold: #6a4fb8;
+  --breath-out: #a33d6b;
+  --register-chest: #a8481e;
+  --register-mix: #5b45b0;
+  --register-head: #136b8a;
 }
 
 @media (prefers-color-scheme: light) {
@@ -85,9 +106,18 @@
     --warn-soft: #f8ecd2;
     --bad: #b0302a;
     --bad-soft: #f8e0dc;
+
+    --voice-guide: #8a5a00;            /* âmbar escuro: 5,9:1 sobre surface, 5,2:1 sobre bg */
+    --voice-you: #0b6f66;
+    --voice-target: rgba(26, 23, 21, 0.09);
+    --breath-in: #1f6fb2;
+    --breath-hold: #6a4fb8;
+    --breath-out: #a33d6b;
+    --register-chest: #a8481e;
+    --register-mix: #5b45b0;
+    --register-head: #136b8a;
   }
 }
-
 
 /* Cor de destaque por instrumento (o <html> recebe data-instrument). */
 /* A cor de cada um, para mostrar na lista de troca. */
@@ -166,6 +196,46 @@ html[data-theme="light"][data-instrument="voice"] { --accent: #b0307a; --on-acce
   --pedal: #c4a55f;             /* latão dos pedais */
   --hand-right: #f28dc0;        /* mão direita (MD): rosa, mais clara */
   --hand-left: #8b93f5;         /* mão esquerda (ME): anil, mais escura */
+}
+
+/* Gaita ───────────────────────────────────────────────────────────────
+ * Diatônica de 10 furos: placas de cobertura em cromo escovado, pente de
+ * plástico preto (ou madeira), palhetas de latão vistas pelos furos.
+ * Iguais nos dois temas, como o braço e o teclado.
+ * O ar: sopro e puxada são preenchimentos (nunca texto) e SEMPRE vêm com
+ * posição (sopro em cima, puxada embaixo), seta (↑ ↓) e sinal da tab (-).
+ */
+:root {
+  --harp-cover: #b8bcc0;        /* placa de cobertura: cromo escovado */
+  --harp-cover-shine: #e8eaec;  /* reflexo do metal (filete de 1–2px) */
+  --harp-cover-edge: #6f7478;   /* dobra da placa, sombra do metal */
+  --harp-comb: #17181a;         /* pente de plástico preto */
+  --harp-comb-wood: #7a4e2d;    /* variante: pente de madeira */
+  --harp-hole: #050506;         /* o vazio do furo */
+  --harp-reed: #c9a24a;         /* palheta de latão vista pelo furo */
+  --harp-engraving: #26292c;    /* números gravados na placa (7:1 sobre o cromo) */
+  --air-blow: #8fd0ff;          /* soprar: céu claro, mais claro que a puxada */
+  --air-draw: #c0648c;          /* puxar: framboesa, mais escuro que o sopro */
+  --bend: #ffb38a;              /* nota curvada: pêssego, sempre com apóstrofo */
+}
+
+/* Canto ───────────────────────────────────────────────────────────────
+ * O monitor do Chimera é uma tela (como o braço e o teclado, um objeto
+ * físico): fundo preto puro, linhas azuis (corpo) e âmbar (som), fonte
+ * Hershey. Iguais nos dois temas. Dentro do monitor vale o Chimera; fora
+ * dele vale a Pauta. Paleta do Chimera: src/ui/colors.ts.
+ */
+:root {
+  --stage-bg: #000000;          /* tela: preto puro */
+  --stage-frame: #1e2124;       /* moldura do monitor (bezel), grafite fosco */
+  --stage-line: #4a1d3a;        /* filete interno da tela (o "frame" do Chimera) */
+  --stage-body: #f47cc0;        /* rosa do canto: corpo e estrutura (no Chimera original, azul #4fb6f2) */
+  --stage-body-dim: #8a3a6c;    /* rosa apagado: grade, rótulos secundários */
+  --stage-sound: #ffb340;       /* âmbar: som (pressão, fluxo, espectro) */
+  --stage-text: #fff0f8;        /* texto claro da tela */
+  --stage-glow: rgba(244, 124, 192, 0.55);      /* brilho das linhas rosa */
+  --stage-sound-glow: rgba(255, 179, 64, 0.55); /* brilho do âmbar */
+  --stage-alert: #ff5d40;       /* slot vermelho do Chimera: só o estado de erro */
 }
 
 /* @values:end ──────────────────────────────────────────────────────── */
@@ -252,6 +322,40 @@ html[data-theme="light"][data-instrument="voice"] { --accent: #b0307a; --on-acce
   --color-pedal: var(--pedal);
   --color-hand-right: var(--hand-right);
   --color-hand-left: var(--hand-left);
+
+  /* Gaita */
+  --color-harp-cover: var(--harp-cover);
+  --color-harp-cover-shine: var(--harp-cover-shine);
+  --color-harp-cover-edge: var(--harp-cover-edge);
+  --color-harp-comb: var(--harp-comb);
+  --color-harp-comb-wood: var(--harp-comb-wood);
+  --color-harp-hole: var(--harp-hole);
+  --color-harp-reed: var(--harp-reed);
+  --color-harp-engraving: var(--harp-engraving);
+  --color-air-blow: var(--air-blow);
+  --color-air-draw: var(--air-draw);
+  --color-bend: var(--bend);
+
+  /* Canto */
+  --color-stage-bg: var(--stage-bg);
+  --color-stage-frame: var(--stage-frame);
+  --color-stage-line: var(--stage-line);
+  --color-stage-body: var(--stage-body);
+  --color-stage-body-dim: var(--stage-body-dim);
+  --color-stage-sound: var(--stage-sound);
+  --color-stage-text: var(--stage-text);
+  --color-stage-glow: var(--stage-glow);
+  --color-stage-sound-glow: var(--stage-sound-glow);
+  --color-stage-alert: var(--stage-alert);
+  --color-voice-guide: var(--voice-guide);
+  --color-voice-you: var(--voice-you);
+  --color-voice-target: var(--voice-target);
+  --color-breath-in: var(--breath-in);
+  --color-breath-hold: var(--breath-hold);
+  --color-breath-out: var(--breath-out);
+  --color-register-chest: var(--register-chest);
+  --color-register-mix: var(--register-mix);
+  --color-register-head: var(--register-head);
 }
 
 @theme {
@@ -259,6 +363,8 @@ html[data-theme="light"][data-instrument="voice"] { --accent: #b0307a; --on-acce
   --font-display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
   --font-sans: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  /* Só dentro do monitor do Chimera (traço único, caixa alta) */
+  --font-stage: "Hershey", "JetBrains Mono", ui-monospace, monospace;
 
   --text-xs: 0.75rem;     /* 12 legenda, rótulo de painel */
   --text-xs--line-height: 1rem;
@@ -302,6 +408,10 @@ html[data-theme="light"][data-instrument="voice"] { --accent: #b0307a; --on-acce
   --animate-beat: beat 180ms var(--ease-out);
   --animate-pulse-ring: pulse-ring 1.6s var(--ease-out) infinite;
   --animate-led: led 260ms var(--ease-out);
+  --animate-cameo-in: cameo-in var(--dur-slow) var(--ease-pluck);
+  --animate-heart-up: heart-up 1.2s var(--ease-out) forwards;
+  --animate-air-up: air-up 1.4s var(--ease-out) infinite;
+  --animate-air-down: air-down 1.4s var(--ease-out) infinite;
 
   @keyframes pluck {
     0% { transform: scale(0.6); }
@@ -338,6 +448,25 @@ html[data-theme="light"][data-instrument="voice"] { --accent: #b0307a; --on-acce
     100% { transform: scale(1.6); opacity: 0; }
   }
   /* LED do MidiStatus: acende forte e volta ao brilho de repouso */
+  /* BreathIndicator: seta respira no sentido do ar */
+  @keyframes air-up {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  @keyframes air-down {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+  /* Canto: entrada do cameo e coraçõezinhos do carinho */
+  @keyframes cameo-in {
+    from { transform: translate(24px, 24px) scale(0.6); opacity: 0; }
+    to { transform: translate(0, 0) scale(1); opacity: 1; }
+  }
+  @keyframes heart-up {
+    0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+    20% { opacity: 1; }
+    100% { transform: translate(var(--hx, 0px), -44px) scale(1); opacity: 0; }
+  }
   @keyframes led {
     0% { box-shadow: 0 0 0 4px var(--accent-soft), 0 0 10px 2px var(--accent); }
     100% { box-shadow: 0 0 0 0 transparent; }
@@ -393,4 +522,19 @@ html[data-theme="light"][data-instrument="voice"] { --accent: #b0307a; --on-acce
   scroll-snap-type: x proximity;
   scrollbar-width: thin;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Canto: a tela do Chimera — linhas e textos com brilho de fósforo */
+@utility stage-text {
+  font-family: var(--font-stage);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--stage-body);
+  text-shadow: 0 0 6px var(--stage-glow);
+}
+@utility stage-glow {
+  filter: drop-shadow(0 0 3px var(--stage-glow));
+}
+@utility stage-sound-glow {
+  filter: drop-shadow(0 0 4px var(--stage-sound-glow));
 }

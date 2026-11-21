@@ -18,6 +18,7 @@ import { BpmLog, MinuteChallenge } from "./widgets/Records";
 import { PlayAlong } from "./widgets/PlayAlong";
 import { StaffNotes } from "../components/music/StaffNotes";
 import { BendCheck, DroneWidget, Jam, Recorder } from "./widgets/Guitar";
+import { BreathWidget, ChimeraShow, CheckinWidget, MatchWidget, PhraseWidget, RangeWidget, SolfegeWidget, SssWidget, VoiceSetup, VowelsWidget, WarmupWidget } from "./widgets/Voice";
 import { DynamicsWidget, StaffQuiz, FindKeys, HandWidget, InputPanel, KeyEcho, KeysWidget, Sequence } from "./widgets/Keys";
 
 const KINDS = ["review", "concept", "lab", "ear"] as const;
@@ -154,6 +155,28 @@ function render(node: Node, i: number, day: number): React.ReactNode {
       return <StaffQuiz key={i} {...node} />;
     case "dynamics":
       return <DynamicsWidget key={i} target={node.target} />;
+    case "voice-setup":
+      return <VoiceSetup key={i} />;
+    case "chimera":
+      return <ChimeraShow key={i} demos={node.demos} caption={node.caption} view={node.view} />;
+    case "match":
+      return <MatchWidget key={i} {...node} />;
+    case "phrase":
+      return <PhraseWidget key={i} {...node} />;
+    case "breath":
+      return <BreathWidget key={i} pattern={node.pattern} cycles={node.cycles} />;
+    case "sss":
+      return <SssWidget key={i} />;
+    case "warmup":
+      return <WarmupWidget key={i} items={node.items} variant={node.variant} />;
+    case "checkin":
+      return <CheckinWidget key={i} day={day} when={node.when} />;
+    case "range":
+      return <RangeWidget key={i} />;
+    case "vowels":
+      return <VowelsWidget key={i} showNasal={node.nasal} />;
+    case "solfege":
+      return <SolfegeWidget key={i} steps={node.steps} tolerance={node.tolerance} title={node.title} />;
   }
 }
 

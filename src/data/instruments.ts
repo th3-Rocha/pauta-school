@@ -22,7 +22,7 @@ export const INSTRUMENTS: Instrument[] = [
   { id: "bass", name: "Baixo", tagline: "Groove e linhas de baixo", available: false, en: ["Bass", "Groove and bass lines"] },
   { id: "ukulele", name: "Ukulele", tagline: "Primeiros acordes em dias", available: false, en: ["Ukulele", "First chords in days"] },
   { id: "drums", name: "Bateria", tagline: "Ritmo, coordenação e viradas", available: false, en: ["Drums", "Rhythm, coordination and fills"] },
-  { id: "voice", name: "Canto", tagline: "Afinação, respiração e voz", available: false, en: ["Voice", "Pitch, breathing and tone"] },
+  { id: "voice", name: "Canto", tagline: "Afinação, respiração e voz", available: true, preview: true, en: ["Voice", "Pitch, breathing and tone"] },
 ];
 
 export const CURRENT_INSTRUMENT: InstrumentId = "guitar";

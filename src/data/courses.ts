@@ -7,6 +7,8 @@ import { MONTHS, type Month } from "./curriculum";
 import { GUITAR_MONTHS_EN } from "./curriculum-en";
 import { KEYBOARD_MONTHS } from "./curriculum-keyboard";
 import { KEYBOARD_MONTHS_EN } from "./curriculum-keyboard-en";
+import { VOICE_MONTHS } from "./curriculum-voice";
+import { VOICE_LESSONS } from "../lessons/voice";
 import type { InstrumentId } from "./instruments";
 import { getLocale, localePath, type Locale } from "../i18n";
 
@@ -56,6 +58,13 @@ const DEFS: Partial<Record<InstrumentId, CourseDef>> = {
     path: "keyboard",
     pt: { name: "Teclado", pitch: "sentado ao teclado", months: KEYBOARD_MONTHS, lessons: KEYBOARD_LESSONS },
     en: { name: "Keyboard", pitch: "at the keyboard", months: KEYBOARD_MONTHS_EN, lessons: KEYBOARD_LESSONS_EN },
+  },
+  voice: {
+    instrument: "voice",
+    path: "voice",
+    pt: { name: "Canto", pitch: "de pé, com água por perto", months: VOICE_MONTHS, lessons: VOICE_LESSONS },
+    // Aulas ainda só em português: /en mostra a aula em português com aviso.
+    en: { name: "Voice", pitch: "standing up, with water nearby", months: VOICE_MONTHS, lessons: VOICE_LESSONS },
   },
 };
 

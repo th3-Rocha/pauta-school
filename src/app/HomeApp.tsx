@@ -78,7 +78,13 @@ export default function HomeApp({ locale = "pt", guitarTitles }: { locale?: Loca
           </div>
 
           <ul className="grid gap-3 text-base">
-            {(instrument === "keyboard"
+            {(instrument === "voice"
+              ? [
+                  { icon: Headphones, t: L("O Chimera canta com você", "Chimera sings with you"), d: L("Uma voz simulada por física, na sua região, mostrando a garganta por dentro.", "A physically simulated voice, in your range, showing the throat from the inside.") },
+                  { icon: Ear, t: L("O microfone confere", "The microphone checks"), d: L("Nota, afinação e ar medidos ao vivo, sem professor e sem login.", "Pitch, tuning and air measured live, with no teacher and no login.") },
+                  { icon: Smartphone, t: L("Canudo e água por perto", "A straw and water nearby"), d: L("Aulas curtas, com pausas. Cantar nunca dói.", "Short lessons, with breaks. Singing never hurts.") },
+                ]
+              : instrument === "keyboard"
               ? [
                   { icon: Cable, t: L("Ligue seu teclado", "Plug in your keyboard"), d: L("Com cabo USB o site ouve o que você toca e confere sozinho. Sem cabo, toque na tela.", "With a USB cable the site hears what you play and checks it for you. No cable? Tap the screen.") },
                   { icon: Ear, t: L("Seu ouvido no centro", "Your ear at the center"), d: L("Treinos curtos todo dia, com meta de 80% de acerto.", "Short drills every day, with an 80% accuracy goal.") },

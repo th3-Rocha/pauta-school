@@ -1,0 +1,10 @@
+/* Só o que as vistas do Chimera (AnatomyView, AnatomyView3D) precisam, tirado de ui/styles.css,
+   preso em .chimera-views para não vazar no resto da Pauta. */
+.chimera-views { --text-dim: #3487c4; }
+.chimera-views .anatomy { position: absolute; inset: 0; }
+.chimera-views .anatomy canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+.chimera-views .anatomy[data-hover] canvas,
+.chimera-views .anatomy.three canvas { cursor: grab; }
+.chimera-views .anatomy.three canvas:active,
+.chimera-views .anatomy[data-hover] canvas:active { cursor: grabbing; }
+.chimera-views .anatomy .no-webgl { margin: 24px; color: var(--text-dim); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }

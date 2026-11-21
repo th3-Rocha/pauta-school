@@ -3,6 +3,7 @@
 
 import type { MarkerKind } from "../components/music/markers";
 import type { Finger, Hand } from "../lib/piano";
+import type { VowelId } from "../lib/voice";
 
 export type Text = string;
 
@@ -139,7 +140,24 @@ export type Node =
     }
   | { w: "staff"; notes: ({ midi: number; d: number } | { rest: true; d: number })[]; clef?: "treble" | "bass"; beatsPerBar?: number; names?: boolean; caption?: Text }
   | { w: "staff-quiz"; notes: number[]; clef?: "treble" | "bass"; rounds?: number; from: number; to: number; title?: Text }
-  | { w: "dynamics"; target: "p" | "mf" | "f" };
+  | { w: "dynamics"; target: "p" | "mf" | "f" }
+  // ── Canto (alturas em semitons a partir da nota-base do aluno) ──
+  /** Ajuste de voz: o triângulo do Chimera e a nota-base pela fala. */
+  | { w: "voice-setup" }
+  /** O Chimera por dentro (2D/3D) com botões de demonstração. */
+  | { w: "chimera"; demos: { label: Text; notes: number[]; vowel?: VowelId; vowels?: VowelId[]; seconds?: number; source?: Record<string, number> }[]; caption?: Text; view?: "2d" | "3d" }
+  /** Repetir uma nota e segurar `hold` segundos dentro de ±`tolerance` cents. */
+  | { w: "match"; offset: number; vowel?: VowelId; tolerance?: number; hold?: number; title?: Text }
+  /** Cantar uma frase no piano roll. `d` em tempos; `syl` = sílaba; `v` = vogal do Chimera. */
+  | { w: "phrase"; notes: { s: number; d: number; syl?: string; v?: VowelId }[]; bpm: number; title?: Text; tolerance?: number; feedback?: "live" | "after" | "hidden"; goal?: number }
+  | { w: "breath"; pattern: [number, number, number]; cycles?: number }
+  | { w: "sss" }
+  | { w: "warmup"; variant?: "warmup" | "cooldown"; items: { id: string; seconds: number; title?: Text }[] }
+  | { w: "checkin"; when: "before" | "after" }
+  | { w: "range" }
+  | { w: "vowels"; nasal?: boolean }
+  /** Escada de solfejo: graus pedidos em ordem (0 = 1º grau … 7 = oitava). */
+  | { w: "solfege"; steps: number[]; tolerance?: number; title?: Text };
 
 export type Block = { title?: Text; subtitle?: Text; minutes: number; body: Node[] };
 
