@@ -85,7 +85,7 @@ export function ChimeraStage({
         "relative isolate overflow-hidden bg-[var(--stage-bg)]",
         cameo ? "size-[72px] rounded-full ring-2 ring-[var(--stage-line)]" : "w-full rounded-md ring-1 ring-[var(--stage-line)]",
         size === "hero" && "aspect-[4/5] sm:aspect-[16/11]",
-        size === "inline" && "aspect-video",
+        size === "inline" && "aspect-[4/3]",
       )}
       role="img"
       aria-label={aria}
@@ -172,7 +172,7 @@ export function ChimeraStage({
   if (cameo) return <div className={className} title={s.credit}>{screen}</div>;
 
   return (
-    <figure data-slot="chimera-stage" className={cn("flex w-full flex-col gap-2", size === "hero" ? "max-w-3xl" : "max-w-2xl", className)}>
+    <figure data-slot="chimera-stage" className={cn("flex w-full flex-col gap-2", "max-w-3xl", className)}>
       {/* a moldura da Pauta: grafite fosco, igual nos dois temas, como um aparelho */}
       <div className="rounded-lg bg-[var(--stage-frame)] p-2 shadow-md ring-1 ring-black/40 sm:p-2.5">{screen}</div>
       {(caption || !hideCredit) && (

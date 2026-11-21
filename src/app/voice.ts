@@ -3,7 +3,7 @@
 // sequências de notas.
 import * as React from "react";
 import { audio, detectPitch } from "./audio";
-import { loadChimera, type ChimeraModules } from "../components/music/voice/ChimeraLive";
+import { loadChimera, setChimeraProp, type ChimeraModules, type ChimeraProp } from "../components/music/voice/ChimeraLive";
 import { BODY_PRESETS, defaultF0, hzToMidi, VOWELS_PT, type VoiceBody, type VoiceRange, type VoiceReading, type VowelId } from "../lib/voice";
 
 /* ── Perfil de voz ─────────────────────────────────────────────────────── */
@@ -144,6 +144,25 @@ export type SungNote = { midi: number; seconds: number; vowel?: VowelId; syllabl
 
 let current: { cancel: () => void } | null = null;
 
+/* O que o Chimera está cantando agora (para a janelinha que acompanha a aula). */
+export type GuideNow = { midi: number; syllable?: string } | null;
+let guideNow: GuideNow = null;
+const guideListeners = new Set<() => void>();
+function setGuideNow(g: GuideNow) {
+  guideNow = g;
+  guideListeners.forEach((l) => l());
+}
+export function useGuideNow(): GuideNow {
+  return React.useSyncExternalStore(
+    (l) => {
+      guideListeners.add(l);
+      return () => guideListeners.delete(l);
+    },
+    () => guideNow,
+    () => null,
+  );
+}
+
 /** Liga o motor (precisa de um clique do aluno) e aplica o corpo do perfil. */
 export async function readyChimera(): Promise<ChimeraModules> {
   const m = await loadChimera();
@@ -167,12 +186,35 @@ export function setVowel(m: ChimeraModules, vowel: VowelId) {
  * O Chimera canta as notas em sequência. `onNote(i)` avisa a nota que começou
  * (-1 no fim). Uma chamada nova cancela a anterior.
  */
-export async function chimeraSing(notes: SungNote[], opts: { onNote?: (i: number) => void; source?: Record<string, number>; gap?: number } = {}): Promise<void> {
+export type SingOpts = {
+  onNote?: (i: number) => void;
+  source?: Record<string, number | boolean>;
+  gap?: number;
+  /** Postura de boca por cima da vogal (lábios, véu, mandíbula…), como no Chimera. */
+  artic?: Record<string, number>;
+  /** Um articulador balançando (os lábios no "brrr"). */
+  wobble?: { key: string; a: number; b: number; hz: number };
+  /** Objeto desenhado na boca enquanto canta. */
+  prop?: ChimeraProp;
+};
+
+export async function chimeraSing(notes: SungNote[], opts: SingOpts = {}): Promise<void> {
   current?.cancel();
   const m = await readyChimera();
   const st = m.useStore.getState();
   const before = { ...st.source };
+  const articBefore = { ...st.artic };
   if (opts.source) st.setSource(opts.source);
+  setChimeraProp(opts.prop ?? null);
+  let wob = 0;
+  if (opts.wobble) {
+    const w = opts.wobble;
+    let on = false;
+    wob = window.setInterval(() => {
+      on = !on;
+      m.useStore.getState().setArtic({ [w.key]: on ? w.a : w.b });
+    }, 500 / w.hz);
+  }
   let cancelled = false;
   let held: number | null = null;
   const timers: number[] = [];
@@ -181,6 +223,10 @@ export async function chimeraSing(notes: SungNote[], opts: { onNote?: (i: number
       if (held !== null) m.useStore.getState().noteOff(held);
       held = null;
       if (opts.source) m.useStore.getState().setSource(before);
+      if (wob) clearInterval(wob);
+      if (opts.artic || opts.wobble) m.useStore.getState().setArtic(articBefore);
+      setChimeraProp(null);
+      setGuideNow(null);
       opts.onNote?.(-1);
       resolve();
     };
@@ -198,9 +244,11 @@ export async function chimeraSing(notes: SungNote[], opts: { onNote?: (i: number
         window.setTimeout(() => {
           const s = m.useStore.getState();
           if (n.vowel) setVowel(m, n.vowel);
+          if (opts.artic) s.setArtic(opts.artic);
           if (held !== null) s.noteOff(held);
           s.noteOn(n.midi);
           held = n.midi;
+          setGuideNow({ midi: n.midi, syllable: n.syllable ?? n.vowel });
           opts.onNote?.(i);
         }, t * 1000),
       );

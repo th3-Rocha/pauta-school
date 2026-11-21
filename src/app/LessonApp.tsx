@@ -10,6 +10,7 @@ import { selectInstrument } from "./instrument";
 import { L, localePath, setLocale, type Locale } from "../i18n";
 import { Shell } from "./Shell";
 import { Lesson } from "../lessons/Lesson";
+import { ChimeraDock } from "../components/music/voice/ChimeraDock";
 
 function Soon({ day, course }: { day: number; course: CourseInfo }) {
   const m = course.monthOfDay(day);
@@ -101,6 +102,7 @@ export default function LessonApp({
         </div>
       )}
       {lesson ? <Lesson lesson={lesson} href={course.href} homeHref={localePath("/")} /> : <Soon day={day} course={course} />}
+      {instrument === "voice" && lesson && <ChimeraDock />}
     </Shell>
   );
 }

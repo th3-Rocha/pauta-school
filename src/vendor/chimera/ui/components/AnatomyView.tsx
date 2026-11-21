@@ -47,7 +47,9 @@ export const articulatorSlots: SlotsFn = (m, a, f, formants) => [
   f.velumPort > 0.02 ? { label: "Soft palate", value: f.velumPort.toFixed(2), unit: "cm²", color: V.white } : { label: "Soft palate", value: "Shut", color: V.white },
 ];
 
-export function AnatomyView(props: { slots?: SlotsFn; info?: InfoFn; showFormants?: boolean; overlay?: OverlayFn }) {
+export function AnatomyView(props: { slots?: SlotsFn; info?: InfoFn; showFormants?: boolean; overlay?: OverlayFn; /** Pauta: sem os números em volta da cabeça */ bare?: boolean }) {
+  const bareRef = useRef(props.bare ?? false);
+  bareRef.current = props.bare ?? false;
   const overlayRef = useRef<OverlayFn | undefined>(props.overlay);
   overlayRef.current = props.overlay;
   const formantsRef = useRef(props.showFormants ?? true);
@@ -70,6 +72,7 @@ export function AnatomyView(props: { slots?: SlotsFn; info?: InfoFn; showFormant
     const ctx = canvas.getContext("2d")!;
     const wrap = wrapRef.current!;
     const r = new AnatomyRenderer();
+    r.bare = bareRef.current;
     const glow = new Glow();
     rendererRef.current = r;
     let w = 0, h = 0, dpr = 1;
@@ -104,7 +107,7 @@ export function AnatomyView(props: { slots?: SlotsFn; info?: InfoFn; showFormant
         if (++fTick % 4 === 0 || formants.length === 0) formants = m.transfer(a).formants;
         const info = infoRef.current(m, f, tele);
         // recording a clip: the head without the measurements
-        const clean = recording.on;
+        const clean = recording.on || bareRef.current;
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.globalCompositeOperation = "source-over";
         ctx.fillStyle = "#000";

@@ -145,7 +145,7 @@ export type Node =
   /** Ajuste de voz: o triângulo do Chimera e a nota-base pela fala. */
   | { w: "voice-setup" }
   /** O Chimera por dentro (2D/3D) com botões de demonstração. */
-  | { w: "chimera"; demos: { label: Text; notes: number[]; vowel?: VowelId; vowels?: VowelId[]; seconds?: number; source?: Record<string, number> }[]; caption?: Text; view?: "2d" | "3d" }
+  | { w: "chimera"; demos: { label: Text; notes: number[]; vowel?: VowelId; vowels?: VowelId[]; seconds?: number; source?: Record<string, number | boolean>; artic?: Record<string, number>; prop?: "straw" | "trill" | "hum" }[]; caption?: Text; view?: "2d" | "3d" }
   /** Repetir uma nota e segurar `hold` segundos dentro de ±`tolerance` cents. */
   | { w: "match"; offset: number; vowel?: VowelId; tolerance?: number; hold?: number; title?: Text }
   /** Cantar uma frase no piano roll. `d` em tempos; `syl` = sílaba; `v` = vogal do Chimera. */

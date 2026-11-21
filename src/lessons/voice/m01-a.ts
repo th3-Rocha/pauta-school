@@ -1,6 +1,6 @@
 // Canto · mês 1 · dias 1 a 15 (docs/curricula/voice.md, seção 8).
 import type { Lesson } from "../types";
-import { CHECK_AFTER, CHECK_BEFORE, COOLDOWN, D, NO_PAIN, PAUSE, STRAW_TIP, WARMUP } from "./shared";
+import { CHECK_AFTER, CHECK_BEFORE, COOLDOWN, D, NO_PAIN, PAUSE, STRAW_TIP, TRILL_HOW, WARMUP } from "./shared";
 
 export const VOICE_M01_A: Lesson[] = [
   {
@@ -29,7 +29,7 @@ export const VOICE_M01_A: Lesson[] = [
           "Repare no Chimera: o ar sobe dos pulmões, as pregas vibram e a boca dá forma ao som. Toque nos botões e veja a cabeça por dentro.",
           {
             w: "chimera",
-            caption: "Arraste a cabeça para girar. O âmbar é o som; o azul, o corpo.",
+            caption: "O âmbar é o som; o rosa, o corpo. No 3D, arraste a cabeça para girar.",
             demos: [
               { label: "Sua nota-base", notes: [0], vowel: "a", seconds: 2 },
               { label: "Falar × cantar", notes: [0, 2, 0], vowel: "a", seconds: 0.6 },
@@ -43,6 +43,7 @@ export const VOICE_M01_A: Lesson[] = [
         body: [
           WARMUP,
           STRAW_TIP,
+          TRILL_HOW,
           "Agora ouça o Chimera cantar a sua nota-base e repita com **\"hum\"** de boca fechada, sem força. Volume de conversa. Quando a sua voz entrar na faixa, o anel enche: segure **3 segundos**.",
           "Se o medidor disser que você está uma **oitava** acima ou abaixo, **vale**. Isso é normal quando vozes diferentes cantam juntas.",
           { w: "match", offset: 0, vowel: "u", tolerance: 50, hold: 3, title: "Repita a sua nota-base" },
@@ -79,14 +80,15 @@ export const VOICE_M01_A: Lesson[] = [
         minutes: 3,
         body: [
           "Cantar num canudo fino (ou com os lábios vibrando, ou em \"hum\") **fecha parte da saída do ar**. O ar que volta empurra de leve as pregas vocais para fora, e elas batem uma na outra com **menos força**. Resultado: menos esforço e uma voz mais solta.",
-          "Os especialistas chamam isso de **SOVT** (trato vocal semiocluído). Vai estar em toda aula, no começo e no fim.",
+          "Os especialistas chamam isso de **SOVT** (trato vocal semiocluído). Vai estar em toda aula, no começo e no fim. **Não precisa comprar nada:** sem canudo, o \"hum\" e o \"brrr\" fazem quase o mesmo.",
           {
             w: "chimera",
             view: "2d",
-            caption: "Compare: na boca quase fechada (\"u\"), o tubo fica estreito na frente.",
+            caption: "Compare: com o canudo, o ar só tem um buraquinho para sair. Veja os lábios em bico em volta dele.",
             demos: [
               { label: "Boca aberta (\"á\")", notes: [0], vowel: "a", seconds: 1.6 },
-              { label: "Quase fechada (\"u\")", notes: [0], vowel: "u", seconds: 1.6 },
+              { label: "No canudo", notes: [0, 2, 0], vowel: "u", seconds: 1, artic: { lipAp: 0.12, lipProt: 1.2, lipWidth: 0.15, jaw: 0.5 }, prop: "straw" },
+              { label: "\"Hum\" (sem canudo)", notes: [0], vowel: "u", seconds: 1.8, artic: { lipAp: -0.25, velum: 0.45, jaw: 0.4 }, prop: "hum" },
             ],
           },
         ],
@@ -171,10 +173,14 @@ export const VOICE_M01_A: Lesson[] = [
         minutes: 3,
         body: [
           "Vibrar os lábios (o \"brrr\" de motorzinho) faz o mesmo que o canudo: fecha parte da saída do ar e deixa as pregas trabalharem leve.",
+          TRILL_HOW,
           {
-            callout: "tip",
-            label: "Não sai o \"brrr\"?",
-            text: "Apoie dois dedos nas bochechas, perto dos cantos da boca, e empurre de leve para cima. Solte menos ar, não mais. Se ainda não sair, use \"hum\".",
+            w: "chimera",
+            caption: "Repare: a boca fica parada e encostada; quem faz os lábios tremerem é o ar (em âmbar) passando.",
+            demos: [
+              { label: "Só o ar, sem voz", notes: [0], vowel: "u", seconds: 2, artic: { lipAp: 0.1, lipProt: 0.3, jaw: 0.35 }, prop: "trill", source: { voiced: false, pressure: 12, breathiness: 1 } },
+              { label: "\"Brrr\" com voz", notes: [0, 2, 4, 2, 0], vowel: "u", seconds: 0.6, artic: { lipAp: 0.02, lipProt: 0.3, jaw: 0.35 }, prop: "trill", source: { roughness: 0.55 } },
+            ],
           },
         ],
       },

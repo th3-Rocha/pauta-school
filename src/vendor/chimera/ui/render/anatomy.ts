@@ -165,6 +165,9 @@ export class AnatomyRenderer {
     for (let i = 0; i < 170; i++) this.particles.push({ s: Math.random() * 17, u: Math.random() * 2 - 1, life: Math.random(), px: NaN, py: NaN });
   }
 
+  /** Pauta: sem os números em volta, a cabeça ocupa a tela toda e fica centrada. */
+  bare = false;
+
   /** size in CSS px */
   resize(w: number, h: number): void {
     this.w = w;
@@ -173,11 +176,11 @@ export class AnatomyRenderer {
     // A tall desktop screen keeps them beside it: the head is then fitted to the width and centred,
     // leaving room above and below, where the compact rows ran over the skull.
     this.compact = w < 560;
-    const padX = 12, padT = this.compact ? 62 : 10, padB = this.compact ? 92 : 8;
+    const padX = 12, padT = this.bare ? 8 : this.compact ? 62 : 10, padB = this.bare ? 8 : this.compact ? 92 : 8;
     this.scale = Math.max(1, Math.min((w - 2 * padX) / (HEAD.x1 - HEAD.x0), (h - padT - padB) / (HEAD.y1 - HEAD.y0)));
     // left-aligned when there is room to spare, so the readouts get the space in front of the face
     const spare = w - 2 * padX - (HEAD.x1 - HEAD.x0) * this.scale;
-    this.ox = padX + (this.compact ? spare / 2 : Math.min(spare / 2, Math.max(0, spare - 220))) - HEAD.x0 * this.scale;
+    this.ox = padX + (this.compact || this.bare ? spare / 2 : Math.min(spare / 2, Math.max(0, spare - 220))) - HEAD.x0 * this.scale;
     this.oy = padT + Math.max(0, (h - padT - padB - (HEAD.y1 - HEAD.y0) * this.scale) / 2) + HEAD.y1 * this.scale;
     for (const p of this.particles) p.px = NaN;
   }

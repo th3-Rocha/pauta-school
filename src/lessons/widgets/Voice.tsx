@@ -51,7 +51,7 @@ export function VoiceSetup() {
   const { mods, error, retry } = useChimera();
   const profile = useVoiceProfile();
   const guide = useGuideState(mods);
-  const [view, setView] = React.useState<ChimeraView>("3d");
+  const [view, setView] = React.useState<ChimeraView>("2d");
   const [applying, setApplying] = React.useState(false);
   const [measuring, setMeasuring] = React.useState(false);
   const [suggestion, setSuggestion] = React.useState<{ body: typeof profile.body; home: number } | null>(null);
@@ -105,6 +105,7 @@ export function VoiceSetup() {
 
   return (
     <div className="flex flex-col gap-4">
+      {stage}
       <VoiceBodyPicker
         value={profile.body}
         onPreview={(b) => mods?.useStore.getState().previewBody(b)}
@@ -114,7 +115,6 @@ export function VoiceSetup() {
         suggestState={measuring ? "listening" : suggestion ? "ready" : ("idle" as BodySuggestState)}
         onMeasure={measure}
         onListen={() => void chimeraSing([{ midi: profile.home, seconds: 0.6, vowel: "a" }, { midi: profile.home + 4, seconds: 0.6, vowel: "a" }, { midi: profile.home + 7, seconds: 1.2, vowel: "a" }])}
-        stage={stage}
         lang={lang()}
         strings={en("voiceBody")}
       />
@@ -146,9 +146,9 @@ export function VoiceSetup() {
 
 /* ── O Chimera mostrando por dentro ────────────────────────────────────── */
 
-export type ChimeraDemo = { label: string; notes: number[]; vowel?: VowelId; vowels?: VowelId[]; seconds?: number; source?: Record<string, number> };
+export type ChimeraDemo = { label: string; notes: number[]; vowel?: VowelId; vowels?: VowelId[]; artic?: Record<string, number>; prop?: "straw" | "trill" | "hum"; seconds?: number; source?: Record<string, number | boolean> };
 
-export function ChimeraShow({ demos, caption, view: initial = "3d" }: { demos: ChimeraDemo[]; caption?: string; view?: ChimeraView }) {
+export function ChimeraShow({ demos, caption, view: initial = "2d" }: { demos: ChimeraDemo[]; caption?: string; view?: ChimeraView }) {
   const { mods, error, retry } = useChimera();
   const profile = useVoiceProfile();
   const guide = useGuideState(mods);
@@ -160,7 +160,7 @@ export function ChimeraShow({ demos, caption, view: initial = "3d" }: { demos: C
     setPlaying(i);
     await chimeraSing(
       d.notes.map((n, k) => ({ midi: profile.home + n, seconds: d.seconds ?? 1.2, vowel: d.vowels?.[k] ?? d.vowel ?? "a" })),
-      { source: d.source },
+      { source: d.source, artic: d.artic, prop: d.prop },
     );
     setPlaying((p) => (p === i ? null : p));
   };
@@ -319,7 +319,7 @@ export function PhraseWidget({
     setState("listen");
     setYou([]);
     setResults([]);
-    const sung: SungNote[] = roll.map((n, i) => ({ midi: n.midi, seconds: n.t1 - n.t0, vowel: vowelOf(notes[i]) }));
+    const sung: SungNote[] = roll.map((n, i) => ({ midi: n.midi, seconds: n.t1 - n.t0, vowel: vowelOf(notes[i]), syllable: notes[i].syl }));
     const p = chimeraSing(sung, { gap: 0.04 });
     start.current = performance.now();
     runClock(() => setState("idle"));
@@ -563,14 +563,20 @@ export function SssWidget() {
 
 /* ── Aquecimento e desaquecimento ──────────────────────────────────────── */
 
-const DEMO_OF: Record<string, number[]> = {
-  "lip-trill": [0, 2, 4, 2, 0],
-  hum: [0, 0],
-  siren: [0, 4, 7, 4, 0],
-  "five-note": [0, 2, 4, 5, 7, 5, 4, 2, 0],
-  "slide-down": [7, 5, 4, 2, 0],
-  yawn: [4, 0],
-  straw: [0, 2, 4, 2, 0],
+/** Como o Chimera demonstra cada item do aquecimento: notas, vogal, boca e o objeto na cena. */
+const DEMO_OF: Record<string, { steps: number[]; seconds: number; vowel: VowelId; artic?: Record<string, number>; source?: Record<string, number | boolean>; wobble?: { key: string; a: number; b: number; hz: number }; prop?: "straw" | "trill" | "hum" }> = {
+  // canudo: lábios em bico, bem fechados em volta dele
+  straw: { steps: [0, 2, 4, 5, 7, 5, 4, 2, 0], seconds: 0.5, vowel: "u", artic: { lipAp: 0.12, lipProt: 1.2, lipWidth: 0.15, jaw: 0.5 }, prop: "straw" },
+  // "brrr": lábios soltos, abrindo e fechando rápido
+  // "brrr": lábios soltos e encostados, parados; quem treme é o ar (desenhado por cima) e a voz fica "áspera"
+  "lip-trill": { steps: [0, 2, 4, 2, 0], seconds: 0.6, vowel: "u", artic: { lipAp: 0.02, lipProt: 0.3, jaw: 0.35 }, source: { roughness: 0.55 }, prop: "trill" },
+  // "hum": boca fechada, véu aberto, o som sai pelo nariz
+  hum: { steps: [0, 0], seconds: 1.6, vowel: "u", artic: { lipAp: -0.25, velum: 0.45, jaw: 0.4 }, prop: "hum" },
+  siren: { steps: [0, 2, 4, 7, 9, 7, 4, 2, 0], seconds: 0.35, vowel: "u" },
+  "five-note": { steps: [0, 2, 4, 5, 7, 5, 4, 2, 0], seconds: 0.45, vowel: "a" },
+  "slide-down": { steps: [7, 5, 4, 2, 0], seconds: 0.45, vowel: "u", artic: { lipAp: -0.25, velum: 0.45 }, prop: "hum" },
+  // bocejo: mandíbula aberta e laringe baixa
+  yawn: { steps: [4, 0], seconds: 1.4, vowel: "a", artic: { jaw: 2.2, larynx: -1.2 } },
 };
 
 export function WarmupWidget({ items, variant = "warmup" }: { items: WarmupItem[]; variant?: "warmup" | "cooldown" }) {
@@ -598,8 +604,9 @@ export function WarmupWidget({ items, variant = "warmup" }: { items: WarmupItem[
         items={items.map((x) => ({ ...x, done: done.includes(x.id) }))}
         current={current}
         onDemo={(id) => {
-          const steps = DEMO_OF[id] ?? [0, 2, 4, 2, 0];
-          void chimeraSing(steps.map((s) => ({ midi: profile.home + s, seconds: id === "hum" ? 1.6 : 0.45, vowel: id === "hum" || id === "lip-trill" || id === "straw" ? "u" : "a" })));
+          const d = DEMO_OF[id] ?? DEMO_OF["five-note"];
+          const syl = id === "straw" ? L("canudo", "straw") : id === "lip-trill" ? "brrr" : id === "hum" || id === "slide-down" ? "mmm" : id === "yawn" ? "ah" : undefined;
+          void chimeraSing(d.steps.map((s) => ({ midi: profile.home + s, seconds: d.seconds, vowel: d.vowel, syllable: syl })), { artic: d.artic, wobble: d.wobble, source: d.source, prop: d.prop, gap: 0.02 });
         }}
         onToggleDone={(id, d) => setDone((xs) => (d ? [...xs, id] : xs.filter((x) => x !== id)))}
         strings={en("vocalHealth")}

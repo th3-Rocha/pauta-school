@@ -25,7 +25,7 @@ function Lab({ mods, locale }: { mods: ChimeraModules; locale: Locale }) {
   const hold = useStore((s) => s.hold);
   const viewFlags = useStore((s) => s.view);
   const [applying, setApplying] = React.useState(false);
-  const [view, setView] = React.useState<ChimeraView>("3d");
+  const [view, setView] = React.useState<ChimeraView>("2d");
   const [vowel, setVowel] = React.useState("a");
   const guide = useGuideState(mods);
   const base = keyboardBase(body);
@@ -104,7 +104,7 @@ function Lab({ mods, locale }: { mods: ChimeraModules; locale: Locale }) {
       onViewChange={setView}
       controls={chips}
       onStartAudio={() => void useStore.getState().start()}
-      caption={L("Arraste a cabeça para girar (3D). Toque as teclas para ela cantar.", "Drag the head to turn it (3D). Play the keys to make it sing.")}
+      caption={L("Toque as teclas para ela cantar. No 3D, arraste a cabeça para girar.", "Play the keys to make it sing. In 3D, drag the head to turn it.")}
       strings={locale === "en" ? EN.chimera : undefined}
     >
       <ChimeraHead mods={mods} view={view} />
